@@ -14,6 +14,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FilterChip
@@ -45,10 +46,9 @@ import com.a.injector.presentation.navigation.popBackStack
 import com.a.injector.presentation.util.CustomBottomSheet
 import com.a.injector.presentation.util.CustomCenterCircularWavyProgressIndicator
 import com.a.injector.presentation.util.CustomCenterTextMessage
-import com.a.injector.presentation.util.CustomTextListTitle
+import com.a.injector.presentation.util.CustomIconButton
 import com.a.injector.presentation.util.CustomTopAppBar
 import com.a.injector.presentation.util.SnackBarEffectLauncher
-import com.a.injector.presentation.util.spacer
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -111,7 +111,14 @@ private fun Screen(
         topBar = {
             CustomTopAppBar(
                 navigationClick = { navBackStack.popBackStack() },
-                title = "Role"
+                title = "Role",
+                actions = {
+                    CustomIconButton(
+                        onClick = { onAction(ManageRoleAction.ButtonCleanStorage) },
+                        content = { Icon(Icons.Rounded.Delete, null) },
+                        isLoading = state.isButtonCleanStorageLoading
+                    )
+                }
             )
         },
         content = { innerPadding ->

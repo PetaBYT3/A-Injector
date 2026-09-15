@@ -7,6 +7,7 @@ import com.a.injector.data.util.SupabaseConstanta
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.annotations.SupabaseExperimental
 import io.github.jan.supabase.postgrest.from
+import io.github.jan.supabase.realtime.selectAsFlow
 import io.github.jan.supabase.realtime.selectSingleValueAsFlow
 import kotlinx.coroutines.flow.Flow
 import org.koin.core.annotation.Single
@@ -15,6 +16,12 @@ import org.koin.core.annotation.Single
 class ReplaceApiImpl(
     private val supabaseClient: SupabaseClient
 ): ReplaceApi {
+    override fun getReplaces(): Flow<List<ReplaceDto>> {
+        return supabaseClient.from(SupabaseConstanta.REPLACE_TABLE).selectAsFlow(
+            primaryKey = ReplaceDto::id
+        )
+    }
+
     override fun getReplace(id: String): Flow<ReplaceDto?> {
         return supabaseClient.from(SupabaseConstanta.REPLACE_TABLE).selectSingleValueAsFlow(
             primaryKey = ReplaceDto::id,

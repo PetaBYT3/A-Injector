@@ -16,8 +16,8 @@ import com.a.injector.data.remote.ReplaceApi
 import com.a.injector.data.remote.SkinApi
 import com.a.injector.data.remote.StorageApi
 import com.a.injector.data.util.toMessage
-import com.a.injector.domain.model.HeroModel
 import com.a.injector.domain.model.HeroDetailModel
+import com.a.injector.domain.model.HeroModel
 import com.a.injector.domain.model.ReplaceModel
 import com.a.injector.domain.model.SkinModel
 import com.a.injector.domain.repository.DatabaseRepository
@@ -27,6 +27,7 @@ import io.github.vinceglb.filekit.size
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -188,6 +189,26 @@ class DatabaseRepositoryImpl(
                 fromBucket = Bucket.SCRIPT,
                 fileName = "${replaceModel.id}.zip"
             )
+            emit(Either.Right(context.getString(R.string.title_success)))
+        }.catch { throwable ->
+            emit(Either.Left(throwable.toMessage(context)))
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override fun cleanStorage(): Flow<Either<String, String>> {
+        return flow<Either<String, String>> {
+            val filesInPostgrest = replaceApi.getReplaces().first().map { "${it.id}.zip" }
+            val filesInStorage = storageApi.getFileNames(Bucket.SCRIPT)
+            val filesToDelete = filesInStorage.filter { fileName ->
+                fileName !in filesInPostgrest
+            }
+
+            if (filesToDelete.isNotEmpty()) {
+                storageApi.deleteFiles(
+                    fromBucket = Bucket.SCRIPT,
+                    files = filesToDelete
+                )
+            }
             emit(Either.Right(context.getString(R.string.title_success)))
         }.catch { throwable ->
             emit(Either.Left(throwable.toMessage(context)))

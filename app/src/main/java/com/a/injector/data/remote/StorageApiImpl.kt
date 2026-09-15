@@ -13,11 +13,13 @@ import java.io.FileOutputStream
 class StorageApiImpl(
     private val supabaseClient: SupabaseClient
 ): StorageApi {
-    override suspend fun upload(
-        targetBucket: Bucket,
-        fileByte: ByteArray,
-        fileName: String,
-    ) {
+    override suspend fun getFileNames(fromBucket: Bucket): List<String> {
+        return supabaseClient.storage.from(fromBucket.absoluteName).list().filter { fileObject ->
+            fileObject.name != ".emptyFolderPlaceholder"
+        }.map { it.name }
+    }
+
+    override suspend fun upload(targetBucket: Bucket, fileByte: ByteArray, fileName: String) {
         supabaseClient.storage.from(targetBucket.absoluteName).upload(
             path = fileName,
             data = fileByte,
@@ -27,21 +29,18 @@ class StorageApiImpl(
         )
     }
 
-    override suspend fun download(
-        fromBucket: Bucket,
-        fileName: String,
-        outputPath: File
-    ) {
+    override suspend fun download(fromBucket: Bucket, fileName: String, outputPath: File) {
         val fileBytes = supabaseClient.storage.from(fromBucket.absoluteName).downloadPublic(fileName)
         FileOutputStream(outputPath).use { fileOutputStream ->
             fileOutputStream.write(fileBytes)
         }
     }
 
-    override suspend fun delete(
-        fromBucket: Bucket,
-        fileName: String
-    ) {
+    override suspend fun delete(fromBucket: Bucket, fileName: String) {
         supabaseClient.storage.from(fromBucket.absoluteName).delete(fileName)
+    }
+
+    override suspend fun deleteFiles(fromBucket: Bucket, files: List<String>) {
+        supabaseClient.storage.from(fromBucket.absoluteName).delete(files)
     }
 }

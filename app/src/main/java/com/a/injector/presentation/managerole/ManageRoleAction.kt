@@ -4,6 +4,8 @@ import com.a.injector.domain.model.ProfileModel
 import com.a.injector.domain.model.RequestModel
 
 sealed interface ManageRoleAction {
+    data object ButtonCleanStorage: ManageRoleAction
+
     data class ShowGrantRequestBottomSheet(val requestModel: RequestModel): ManageRoleAction
     data object DismissGrantRequestBottomSheet: ManageRoleAction
     data object GrantRequestButton: ManageRoleAction

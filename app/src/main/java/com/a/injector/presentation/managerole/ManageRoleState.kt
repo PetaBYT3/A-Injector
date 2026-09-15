@@ -5,6 +5,8 @@ import com.a.injector.domain.model.RequestDetailModel
 import com.a.injector.domain.model.RequestModel
 
 data class ManageRoleState(
+    val isButtonCleanStorageLoading: Boolean = false,
+
     val isRequestDetailsLoading: Boolean = true,
     val isRequestDetailsError: String? = null,
     val requestDetails: List<RequestDetailModel> = emptyList(),

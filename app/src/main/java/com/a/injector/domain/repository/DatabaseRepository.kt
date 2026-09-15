@@ -1,8 +1,8 @@
 package com.a.injector.domain.repository
 
 import arrow.core.Either
-import com.a.injector.domain.model.HeroModel
 import com.a.injector.domain.model.HeroDetailModel
+import com.a.injector.domain.model.HeroModel
 import com.a.injector.domain.model.ReplaceModel
 import com.a.injector.domain.model.SkinModel
 import io.github.vinceglb.filekit.PlatformFile
@@ -23,4 +23,6 @@ interface DatabaseRepository {
     fun getReplace(replaceId: String): Flow<Either<String, ReplaceModel>>
     fun upsertReplace(replaceModel: ReplaceModel, platformFile: PlatformFile?): Flow<Either<String, String>>
     fun deleteReplace(replaceModel: ReplaceModel): Flow<Either<String, String>>
+
+    fun cleanStorage(): Flow<Either<String, String>>
 }
