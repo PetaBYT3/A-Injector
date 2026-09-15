@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_home">Home</string>
+    <string name="title_script">Script</string>
+    <string name="title_profile">Profile</string>
+    <string name="title_hero">Hero</string>
+    <string name="title_skin">Skin</string>
+    <string name="title_add">Add</string>
+    <string name="title_edit">Edit</string>
+    <string name="title_delete">Delete</string>
+    <string name="title_name">Name</string>
+    <string name="title_action">Action</string>
+    <string name="title_file">File</string>
+    <string name="title_executor">Executor</string>
+    <string name="title_change">Change</string>
+    <string name="title_update">Update</string>
+    <string name="title_label">Label</string>
+    <string name="title_replaced">Replaced</string>
+    <string name="title_success">Success</string>
+    <string name="title_to">To</string>
+    <string name="title_role">Role</string>
+    <string name="title_contribution">Contribution</string>
+    <string name="title_request">Request</string>
+    <string name="title_grant">Grant</string>
+
+    <string name="title_authorized">Authorized</string>
+    <string name="title_unauthorized">Unauthorized</string>
+    <string name="title_granted">Granted</string>
+    <string name="title_denied">Denied</string>
+
+    <string name="title_description">Description</string>
+    <string name="title_replace">Replace</string>
+
+    <string name="title_developer">Developer</string>
+    <string name="title_contributor">Contributor</string>
+    <string name="title_support">Support</string>
+
+    <string name="title_sign_in">Sign In</string>
+    <string name="title_sign_up">Sign Up</string>
+    <string name="title_guest">Guest</string>
+
+    <string name="title_email">Email</string>
+    <string name="title_password">Password</string>
+    <string name="title_repeat_password">Repeat Password</string>
+
+    <string name="title_show_password">Show Password</string>
+    <string name="title_same">Same</string>
+    <string name="title_8_character">8 Character</string>
+    <string name="title_uppercase">Uppercase</string>
+    <string name="title_number">Number</string>
+
+    <string name="title_unknown">Unknown</string>
+    <string name="title_empty">Empty</string>
+</resources>

@@ -1,0 +1,116 @@
+[versions]
+agp = "9.4.0"
+coreKtx = "1.19.0"
+junit = "4.13.2"
+junitVersion = "1.1.5"
+espressoCore = "3.5.1"
+lifecycleRuntimeKtx = "2.11.0"
+activityCompose = "1.13.0"
+kotlin = "2.4.10"
+composeBom = "2026.08.00"
+material3Version = "1.5.0-alpha27"
+materialIconExtendedVersion = "1.7.8"
+
+splashScreenVersion = "1.2.0"
+koinVersion = "4.2.2"
+koinAnnotationVersion = "2.3.1"
+arrowBomVersion = "2.2.3"
+navigationVersion = "1.1.7"
+dataStoreVersion = "1.2.1"
+ktorVersion = "3.0.0"
+firebaseVersion = "34.18.0"
+supabaseVersion = "3.8.0"
+gitliveFirestoreVersion = "2.6.0"
+fileKitVersion = "0.15.0"
+shizukuVersion = "13.1.5"
+
+googleKspVersion = "2.3.2"
+secretsGradleVersion = "2.0.1"
+googleServiceVersion = "4.5.0"
+
+[libraries]
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3Version" }
+
+#Splash Screen
+androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "splashScreenVersion" }
+
+#Koin Android
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koinVersion" }
+koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koinVersion" }
+koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koinVersion" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koinVersion" }
+koin-android-compose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koinVersion" }
+koin-android-workmanager = { module = "io.insert-koin:koin-androidx-workmanager", version.ref = "koinVersion" }
+
+koin-annotation = { module = "io.insert-koin:koin-annotations", version.ref = "koinAnnotationVersion" }
+koin-ksp-compier = { module = "io.insert-koin:koin-ksp-compiler", version.ref = "koinAnnotationVersion" }
+
+#Arrow
+arrow-bom = { module = "io.arrow-kt:arrow-stack", version.ref = "arrowBomVersion" }
+arrow-core = { module = "io.arrow-kt:arrow-core" }
+arrow-fx-coroutine = { module = "io.arrow-kt:arrow-fx-coroutines" }
+arrow-optics = { module = "io.arrow-kt:arrow-optics" }
+
+#Datastore
+datastore = { module = "androidx.datastore:datastore", version.ref = "dataStoreVersion" }
+datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "dataStoreVersion" }
+
+#Ktor
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktorVersion" }
+
+#Firebase
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseVersion" }
+gitlive-firebase-firestore = { module = "dev.gitlive:firebase-firestore", version.ref = "gitliveFirestoreVersion" }
+
+#Supabase
+supabase-bom = { module = "io.github.jan-tennert.supabase:bom", version.ref = "supabaseVersion" }
+supabase-realtime = { module = "io.github.jan-tennert.supabase:realtime-kt" }
+supabase-auth = { module = "io.github.jan-tennert.supabase:auth-kt" }
+supabase-postgrest = { module = "io.github.jan-tennert.supabase:postgrest-kt" }
+supabase-storage = { module = "io.github.jan-tennert.supabase:storage-kt" }
+
+#Navigation
+androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "navigationVersion" }
+androidx-navigation3-ui = { module = "androidx.navigation3:navigation3-ui", version.ref = "navigationVersion" }
+androidx-lifecycle-viewmodel-navigation3 = { module = "androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycleRuntimeKtx" }
+
+#File Kit
+filekit-dialog = { module = "io.github.vinceglb:filekit-dialogs", version.ref = "fileKitVersion" }
+filekit-dialog-compose = { module = "io.github.vinceglb:filekit-dialogs-compose", version.ref = "fileKitVersion" }
+
+#Shizuku
+shizuku-api = { module = "dev.rikka.shizuku:api", version.ref = "shizukuVersion" }
+shizuku-provider = { module = "dev.rikka.shizuku:provider", version.ref = "shizukuVersion" }
+
+#Icon
+material-icon-extended = { module = "androidx.compose.material:material-icons-extended-android", version.ref = "materialIconExtendedVersion" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+
+#KSP
+google-ksp = { id = "com.google.devtools.ksp", version.ref = "googleKspVersion" }
+
+#Secret Gradle
+secrets-gradle = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "secretsGradleVersion" }
+
+#Serialization
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+
+#Google Services
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServiceVersion" }
+

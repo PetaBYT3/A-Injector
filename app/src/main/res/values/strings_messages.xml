@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="message_credential_invalid">Email or password incorrect</string>
+    <string name="message_email_invalid">Email invalid</string>
+    <string name="message_email_unverified">Email not verified</string>
+    <string name="message_email_used">Email already been used</string>
+    <string name="message_password_weak">Password is weak</string>
+    <string name="message_user_not_found">User not found</string>
+    <string name="message_too_many_attempts">Too many attempts</string>
+    <string name="message_no_connection">No internet connection, check your network</string>
+    <string name="message_connection_timeout">Connection timeout</string>
+    <string name="message_server_error">Something went wrong with the server</string>
+    <string name="message_unknown_error">Something went wrong</string>
+    <string name="message_data_already_exist">Data Already Exist</string>
+
+    <string name="message_no_data">Data has been does not exist or has been deleted</string>
+
+    <string name="message_delete_hero">This hero will be permanently deleted and all of its skin and script data</string>
+
+    <string name="message_no_file">No file picked</string>
+</resources>
