@@ -1,9 +1,10 @@
-package com.a.injector.data.repository
+package com.a.injector.data.system
 
-import com.a.injector.domain.repository.SuperuserRepository
+import android.content.Context
+import com.a.injector.R
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
@@ -13,31 +14,35 @@ import java.io.DataOutputStream
 import java.io.InputStreamReader
 
 @Single
-class SuperuserRepositoryImpl : SuperuserRepository {
-    private val _isRooted = MutableStateFlow(false)
-    override val isGranted: StateFlow<Boolean> = _isRooted.asStateFlow()
+class SuperuserCommandServiceImpl(
+    private val context: Context
+): SuperuserCommandService {
+    private val _isGranted = MutableStateFlow(false)
+    override val isGranted: Flow<Boolean> = _isGranted.asStateFlow()
 
     private var process: Process? = null
 
     override suspend fun check() {
-        val isRooted = withContext(Dispatchers.IO) {
+        withContext(Dispatchers.IO) {
             try {
                 process = Runtime.getRuntime().exec(arrayOf("su", "-c", "id"))
                 val reader = BufferedReader(InputStreamReader(process?.inputStream))
                 val output = reader.readLine()
 
-                process?.waitFor() == 0 && output != null && output.contains("uid=0")
+                val result = process?.waitFor() == 0 && output != null && output.contains("uid=0")
+                _isGranted.update { result }
             } catch (e: Exception) {
-                false
+                _isGranted.update { false }
             } finally {
                 process?.destroy()
             }
         }
-        _isRooted.update { isRooted }
     }
 
     override suspend fun copy(sourcePath: String, targetPath: String) {
         withContext(Dispatchers.IO) {
+            if (!_isGranted.value) throw Exception(context.getString(R.string.message_superuser_denied))
+
             process = Runtime.getRuntime().exec("su")
             val os = DataOutputStream(process?.outputStream)
 

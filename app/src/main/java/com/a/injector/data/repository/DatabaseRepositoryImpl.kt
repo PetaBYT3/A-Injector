@@ -11,7 +11,9 @@ import com.a.injector.data.mapper.toReplaceDto
 import com.a.injector.data.mapper.toReplaceModel
 import com.a.injector.data.mapper.toSkinDto
 import com.a.injector.data.mapper.toSkinModel
+import com.a.injector.data.remote.AuthApi
 import com.a.injector.data.remote.HeroApi
+import com.a.injector.data.remote.ProfileApi
 import com.a.injector.data.remote.ReplaceApi
 import com.a.injector.data.remote.SkinApi
 import com.a.injector.data.remote.StorageApi
@@ -37,6 +39,8 @@ import kotlin.time.Clock
 @Single
 class DatabaseRepositoryImpl(
     private val context: Context,
+    private val authApi: AuthApi,
+    private val profileApi: ProfileApi,
     private val heroApi: HeroApi,
     private val skinApi: SkinApi,
     private val replaceApi: ReplaceApi,
@@ -169,6 +173,8 @@ class DatabaseRepositoryImpl(
                     fileByte = platformFile.readBytes(),
                     fileName = "${replaceModel.id}.zip"
                 )
+                val currentId = authApi.currentAuth.first()?.id!!
+                profileApi.incrementContribution(currentId)
             } else {
                 replaceApi.upsertReplace(
                     replace = replaceModel.toReplaceDto()

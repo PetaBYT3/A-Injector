@@ -1,7 +1,5 @@
-package com.a.injector.domain.model.state
+package com.a.injector.domain.model
 
-import com.a.injector.data.dto.ProfileDto
-import com.a.injector.domain.model.ProfileModel
 import io.github.jan.supabase.auth.user.UserInfo
 
 sealed interface AuthState {

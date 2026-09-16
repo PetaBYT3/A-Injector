@@ -1,15 +1,15 @@
 package com.a.injector.data.mapper
 
-import com.a.injector.data.dto.HeroDto
 import com.a.injector.data.dto.HeroDetailDto
+import com.a.injector.data.dto.HeroDto
 import com.a.injector.data.dto.ReplaceDto
-import com.a.injector.data.dto.SkinDto
 import com.a.injector.data.dto.SkinDetailDto
-import com.a.injector.domain.model.HeroModel
+import com.a.injector.data.dto.SkinDto
 import com.a.injector.domain.model.HeroDetailModel
+import com.a.injector.domain.model.HeroModel
 import com.a.injector.domain.model.ReplaceModel
-import com.a.injector.domain.model.SkinModel
 import com.a.injector.domain.model.SkinDetailModel
+import com.a.injector.domain.model.SkinModel
 
 fun HeroDto.toHeroModel(): HeroModel = HeroModel(
     id = this.id,

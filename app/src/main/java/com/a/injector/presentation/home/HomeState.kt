@@ -1,10 +1,12 @@
 package com.a.injector.presentation.home
 
-import com.a.injector.data.dto.Executor
+import com.a.injector.domain.model.CommandServiceModel
+import com.a.injector.domain.model.ProfileModel
 
 data class HomeState(
-    val executor: Executor = Executor.Shizuku,
+    val commandService: CommandServiceModel = CommandServiceModel.DEFAULT,
 
-    val isAuthorized: Boolean = false,
-    val isGranted: Boolean = false,
+    val isHighestContributionProfileLoading: Boolean = true,
+    val isHighestContributionProfileError: String? = null,
+    val highestContributionProfile: List<ProfileModel> = emptyList()
 )

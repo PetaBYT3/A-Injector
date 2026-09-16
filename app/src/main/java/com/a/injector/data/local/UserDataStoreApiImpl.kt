@@ -4,7 +4,6 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.a.injector.data.dto.Executor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.koin.core.annotation.Single
@@ -14,16 +13,16 @@ class UserDataStoreApiImpl(
     private val dataStore: DataStore<Preferences>
 ): UserDataStoreApi {
     private companion object {
-        val EXECUTOR = stringPreferencesKey("executor")
+        val COMMAND_SERVICES = stringPreferencesKey("executor")
     }
 
-    override val executor: Flow<Executor> = dataStore.data.map { preferences ->
-        Executor.valueOf(preferences[EXECUTOR] ?: Executor.Shizuku.name)
+    override val commandService: Flow<CommandService> = dataStore.data.map { preferences ->
+        CommandService.valueOf(preferences[COMMAND_SERVICES] ?: CommandService.Shizuku.name)
     }
 
-    override suspend fun setExecutor(executor: Executor) {
+    override suspend fun setCommandService(commandService: CommandService) {
         dataStore.edit { preferences ->
-            preferences[EXECUTOR] = executor.name
+            preferences[COMMAND_SERVICES] = commandService.name
         }
     }
 }

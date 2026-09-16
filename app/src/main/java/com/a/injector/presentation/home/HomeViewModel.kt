@@ -2,57 +2,76 @@ package com.a.injector.presentation.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.a.injector.data.local.UserDataStoreApi
-import com.a.injector.data.dto.Executor
-import com.a.injector.domain.repository.SuperuserRepository
-import com.a.injector.domain.repository.ShizukuRepository
+import com.a.injector.data.local.CommandService
+import com.a.injector.domain.repository.AccountRepository
+import com.a.injector.domain.repository.InjectRepository
+import com.a.injector.presentation.util.ScreenEffect
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
 class HomeViewModel(
-    private val userDataStoreApi: UserDataStoreApi,
-    private val shizukuRepository: ShizukuRepository,
-    private val superuserRepository: SuperuserRepository
+    private val injectRepository: InjectRepository,
+    private val accountRepository: AccountRepository
 ): ViewModel() {
-
     private val _state = MutableStateFlow(HomeState())
     val state = _state.asStateFlow()
 
+    private val _effect = Channel<ScreenEffect>()
+    val effect = _effect.receiveAsFlow()
+
     init {
         viewModelScope.launch {
-            userDataStoreApi.executor.collect { executor ->
-                _state.update { it.copy(executor = executor) }
+            injectRepository.commandService.collect { commandServiceState ->
+                _state.update { currentState ->
+                    currentState.copy(commandService = commandServiceState)
+                }
             }
         }
 
         viewModelScope.launch {
-            shizukuRepository.isAuthorized.collect { isAuthorized ->
-                _state.update { it.copy(isAuthorized = isAuthorized) }
-            }
-        }
-
-        viewModelScope.launch {
-            superuserRepository.isGranted.collect { isGranted ->
-                _state.update { it.copy(isGranted = isGranted) }
+            accountRepository.getProfileByHighestContribution().collect { either ->
+                either.onRight { profileModels ->
+                    _state.update { currentState ->
+                        currentState.copy(
+                            highestContributionProfile = profileModels,
+                            isHighestContributionProfileLoading = false
+                        )
+                    }
+                }.onLeft { error ->
+                    _state.update { currentState ->
+                        currentState.copy(
+                            isHighestContributionProfileError = error,
+                            isHighestContributionProfileLoading = false
+                        )
+                    }
+                }
             }
         }
     }
 
     fun onAction(action: HomeAction) {
         when (action) {
-            is HomeAction.SetExecutor -> {
-                setExecutor(executor = action.executor)
+            is HomeAction.SetCommandServiceButton -> {
+                setCommandServiceButton(action.commandService)
             }
         }
     }
 
-    private fun setExecutor(executor: Executor) {
+    private fun setCommandServiceButton(commandService: CommandService) {
         viewModelScope.launch {
-            userDataStoreApi.setExecutor(executor = executor)
+            injectRepository.setCommandService(
+                commandService = commandService
+            ).collect { either ->
+                either.onLeft { error ->
+                    _effect.send(ScreenEffect.ShowSnackBar(error))
+                }
+            }
         }
     }
 }

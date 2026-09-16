@@ -3,8 +3,8 @@ package com.a.injector.presentation.profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a.injector.data.dto.Role
+import com.a.injector.domain.model.AuthState
 import com.a.injector.domain.model.RequestModel
-import com.a.injector.domain.model.state.AuthState
 import com.a.injector.domain.repository.AccountRepository
 import com.a.injector.presentation.util.ScreenEffect
 import kotlinx.coroutines.channels.Channel

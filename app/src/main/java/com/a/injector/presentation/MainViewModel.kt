@@ -2,7 +2,7 @@ package com.a.injector.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.a.injector.domain.model.state.AuthState
+import com.a.injector.domain.model.AuthState
 import com.a.injector.domain.repository.AccountRepository
 import com.a.injector.domain.repository.NavigationRepository
 import com.a.injector.presentation.navigation.NavigationRoute

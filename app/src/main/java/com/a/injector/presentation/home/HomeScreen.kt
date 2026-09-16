@@ -2,36 +2,50 @@
 
 package com.a.injector.presentation.home
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Warning
+import androidx.compose.material.icons.rounded.ArrowDropDown
+import androidx.compose.material.icons.rounded.OpenInNew
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItemDefaults
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
-import com.a.injector.data.dto.Executor
+import com.a.injector.data.local.CommandService
+import com.a.injector.domain.model.StaticModel
+import com.a.injector.presentation.component.DefaultClickableListItem
+import com.a.injector.presentation.component.DefaultListItem
+import com.a.injector.presentation.component.PrimaryListItem
+import com.a.injector.presentation.util.CustomCenterCircularWavyProgressIndicator
+import com.a.injector.presentation.util.CustomTextListTitle
 import com.a.injector.presentation.util.CustomTopAppBar
+import com.a.injector.presentation.util.spacer
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -65,25 +79,6 @@ private fun Screen(
     state: HomeState,
     onAction: (HomeAction) -> Unit
 ) {
-    val developerList = listOf(
-        Pair(
-            first = {},
-            second = stringResource(R.string.developer_name)
-        ),
-        Pair(
-            first = {},
-            second = stringResource(R.string.github)
-        ),
-        Pair(
-            first = {},
-            second = stringResource(R.string.instagram)
-        ),
-        Pair(
-            first = {},
-            second = stringResource(R.string.title_support)
-        )
-    )
-
     Scaffold(
         contentWindowInsets = WindowInsets.statusBars,
         topBar = {
@@ -92,82 +87,181 @@ private fun Screen(
             )
         },
         content = { innerPadding ->
-            LazyColumn(
+            Content(
                 modifier = Modifier
-                    .padding(innerPadding)
-                    .fillMaxSize(),
-                contentPadding = PaddingValues(horizontal = 10.dp),
+                    .padding(innerPadding),
+                state = state,
+                onAction = onAction
+            )
+        }
+    )
+}
+
+@Composable
+private fun Content(
+    modifier: Modifier = Modifier,
+    state: HomeState,
+    onAction: (HomeAction) -> Unit
+) {
+    val aboutDeveloperList = listOf(
+        StaticModel(
+            onClick = {},
+            contentTextResId = R.string.title_github
+        ),
+        StaticModel(
+            onClick = {},
+            contentTextResId = R.string.linkedin
+        ),
+        StaticModel(
+            onClick = {},
+            contentTextResId = R.string.instagram
+        ),
+        StaticModel(
+            onClick = {},
+            contentTextResId = R.string.title_support
+        )
+    )
+    LazyColumn(
+        modifier = modifier,
+        contentPadding = PaddingValues(start = 10.dp, end = 10.dp, bottom = 100.dp),
+        verticalArrangement = Arrangement.spacedBy(2.5.dp)
+    ) {
+        item("serviceCommandItem") {
+            var isCommandServiceExpanded by remember {
+                mutableStateOf(false)
+            }
+            Column(
+                modifier = Modifier
+                    .animateItem(),
                 verticalArrangement = Arrangement.spacedBy(2.5.dp)
             ) {
-                item {
-                    SegmentedListItem(
-                        colors = ListItemDefaults.colors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            leadingContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                            supportingContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                            trailingContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                        ),
-                        shapes = ListItemDefaults.segmentedShapes(
-                            index = 0,
-                            count = Executor.entries.size
-                        ),
-                        onClick = { onAction(HomeAction.SetExecutor(Executor.Shizuku)) },
-                        leadingContent = {
-                            RadioButton(
-                                selected = state.executor == Executor.Shizuku,
-                                onClick = null
-                            )
-                        },
-                        content = { Text(text = Executor.Shizuku.name) },
-                        supportingContent = {
-                            Text(
-                                text = if (state.isAuthorized) stringResource(R.string.title_authorized)
-                                else stringResource(R.string.title_unauthorized)
-                            )
-                        },
-                        trailingContent = {
-                            if (!state.isAuthorized) {
-                                Icon(Icons.Rounded.Warning, null)
+                PrimaryListItem(
+                    overlineContent = { Text(text = stringResource(R.string.title_command_service)) },
+                    content = { Text(text = state.commandService.name.name) },
+                    supportingContent = {
+                        Text(
+                            text = when (state.commandService.name) {
+                                CommandService.Shizuku -> {
+                                    if (state.commandService.isRunning) {
+                                        stringResource(R.string.title_authorized)
+                                    } else {
+                                        stringResource(R.string.title_unauthorized)
+                                    }
+                                }
+                                CommandService.Superuser -> {
+                                    if (state.commandService.isRunning) {
+                                        stringResource(R.string.state_granted)
+                                    } else {
+                                        stringResource(R.string.title_denied)
+                                    }
+                                }
                             }
+                        )
+                    },
+                    trailingContent = {
+                        val rotateIcon by animateFloatAsState(
+                            targetValue = if (isCommandServiceExpanded) 180f else 0f
+                        )
+                        IconButton(
+                            onClick = { isCommandServiceExpanded = !isCommandServiceExpanded },
+                            content = {
+                                Icon(
+                                    modifier = Modifier
+                                        .rotate(rotateIcon),
+                                    imageVector = Icons.Rounded.ArrowDropDown,
+                                    contentDescription = null
+                                )
+                            }
+                        )
+                    }
+                )
+                AnimatedVisibility(
+                    visible = isCommandServiceExpanded
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(2.5.dp)
+                    ) {
+                        CommandService.entries.fastForEachIndexed { index, commandService ->
+                            DefaultClickableListItem(
+                                index = index,
+                                count = CommandService.entries.size,
+                                onClick = {
+                                    onAction(HomeAction.SetCommandServiceButton(commandService))
+                                },
+                                leadingContent = {
+                                    RadioButton(
+                                        selected = state.commandService.name == commandService,
+                                        onClick = null
+                                    )
+                                },
+                                content = { Text(text = commandService.name) }
+                            )
                         }
+                    }
+                }
+            }
+        }
+        spacer()
+        item("aboutDeveloperTitle") {
+            CustomTextListTitle(
+                modifier = Modifier
+                    .animateItem(),
+                text = stringResource(R.string.title_about_developer)
+            )
+        }
+        itemsIndexed(
+            items = aboutDeveloperList,
+            key = { _, staticModel -> staticModel.id }
+        ) { index, staticModel ->
+            DefaultClickableListItem(
+                modifier = Modifier
+                    .animateItem(),
+                index = index,
+                count = aboutDeveloperList.size,
+                onClick = { staticModel.onClick?.invoke() },
+                content = { Text(text = stringResource(staticModel.contentTextResId)) },
+                trailingContent = { Icon(Icons.Rounded.OpenInNew, null) }
+            )
+        }
+        spacer()
+        item("contributorTitle") {
+            CustomTextListTitle(
+                modifier = Modifier
+                    .animateItem(),
+                text = stringResource(R.string.title_contributor)
+            )
+        }
+        when {
+            state.isHighestContributionProfileLoading -> {
+                item("isHighestContributionProfileLoading") {
+                    CustomCenterCircularWavyProgressIndicator(
+                        modifier = Modifier
+                            .animateItem()
                     )
                 }
-                item {
-                    SegmentedListItem(
-                        colors = ListItemDefaults.colors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            leadingContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                            supportingContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                            trailingContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                        ),
-                        shapes = ListItemDefaults.segmentedShapes(
-                            index = 1,
-                            count = Executor.entries.size
-                        ),
-                        onClick = { onAction(HomeAction.SetExecutor(Executor.Superuser)) },
-                        leadingContent = {
-                            RadioButton(
-                                selected = state.executor == Executor.Superuser,
-                                onClick = null
-                            )
-                        },
-                        content = { Text(text = Executor.Superuser.name) },
-                        supportingContent = {
-                            Text(
-                                text = if (state.isGranted) stringResource(R.string.state_granted)
-                                else stringResource(R.string.title_denied)
-                            )
-                        },
+            }
+            state.isHighestContributionProfileError != null -> {
+                item("isHighestContributionProfileError") {
+
+                }
+            }
+            else -> {
+                itemsIndexed(
+                    items = state.highestContributionProfile,
+                    key = { _, profileModel -> profileModel.id }
+                ) { index, profileModel ->
+                    DefaultListItem(
+                        modifier = Modifier
+                            .animateItem(),
+                        index = index,
+                        count = state.highestContributionProfile.size,
+                        content = { Text(text = profileModel.email) },
                         trailingContent = {
-                            if (!state.isGranted) {
-                                Icon(Icons.Rounded.Warning, null)
-                            }
+                            Text(text = "${profileModel.contribution} Files Uploaded")
                         }
                     )
                 }
             }
         }
-    )
+    }
 }

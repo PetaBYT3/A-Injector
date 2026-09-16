@@ -12,6 +12,8 @@
     <string name="message_server_error">Something went wrong with the server</string>
     <string name="message_unknown_error">Something went wrong</string>
     <string name="message_data_already_exist">Data Already Exist</string>
+    <string name="message_shizuku_unauthorized">Cannot perform action, cause unauthorized by shizuku</string>
+    <string name="message_superuser_denied">Cannot perform action, cause superuser access denied</string>
 
     <string name="message_no_data">Data has been does not exist or has been deleted</string>
 

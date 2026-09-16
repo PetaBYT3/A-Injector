@@ -1,6 +1,5 @@
 package com.a.injector.data.remote
 
-import com.a.injector.domain.model.state.AuthState
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.SignOutScope
 import io.github.jan.supabase.auth.auth

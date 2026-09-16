@@ -14,10 +14,10 @@ import com.a.injector.data.remote.AuthApi
 import com.a.injector.data.remote.ProfileApi
 import com.a.injector.data.remote.RequestApi
 import com.a.injector.data.util.toMessage
+import com.a.injector.domain.model.AuthState
 import com.a.injector.domain.model.ProfileModel
 import com.a.injector.domain.model.RequestDetailModel
 import com.a.injector.domain.model.RequestModel
-import com.a.injector.domain.model.state.AuthState
 import com.a.injector.domain.repository.AccountRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -93,6 +93,15 @@ class AccountRepositoryImpl(
             authApi.signOut()
             emit(Either.Right(Unit))
             return@flow
+        }.catch { throwable ->
+            emit(Either.Left(throwable.toMessage(context)))
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override fun getProfileByHighestContribution(): Flow<Either<String, List<ProfileModel>>> {
+        return profileApi.getProfileByHighestContribution().map { profileDtos ->
+            val profileModels = profileDtos.map { it.toProfileModel() }
+            Either.Right(profileModels) as Either<String, List<ProfileModel>>
         }.catch { throwable ->
             emit(Either.Left(throwable.toMessage(context)))
         }.flowOn(Dispatchers.IO)
