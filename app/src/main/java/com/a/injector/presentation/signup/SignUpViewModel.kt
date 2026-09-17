@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a.injector.domain.repository.AccountRepository
 import com.a.injector.domain.repository.NavigationRepository
-import com.a.injector.presentation.util.ScreenEffect
 import com.a.injector.presentation.navigation.NavigationRoute
+import com.a.injector.presentation.util.ScreenEffect
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,12 +30,18 @@ class SignUpViewModel(
     fun onAction(action: SignUpAction) {
         when (action) {
             is SignUpAction.EmailTextField -> {
-                _state.update { it.copy(emailTextField = action.email) }
+                _state.update { currentState ->
+                    currentState.copy(emailTextField = action.email)
+                }
             }
             is SignUpAction.PasswordTextField -> {
-                _state.update { it.copy(passwordTextField = action.password) }
+                _state.update { currentState ->
+                    currentState.copy(passwordTextField = action.password)
+                }
             }
-            SignUpAction.SignUpButton -> signUpButton()
+            SignUpAction.SignUpButton -> {
+                signUpButton()
+            }
         }
     }
 

@@ -38,9 +38,13 @@ class ManageHeroViewModel(
                     heroId = heroId
                 ).collect { either ->
                     either.onRight { hero ->
-                        _state.update { it.copy(hero = hero, isHeroLoading = false) }
+                        _state.update { currentState ->
+                            currentState.copy(hero = hero, isHeroLoading = false)
+                        }
                     }.onLeft { error ->
-                        navigationRepository.popBackStack()
+                        _state.update { currentState ->
+                            currentState.copy(isHeroError = error, isHeroLoading = false)
+                        }
                     }
                 }
             } else {
@@ -52,10 +56,14 @@ class ManageHeroViewModel(
     fun onAction(action: ManageHeroAction) {
         when (action) {
             is ManageHeroAction.HeroNameTextField -> {
-                _state.update { it.copy(hero = it.hero.copy(name = action.name)) }
+                _state.update { currentState ->
+                    currentState.copy(hero = currentState.hero.copy(name = action.name))
+                }
             }
             ManageHeroAction.DeleteBottomSheet -> {
-                _state.update { it.copy(isDeleteBottomSheetVisible = !it.isDeleteBottomSheetVisible) }
+                _state.update { currentState ->
+                    currentState.copy(isDeleteBottomSheetVisible = !currentState.isDeleteBottomSheetVisible)
+                }
             }
             ManageHeroAction.DeleteButton -> {
                 deleteButton()

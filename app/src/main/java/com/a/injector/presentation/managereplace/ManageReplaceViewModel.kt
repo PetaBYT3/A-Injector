@@ -38,10 +38,14 @@ class ManageReplaceViewModel(
             databaseRepository.getHero(
                 heroId = heroId
             ).collect { either ->
-                either.onRight { hero ->
-                    _state.update { it.copy(hero = hero, isHeroLoading = false) }
+                either.onRight { heroModel ->
+                    _state.update { currentState ->
+                        currentState.copy(hero = heroModel, isHeroLoading = false)
+                    }
                 }.onLeft { error ->
-                    navigationRepository.popBackStack()
+                    _state.update { currentState ->
+                        currentState.copy(isHeroError = error, isHeroLoading = false)
+                    }
                 }
             }
         }
@@ -50,10 +54,14 @@ class ManageReplaceViewModel(
             databaseRepository.getSkin(
                 skinId = skinId
             ).collect { either ->
-                either.onRight { skin ->
-                    _state.update { it.copy(skin = skin, isSkinLoading = false) }
+                either.onRight { skinModel ->
+                    _state.update { currentState ->
+                        currentState.copy(skin = skinModel, isSkinLoading = false)
+                    }
                 }.onLeft { error ->
-                    navigationRepository.popBackStack()
+                    _state.update { currentState ->
+                        currentState.copy(isSkinError = error, isSkinLoading = false)
+                    }
                 }
             }
         }
@@ -63,10 +71,14 @@ class ManageReplaceViewModel(
                 databaseRepository.getReplace(
                     replaceId = replaceId
                 ).collect { either ->
-                    either.onRight { script ->
-                        _state.update { it.copy(replace = script, isReplaceLoading = false) }
+                    either.onRight { replaceModel ->
+                        _state.update { currentState ->
+                            currentState.copy(replace = replaceModel, isReplaceLoading = false)
+                        }
                     }.onLeft { error ->
-                        navigationRepository.popBackStack()
+                        _state.update { currentState ->
+                            currentState.copy(isReplaceError = error, isReplaceLoading = false)
+                        }
                     }
                 }
             } else {
@@ -78,16 +90,24 @@ class ManageReplaceViewModel(
     fun onAction(action: ManageReplaceAction) {
         when (action) {
             is ManageReplaceAction.LabelTextField -> {
-                _state.update { it.copy(replace = it.replace.copy(label = action.label)) }
+                _state.update { currentState ->
+                    currentState.copy(replace = currentState.replace.copy(label = action.label))
+                }
             }
             is ManageReplaceAction.NameTextField -> {
-                _state.update { it.copy(replace = it.replace.copy(name = action.name)) }
+                _state.update { currentState ->
+                    currentState.copy(replace = currentState.replace.copy(name = action.name))
+                }
             }
             is ManageReplaceAction.ReplaceFilePicker -> {
-                _state.update { it.copy(replaceFile = action.platformFile) }
+                _state.update { currentState ->
+                    currentState.copy(replaceFile = action.platformFile)
+                }
             }
             ManageReplaceAction.DeleteBottomSheet -> {
-                _state.update { it.copy(isDeleteBottomSheetVisible = !it.isDeleteBottomSheetVisible) }
+                _state.update { currentState ->
+                    currentState.copy(isDeleteBottomSheetVisible = !currentState.isDeleteBottomSheetVisible)
+                }
             }
             ManageReplaceAction.DeleteButton -> {
                 deleteButton()

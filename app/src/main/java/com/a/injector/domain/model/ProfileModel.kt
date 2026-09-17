@@ -4,14 +4,14 @@ import com.a.injector.data.dto.Role
 
 data class ProfileModel(
     val id: String,
-    val email: String,
+    val username: String,
     val role: Role,
     val contribution: Int
 ) {
     companion object {
         val EMPTY = ProfileModel(
             id = "",
-            email = "",
+            username = "",
             role = Role.User,
             contribution = 0
         )

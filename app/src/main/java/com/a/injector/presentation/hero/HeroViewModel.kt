@@ -40,12 +40,18 @@ class HeroViewModel(
                 id = heroId
             ).collect { either ->
                 either.onRight { heroDetailModel ->
-                    _state.update {
-                        it.copy(heroDetail = heroDetailModel, isHeroDetailLoading = false)
+                    _state.update { currentState ->
+                        currentState.copy(
+                            heroDetail = heroDetailModel,
+                            isHeroDetailLoading = false
+                        )
                     }
                 }.onLeft { error ->
-                    _state.update {
-                        it.copy(isHeroDetailError = error, isHeroDetailLoading = false)
+                    _state.update { currentState ->
+                        currentState.copy(
+                            isHeroDetailError = error,
+                            isHeroDetailLoading = false
+                        )
                     }
                 }
             }
@@ -55,10 +61,14 @@ class HeroViewModel(
     fun onAction(action: HeroAction) {
         when (action) {
             is HeroAction.ShowActionSkinBottomSheet -> {
-                _state.update { it.copy(isActionSkinBottomSheetVisible = true, skinToAction = action.skin) }
+                _state.update { currentState ->
+                    currentState.copy(isActionSkinBottomSheetVisible = true, skinToAction = action.skin)
+                }
             }
             HeroAction.DismissSkinActionBottomSheet -> {
-                _state.update { it.copy(isActionSkinBottomSheetVisible = false) }
+                _state.update { currentState ->
+                    currentState.copy(isActionSkinBottomSheetVisible = false)
+                }
             }
             is HeroAction.StartInject -> {
                 startInject(replace = action.replace)

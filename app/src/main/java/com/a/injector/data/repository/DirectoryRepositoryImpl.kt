@@ -1,7 +1,7 @@
 package com.a.injector.data.repository
 
 import android.content.Context
-import com.a.injector.domain.model.Directory
+import com.a.injector.domain.model.state.Directory
 import com.a.injector.domain.repository.DirectoryRepository
 import org.koin.core.annotation.Single
 import java.io.File

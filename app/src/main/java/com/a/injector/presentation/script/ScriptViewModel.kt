@@ -26,10 +26,14 @@ class ScriptViewModel(
         viewModelScope.launch {
             databaseRepository.getHeroes().collect { either ->
                 either.onRight { heroes ->
-                    _state.update { it.copy(heroes = heroes, isHeroesLoading = false) }
+                    _state.update { currentState ->
+                        currentState.copy(heroes = heroes, isHeroesLoading = false)
+                    }
                     searchTextFiled(keyword = "")
                 }.onLeft { error ->
-                    _state.update { it.copy(isHeroesError = error, isHeroesLoading = false) }
+                    _state.update { currentState ->
+                        currentState.copy(isHeroesError = error, isHeroesLoading = false)
+                    }
                 }
             }
         }
@@ -51,6 +55,8 @@ class ScriptViewModel(
                 hero.name.contains(keyword, true)
             }
         }
-        _state.update { it.copy(searchTextField = keyword, filteredHeroes = filteredHeroes) }
+        _state.update { currentState ->
+            currentState.copy(searchTextField = keyword, filteredHeroes = filteredHeroes)
+        }
     }
 }

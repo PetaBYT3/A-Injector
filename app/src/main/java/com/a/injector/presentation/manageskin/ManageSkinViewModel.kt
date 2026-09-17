@@ -38,9 +38,13 @@ class ManageSkinViewModel(
                 heroId = heroId
             ).collect { either ->
                 either.onRight { hero ->
-                    _state.update { it.copy(hero = hero, isHeroLoading = false) }
+                    _state.update { currentState ->
+                        currentState.copy(hero = hero, isHeroLoading = false)
+                    }
                 }.onLeft { error ->
-                    navigationRepository.popBackStack()
+                    _state.update { currentState ->
+                        currentState.copy(isHeroError = error, isHeroLoading = false)
+                    }
                 }
             }
         }
@@ -51,9 +55,13 @@ class ManageSkinViewModel(
                     skinId = skinId
                 ).collect { either ->
                     either.onRight { skin ->
-                        _state.update { it.copy(skin = skin, isSkinLoading = false) }
+                        _state.update { currentState ->
+                            currentState.copy(skin = skin, isSkinLoading = false)
+                        }
                     }.onLeft { error ->
-                        navigationRepository.popBackStack()
+                        _state.update { currentState ->
+                            currentState.copy(isSkinError = error, isSkinLoading = false)
+                        }
                     }
                 }
             } else {
@@ -65,13 +73,19 @@ class ManageSkinViewModel(
     fun onAction(action: ManageSkinAction) {
         when (action) {
             is ManageSkinAction.SkinLabelTextField -> {
-                _state.update { it.copy(skin = it.skin.copy(label = action.label)) }
+                _state.update { currentState ->
+                    currentState.copy(skin = currentState.skin.copy(label = action.label))
+                }
             }
             is ManageSkinAction.SkinNameTextField -> {
-                _state.update { it.copy(skin = it.skin.copy(name = action.name)) }
+                _state.update { currentState ->
+                    currentState.copy(skin = currentState.skin.copy(name = action.name))
+                }
             }
             ManageSkinAction.DeleteBottomSheet -> {
-                _state.update { it.copy(isDeleteBottomSheetVisible = !it.isDeleteBottomSheetVisible) }
+                _state.update { currentState ->
+                    currentState.copy(isDeleteBottomSheetVisible = !currentState.isDeleteBottomSheetVisible)
+                }
             }
             ManageSkinAction.DeleteButton -> {
                 deleteButton()

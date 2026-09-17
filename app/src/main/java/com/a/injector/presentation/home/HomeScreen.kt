@@ -121,6 +121,7 @@ private fun Content(
             contentTextResId = R.string.title_support
         )
     )
+
     LazyColumn(
         modifier = modifier,
         contentPadding = PaddingValues(start = 10.dp, end = 10.dp, bottom = 100.dp),
@@ -255,7 +256,7 @@ private fun Content(
                             .animateItem(),
                         index = index,
                         count = state.highestContributionProfile.size,
-                        content = { Text(text = profileModel.email) },
+                        content = { Text(text = profileModel.username) },
                         trailingContent = {
                             Text(text = "${profileModel.contribution} Files Uploaded")
                         }

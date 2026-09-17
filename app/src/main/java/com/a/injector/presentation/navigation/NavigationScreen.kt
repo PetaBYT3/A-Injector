@@ -24,12 +24,13 @@ import com.a.injector.domain.repository.NavigationRepository
 import com.a.injector.presentation.bottomnavigation.BottomNavigation
 import com.a.injector.presentation.hero.HeroScreen
 import com.a.injector.presentation.landing.LandingScreen
-import com.a.injector.presentation.signin.SignInScreen
-import com.a.injector.presentation.signup.SignUpScreen
+import com.a.injector.presentation.loading.LoadingScreen
 import com.a.injector.presentation.managehero.ManageHeroScreen
 import com.a.injector.presentation.managereplace.ManageReplaceScreen
 import com.a.injector.presentation.managerole.ManageRoleScreen
 import com.a.injector.presentation.manageskin.ManageSkinScreen
+import com.a.injector.presentation.signin.SignInScreen
+import com.a.injector.presentation.signup.SignUpScreen
 import org.koin.compose.koinInject
 
 @Composable
@@ -37,10 +38,10 @@ fun NavigationScreen(
     navigationRepository: NavigationRepository = koinInject()
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
-    val navBackStack = rememberNavBackStack(NavigationRoute.LandingScreen)
+    val navBackStack = rememberNavBackStack(NavigationRoute.LoadingScreen)
 
     LaunchedEffect(lifecycleOwner.lifecycle, navigationRepository.navigationEffect) {
-        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
             navigationRepository.navigationEffect.collect { navigationState ->
                 when (navigationState) {
                     is NavigationState.NavigateTo -> {
@@ -69,6 +70,13 @@ fun NavigationScreen(
         ),
         entryProvider = { navKey ->
             when (navKey) {
+                is NavigationRoute.LoadingScreen -> {
+                    NavEntry(navKey) {
+                        LoadingScreen(
+                            navBackStack = navBackStack
+                        )
+                    }
+                }
                 is NavigationRoute.LandingScreen -> {
                     NavEntry(navKey) {
                         LandingScreen(

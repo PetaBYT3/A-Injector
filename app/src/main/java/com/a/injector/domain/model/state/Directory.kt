@@ -1,4 +1,4 @@
-package com.a.injector.domain.model
+package com.a.injector.domain.model.state
 
 enum class Directory(
     val absoluteName: String

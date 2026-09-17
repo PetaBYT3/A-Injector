@@ -5,6 +5,7 @@ package com.a.injector.data.repository
 import android.content.Context
 import arrow.core.Either
 import com.a.injector.R
+import com.a.injector.data.dto.ProfileDto
 import com.a.injector.data.dto.Role
 import com.a.injector.data.mapper.toProfileDto
 import com.a.injector.data.mapper.toProfileModel
@@ -18,17 +19,22 @@ import com.a.injector.domain.model.AuthState
 import com.a.injector.domain.model.ProfileModel
 import com.a.injector.domain.model.RequestDetailModel
 import com.a.injector.domain.model.RequestModel
+import com.a.injector.domain.model.state.RequestState
 import com.a.injector.domain.repository.AccountRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import org.koin.core.annotation.Single
+import kotlin.time.Duration.Companion.seconds
+import kotlin.uuid.Uuid
 
 @Single
 class AccountRepositoryImpl(
@@ -59,7 +65,6 @@ class AccountRepositoryImpl(
                 password = password
             )
             emit(Either.Right(Unit))
-            return@flow
         }.catch { throwable ->
             emit(Either.Left(throwable.toMessage(context)))
         }.flowOn(Dispatchers.IO)
@@ -71,8 +76,16 @@ class AccountRepositoryImpl(
                 email = email,
                 password = password
             )
+            delay(1.seconds)
+            profileApi.upsertProfile(
+                profileDto = ProfileDto(
+                    id = authApi.currentAuth.first()!!.id,
+                    username = "user${Uuid.random()}",
+                    role = Role.User,
+                    contribution = 0
+                )
+            )
             emit(Either.Right(Unit))
-            return@flow
         }.catch { throwable ->
             emit(Either.Left(throwable.toMessage(context)))
         }.flowOn(Dispatchers.IO)
@@ -82,7 +95,6 @@ class AccountRepositoryImpl(
         return flow<Either<String, Unit>> {
             authApi.signGuest()
             emit(Either.Right(Unit))
-            return@flow
         }.catch { throwable ->
             emit(Either.Left(throwable.toMessage(context)))
         }.flowOn(Dispatchers.IO)
@@ -92,7 +104,6 @@ class AccountRepositoryImpl(
         return flow<Either<String, Unit>> {
             authApi.signOut()
             emit(Either.Right(Unit))
-            return@flow
         }.catch { throwable ->
             emit(Either.Left(throwable.toMessage(context)))
         }.flowOn(Dispatchers.IO)
@@ -116,6 +127,18 @@ class AccountRepositoryImpl(
         }.catch { throwable ->
             emit(Either.Left(throwable.toMessage(context)))
         }.flowOn(Dispatchers.IO)
+    }
+
+    override fun getRequestStatus(): Flow<RequestState> {
+        return authApi.currentAuth.flatMapLatest { userInfo ->
+            if (userInfo != null) {
+                requestApi.getRequestDetail(userInfo.id).map { requestDetailDto ->
+                    if (requestDetailDto != null) RequestState.Applied else RequestState.NotApplied
+                }
+            } else {
+                flowOf(RequestState.NotApplied)
+            }
+        }
     }
 
     override fun getRequestDetails(): Flow<Either<String, List<RequestDetailModel>>> {
@@ -150,7 +173,7 @@ class AccountRepositoryImpl(
     override fun grantRequest(requestModel: RequestModel): Flow<Either<String, String>> {
         return flow<Either<String, String>> {
             profileApi.upsertRole(
-                id = requestModel.profileId,
+                id = requestModel.id,
                 role = requestModel.role
             )
             requestApi.deleteRequest(

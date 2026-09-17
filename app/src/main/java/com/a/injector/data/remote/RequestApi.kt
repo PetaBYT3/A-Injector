@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface RequestApi {
     fun getRequestDetails(): Flow<List<RequestDetailDto>>
+    fun getRequestDetail(id: String): Flow<RequestDetailDto?>
     suspend fun upsertRequest(requestDto: RequestDto)
     suspend fun deleteRequest(requestDto: RequestDto)
 }

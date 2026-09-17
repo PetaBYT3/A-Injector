@@ -8,34 +8,31 @@ import com.a.injector.domain.model.RequestDetailModel
 import com.a.injector.domain.model.RequestModel
 
 fun ProfileDto.toProfileModel(): ProfileModel = ProfileModel(
-    id = this.id,
-    email = this.email,
+    id = this.id ?: "",
+    username = username,
     role = this.role,
     contribution = this.contribution
 )
 
 fun ProfileModel.toProfileDto(): ProfileDto = ProfileDto(
     id = this.id,
-    email = this.email,
+    username = username,
     role = this.role,
     contribution = this.contribution
 )
 
 fun RequestDto.toRequestModel(): RequestModel = RequestModel(
     id = this.id,
-    profileId = this.profileId ?: "",
-    role = this.role
+    role = role
 )
 
 fun RequestModel.toRequestDto(): RequestDto = RequestDto(
     id = this.id,
-    profileId = this.profileId.ifBlank { null },
-    role = this.role
+    role = role
 )
 
 fun RequestDetailDto.toRequestDetailModel(): RequestDetailModel = RequestDetailModel(
     id = this.id,
-    profileId = this.profileId ?: "",
-    role = this.role,
-    profile = this.profileDto?.toProfileModel() ?: ProfileModel.EMPTY
+    role = role,
+    profile = profileDto?.toProfileModel() ?: ProfileModel.EMPTY
 )

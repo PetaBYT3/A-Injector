@@ -84,11 +84,10 @@ private fun Preview() {
             requestDetails = listOf(
                 RequestDetailModel(
                     id = "",
-                    profileId = "",
                     role = Role.Contributor,
                     profile = ProfileModel(
                         id = "",
-                        email = "previewemail@mail.com",
+                        username = "previewemail@mail.com",
                         role = Role.Contributor,
                         contribution = 0
                     )
@@ -276,14 +275,13 @@ private fun PendingRequestPager(
                             .animateItem(),
                         index = index,
                         count = state.requestDetails.size,
-                        content = { Text(text = requestDetail.profile.email) },
+                        content = { Text(text = requestDetail.profile.username) },
                         supportingContent = { Text(text = requestDetail.role.name) },
                         trailingContent = {
                             FilledTonalIconButton(
                                 onClick = {
                                     val requestModel = RequestModel(
                                         id = requestDetail.id,
-                                        profileId = requestDetail.profileId,
                                         role = requestDetail.role
                                     )
                                     onAction(ManageRoleAction.ShowGrantRequestBottomSheet(requestModel))
@@ -338,7 +336,7 @@ private fun ContributorPager(
                             .animateItem(),
                         index = index,
                         count = state.contributorProfiles.size,
-                        content = { Text(text = grantedRequest.email) },
+                        content = { Text(text = grantedRequest.username) },
                         supportingContent = { Text(text = grantedRequest.role.name) },
                         trailingContent = {
                             IconButton(

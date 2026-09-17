@@ -8,7 +8,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class RequestDetailDto(
     val id: String,
-    @SerialName("profile_id") val profileId: String? = null,
     val role: Role,
     @SerialName("profile") val profileDto: ProfileDto?
 )

@@ -10,7 +10,7 @@ import org.koin.core.annotation.Single
 
 @Single
 class NavigationRepositoryImpl: NavigationRepository {
-    private val _navigationEffect = Channel<NavigationState>()
+    private val _navigationEffect = Channel<NavigationState>(Channel.BUFFERED)
     override val navigationEffect: Flow<NavigationState> = _navigationEffect.receiveAsFlow()
 
     override suspend fun navigateTo(navigationRoute: NavigationRoute) {

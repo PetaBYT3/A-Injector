@@ -2,7 +2,6 @@
 
 package com.a.injector.data.remote
 
-import android.util.Log
 import com.a.injector.data.dto.RequestDetailDto
 import com.a.injector.data.dto.RequestDto
 import com.a.injector.data.util.SupabaseConstanta
@@ -11,9 +10,9 @@ import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
 import io.github.jan.supabase.postgrest.query.Columns
 import io.github.jan.supabase.realtime.PostgresAction
-import io.github.jan.supabase.realtime.RealtimeChannel
 import io.github.jan.supabase.realtime.channel
 import io.github.jan.supabase.realtime.postgresChangeFlow
+import io.github.jan.supabase.realtime.realtime
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
@@ -22,7 +21,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import org.koin.core.annotation.Single
 import kotlin.time.Duration.Companion.milliseconds
@@ -51,6 +50,31 @@ class RequestApiImpl(
                 )
             ).decodeList<RequestDetailDto>()
             flowOf(data)
+        }
+    }
+
+    override fun getRequestDetail(id: String): Flow<RequestDetailDto?> {
+        val channel = supabaseClient.channel("requestDetail:$id")
+        return merge(
+            channel.postgresChangeFlow<PostgresAction>(
+                schema = SupabaseConstanta.SCHEMA,
+                filter = { table = SupabaseConstanta.REQUEST_TABLE }
+            ),
+            channel.postgresChangeFlow<PostgresAction>(
+                schema = SupabaseConstanta.SCHEMA,
+                filter = { table = SupabaseConstanta.PROFILE_TABLE }
+            )
+        ).map(::postgrestActionToUnit).debounce(300.milliseconds).onStart {
+            emit(Unit)
+        }.onCompletion {
+            supabaseClient.realtime.removeChannel(channel)
+        }.map {
+            supabaseClient.from(SupabaseConstanta.REQUEST_TABLE).select(
+                request = { filter { eq("id", id) } },
+                columns = Columns.raw(
+                    "*, ${SupabaseConstanta.PROFILE_TABLE}(*)"
+                )
+            ).decodeAsOrNull<RequestDetailDto>()
         }
     }
 

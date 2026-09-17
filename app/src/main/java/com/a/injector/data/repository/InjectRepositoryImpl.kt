@@ -13,8 +13,8 @@ import com.a.injector.data.system.ShizukuCommandService
 import com.a.injector.data.system.SuperuserCommandService
 import com.a.injector.data.util.toMessage
 import com.a.injector.domain.model.CommandServiceModel
-import com.a.injector.domain.model.Directory
 import com.a.injector.domain.model.ReplaceModel
+import com.a.injector.domain.model.state.Directory
 import com.a.injector.domain.repository.DirectoryRepository
 import com.a.injector.domain.repository.InjectRepository
 import kotlinx.coroutines.Dispatchers
