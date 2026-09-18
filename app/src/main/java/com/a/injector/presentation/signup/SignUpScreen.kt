@@ -94,7 +94,7 @@ private fun Screen(
         topBar = {
             CustomMediumTopAppBar(
                 scrollBehavior = scrollBehaviour,
-                title = { Text(stringResource(R.string.title_sign_up)) }
+                title = { Text(stringResource(R.string.sign_up)) }
             )
         },
         content = { innerPadding ->
@@ -109,7 +109,7 @@ private fun Screen(
         floatingActionButton = {
             CustomExtendedFloatingActionButton(
                 onClick = { onAction(SignUpAction.SignUpButton) },
-                content = { Text(text = stringResource(R.string.title_sign_up)) },
+                content = { Text(text = stringResource(R.string.sign_up)) },
                 isLoading = state.isSignUpButtonLoading
             )
         }
@@ -147,14 +147,14 @@ private fun Content(
     ) {
         item {
             CustomTextListTitle(
-                text = stringResource(R.string.title_email)
+                text = stringResource(R.string.sign_up_email)
             )
         }
         item {
             TextField(
                 modifier = Modifier
                     .fillMaxWidth(),
-                placeholder = { Text(text = stringResource(R.string.title_email)) },
+                placeholder = { Text(text = stringResource(R.string.sign_up_email)) },
                 value = state.emailTextField,
                 onValueChange = { onAction(SignUpAction.EmailTextField(it)) }
             )
@@ -162,14 +162,14 @@ private fun Content(
         spacer()
         item {
             CustomTextListTitle(
-                text = stringResource(R.string.title_password)
+                text = stringResource(R.string.sign_up_password)
             )
         }
         item {
             TextField(
                 modifier = Modifier
                     .fillMaxWidth(),
-                placeholder = { Text(text = stringResource(R.string.title_password)) },
+                placeholder = { Text(text = stringResource(R.string.sign_up_password)) },
                 value = state.passwordTextField,
                 onValueChange = { onAction(SignUpAction.PasswordTextField(it)) },
                 visualTransformation = if (isPasswordVisible) {
@@ -189,26 +189,62 @@ private fun Content(
                     modifier = Modifier
                         .align(Alignment.TopStart)
                 ) {
-                    passwordValidation.fastForEach { pair ->
+                    signUpPasswordRequirementItem.fastForEach { staticModel ->
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(5.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
-                                tint = if (pair.first) {
-                                    MaterialTheme.colorScheme.primary
-                                } else {
-                                    MaterialTheme.colorScheme.onSurfaceVariant
+                                tint = when (staticModel.id) {
+                                    SignUpPasswordRequirementId.MoreThanEightCharacter -> {
+                                        if (state.isPasswordMoreThan8Character) {
+                                            MaterialTheme.colorScheme.primary
+                                        } else {
+                                            MaterialTheme.colorScheme.onSurfaceVariant
+                                        }
+                                    }
+                                    SignUpPasswordRequirementId.ContainUppercase -> {
+                                        if (state.isPasswordContainUppercase) {
+                                            MaterialTheme.colorScheme.primary
+                                        } else {
+                                            MaterialTheme.colorScheme.onSurfaceVariant
+                                        }
+                                    }
+                                    SignUpPasswordRequirementId.ContainNumber -> {
+                                        if (state.isPasswordContainNumber) {
+                                            MaterialTheme.colorScheme.primary
+                                        } else {
+                                            MaterialTheme.colorScheme.onSurfaceVariant
+                                        }
+                                    }
                                 },
-                                imageVector = if (pair.first) {
-                                    Icons.Rounded.Check
-                                } else {
-                                    Icons.Rounded.Close
+                                imageVector = when (staticModel.id) {
+                                    SignUpPasswordRequirementId.MoreThanEightCharacter -> {
+                                        if (state.isPasswordMoreThan8Character) {
+                                            Icons.Rounded.Check
+                                        } else {
+                                            Icons.Rounded.Close
+                                        }
+                                    }
+                                    SignUpPasswordRequirementId.ContainUppercase -> {
+                                        if (state.isPasswordContainUppercase) {
+                                            Icons.Rounded.Check
+                                        } else {
+                                            Icons.Rounded.Close
+                                        }
+                                    }
+                                    SignUpPasswordRequirementId.ContainNumber -> {
+                                        if (state.isPasswordContainNumber) {
+                                            Icons.Rounded.Check
+                                        } else {
+                                            Icons.Rounded.Close
+                                        }
+                                    }
                                 },
                                 contentDescription = null
                             )
                             Text(
-                                text = pair.second,
+                                text = stringResource(staticModel.contentTextResId),
                                 style = MaterialTheme.typography.bodyMedium
                             )
                         }

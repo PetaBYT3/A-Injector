@@ -1,4 +1,4 @@
-package com.a.injector.presentation.managerole
+package com.a.injector.presentation.panel
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,14 +12,9 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material3.Button
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -40,22 +35,24 @@ import com.a.injector.R
 import com.a.injector.data.dto.Role
 import com.a.injector.domain.model.ProfileModel
 import com.a.injector.domain.model.RequestDetailModel
-import com.a.injector.domain.model.RequestModel
 import com.a.injector.presentation.component.DefaultListItem
 import com.a.injector.presentation.navigation.popBackStack
 import com.a.injector.presentation.util.CustomBottomSheet
+import com.a.injector.presentation.util.CustomButton
 import com.a.injector.presentation.util.CustomCenterCircularWavyProgressIndicator
 import com.a.injector.presentation.util.CustomCenterTextMessage
 import com.a.injector.presentation.util.CustomIconButton
+import com.a.injector.presentation.util.CustomSurfaceText
+import com.a.injector.presentation.util.CustomTonalButton
 import com.a.injector.presentation.util.CustomTopAppBar
 import com.a.injector.presentation.util.SnackBarEffectLauncher
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun ManageRoleScreen(
+fun PanelScreen(
     navBackStack: NavBackStack<NavKey>,
-    viewModel: ManageRoleViewModel = koinViewModel()
+    viewModel: PanelViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val onAction = viewModel::onAction
@@ -79,7 +76,7 @@ fun ManageRoleScreen(
 private fun Preview() {
     Screen(
         navBackStack = rememberNavBackStack(),
-        state = ManageRoleState(
+        state = PanelState(
             isRequestDetailsLoading = false,
             requestDetails = listOf(
                 RequestDetailModel(
@@ -102,18 +99,18 @@ private fun Preview() {
 @Composable
 private fun Screen(
     navBackStack: NavBackStack<NavKey>,
-    state: ManageRoleState,
-    onAction: (ManageRoleAction) -> Unit,
+    state: PanelState,
+    onAction: (PanelRoleAction) -> Unit,
     snackBarHostState: SnackbarHostState
 ) {
     Scaffold(
         topBar = {
             CustomTopAppBar(
                 navigationClick = { navBackStack.popBackStack() },
-                title = "Role",
+                title = stringResource(R.string.panel),
                 actions = {
                     CustomIconButton(
-                        onClick = { onAction(ManageRoleAction.ButtonCleanStorage) },
+                        onClick = { onAction(PanelRoleAction.CleanStorageBottomSheet) },
                         content = { Icon(Icons.Rounded.Delete, null) },
                         isLoading = state.isButtonCleanStorageLoading
                     )
@@ -132,41 +129,68 @@ private fun Screen(
     )
 
     CustomBottomSheet(
-        visible = state.isGrantRequestBottomSheetVisible,
-        onDismiss = { onAction(ManageRoleAction.DismissGrantRequestBottomSheet) },
-        title = stringResource(R.string.title_request),
+        visible = state.isCleanStorageBottomSheetVisible,
+        onDismiss = { onAction(PanelRoleAction.CleanStorageBottomSheet) },
+        title = stringResource(R.string.panel_clean_cloud_storage),
         content = {
             item {
-                CustomCenterTextMessage(text = stringResource(R.string.lorem_ipsum))
+                CustomSurfaceText(text = stringResource(R.string.panel_clean_cloud_storage_msg))
             }
         },
         bottomBar = {
-            Button(
+            CustomButton(
                 onClick = {
-                    onAction(ManageRoleAction.DismissGrantRequestBottomSheet)
-                    onAction(ManageRoleAction.GrantRequestButton)
+                    onAction(PanelRoleAction.CleanStorageBottomSheet)
+                    onAction(PanelRoleAction.CleanStorageButton)
                 },
-                content = { Text(text = stringResource(R.string.title_grant)) }
+                text = stringResource(R.string.panel_clean_cloud_storage_accept)
+            )
+        }
+    )
+
+    CustomBottomSheet(
+        visible = state.isGrantRequestBottomSheetVisible,
+        onDismiss = { onAction(PanelRoleAction.DismissGrantRequestBottomSheet) },
+        title = stringResource(R.string.panel_grant_request),
+        content = {
+            item {
+                DefaultListItem(
+                    content = { Text(text = state.requestToGrant.profile.username) },
+                    supportingContent = { Text(text = state.requestToGrant.role.name) }
+                )
+            }
+        },
+        bottomBar = {
+            CustomButton(
+                onClick = {
+                    onAction(PanelRoleAction.DismissGrantRequestBottomSheet)
+                    onAction(PanelRoleAction.GrantRequestButton)
+                },
+                text = stringResource(R.string.panel_grant_request_accept)
             )
         }
     )
 
     CustomBottomSheet(
         visible = state.isDetachProfileBottomSheetVisible,
-        onDismiss = { onAction(ManageRoleAction.DismissDetachProfileBottomSheet) },
-        title = "Detach",
+        onDismiss = { onAction(PanelRoleAction.DismissDetachProfileBottomSheet) },
+        title = stringResource(R.string.panel_detach_contributor),
         content = {
             item {
-                CustomCenterTextMessage(text = stringResource(R.string.lorem_ipsum))
+                DefaultListItem(
+                    content = { Text(text = state.profileToDetach.username) },
+                    supportingContent = { Text(text = state.profileToDetach.role.name) }
+                )
             }
         },
         bottomBar = {
-            Button(
+            CustomButton(
                 onClick = {
-                    onAction(ManageRoleAction.DismissDetachProfileBottomSheet)
-                    onAction(ManageRoleAction.DetachProfileButton)
+                    onAction(PanelRoleAction.DismissDetachProfileBottomSheet)
+                    onAction(PanelRoleAction.DetachProfileButton)
                 },
-                content = { Text(text = stringResource(R.string.title_grant)) }
+                text = stringResource(R.string.panel_detach_contributor_accept),
+                isError = true
             )
         }
     )
@@ -175,8 +199,8 @@ private fun Screen(
 @Composable
 private fun Content(
     modifier: Modifier = Modifier,
-    state: ManageRoleState,
-    onAction: (ManageRoleAction) -> Unit
+    state: PanelState,
+    onAction: (PanelRoleAction) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val tabList = listOf(
@@ -238,8 +262,8 @@ private fun Content(
 @Composable
 private fun PendingRequestPager(
     modifier: Modifier = Modifier,
-    state: ManageRoleState,
-    onAction: (ManageRoleAction) -> Unit
+    state: PanelState,
+    onAction: (PanelRoleAction) -> Unit
 ) {
     LazyColumn(
         modifier = modifier,
@@ -278,15 +302,11 @@ private fun PendingRequestPager(
                         content = { Text(text = requestDetail.profile.username) },
                         supportingContent = { Text(text = requestDetail.role.name) },
                         trailingContent = {
-                            FilledTonalIconButton(
+                            CustomTonalButton(
                                 onClick = {
-                                    val requestModel = RequestModel(
-                                        id = requestDetail.id,
-                                        role = requestDetail.role
-                                    )
-                                    onAction(ManageRoleAction.ShowGrantRequestBottomSheet(requestModel))
+                                    onAction(PanelRoleAction.ShowGrantRequestBottomSheet(requestDetail))
                                 },
-                                content = { Icon(Icons.Rounded.Check, null) }
+                                text = stringResource(R.string.panel_grant_request)
                             )
                         }
                     )
@@ -299,8 +319,8 @@ private fun PendingRequestPager(
 @Composable
 private fun ContributorPager(
     modifier: Modifier = Modifier,
-    state: ManageRoleState,
-    onAction: (ManageRoleAction) -> Unit
+    state: PanelState,
+    onAction: (PanelRoleAction) -> Unit
 ) {
     LazyColumn(
         modifier = modifier,
@@ -339,11 +359,12 @@ private fun ContributorPager(
                         content = { Text(text = grantedRequest.username) },
                         supportingContent = { Text(text = grantedRequest.role.name) },
                         trailingContent = {
-                            IconButton(
+                            CustomButton(
                                 onClick = {
-                                    onAction(ManageRoleAction.ShowDetachProfileBottomSheet(grantedRequest))
+                                    onAction(PanelRoleAction.ShowDetachProfileBottomSheet(grantedRequest))
                                 },
-                                content = { Icon(Icons.Rounded.Close, null) }
+                                text = stringResource(R.string.panel_detach_contributor),
+                                isError = true
                             )
                         }
                     )

@@ -2,7 +2,10 @@ package com.a.injector.presentation.hero
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.a.injector.data.dto.Role
+import com.a.injector.domain.model.AuthState
 import com.a.injector.domain.model.ReplaceModel
+import com.a.injector.domain.repository.AccountRepository
 import com.a.injector.domain.repository.DatabaseRepository
 import com.a.injector.domain.repository.InjectRepository
 import com.a.injector.presentation.util.ScreenEffect
@@ -23,6 +26,7 @@ import java.util.concurrent.ConcurrentMap
 @KoinViewModel
 class HeroViewModel(
     @InjectedParam private val heroId: String,
+    private val accountRepository: AccountRepository,
     private val databaseRepository: DatabaseRepository,
     private val injectRepository: InjectRepository
 ): ViewModel() {
@@ -35,6 +39,18 @@ class HeroViewModel(
     private val injectJob: ConcurrentMap<String, Job> = ConcurrentHashMap()
 
     init {
+        viewModelScope.launch {
+            accountRepository.currentAuth.collect { authState ->
+                if (authState is AuthState.Authorized) {
+                    _state.update { currentState ->
+                        currentState.copy(
+                            isModifyEnabled = authState.profileModel.role != Role.User
+                        )
+                    }
+                }
+            }
+        }
+
         viewModelScope.launch {
             databaseRepository.getHeroDetail(
                 id = heroId

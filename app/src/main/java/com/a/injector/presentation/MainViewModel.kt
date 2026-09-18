@@ -9,7 +9,6 @@ import com.a.injector.presentation.navigation.NavigationRoute
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -24,16 +23,14 @@ class MainViewModel(
     private val _isSplashScreenVisible = MutableStateFlow(true)
     val isSplashScreenVisible = _isSplashScreenVisible.asStateFlow()
 
-    private var isInitialized = false
+    private var isOnStart = true
 
     init {
         viewModelScope.launch {
             accountRepository.currentAuth.onStart {
                 navigationRepository.navigateTo(NavigationRoute.LoadingScreen)
-            }.onCompletion {
-                navigationRepository.popBackStack()
             }.collect { authState ->
-                if (!isInitialized) {
+                if (isOnStart) {
                     when (authState) {
                         AuthState.Unauthorized -> {
                             navigationRepository.replaceTo(NavigationRoute.LandingScreen)
@@ -47,7 +44,7 @@ class MainViewModel(
                     }
                     _isSplashScreenVisible.update { false }
                     delay(1.5.seconds)
-                    isInitialized = true
+                    isOnStart = false
                 } else {
                     when {
                         authState is AuthState.Unauthorized -> {

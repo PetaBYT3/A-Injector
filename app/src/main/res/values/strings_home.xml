@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home">Home</string>
+
+    <string name="home_command_service">Command Service</string>
+    <string name="home_shizuku_running">Running</string>
+    <string name="home_shizuku_inactive">Inactive</string>
+    <string name="home_superuser_granted">Granted</string>
+    <string name="home_superuser_denied">Denied</string>
+
+    <string name="home_about_developer_title">About Developer</string>
+    <string name="home_github">Github</string>
+    <string name="home_support">Support</string>
+
+    <string name="home_top_script_contributor">Top Script Contributor</string>
+    <string name="home_total_files_uploaded">Total Files Uploaded</string>
+</resources>

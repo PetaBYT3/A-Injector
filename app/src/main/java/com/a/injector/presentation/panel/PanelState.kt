@@ -1,10 +1,10 @@
-package com.a.injector.presentation.managerole
+package com.a.injector.presentation.panel
 
 import com.a.injector.domain.model.ProfileModel
 import com.a.injector.domain.model.RequestDetailModel
-import com.a.injector.domain.model.RequestModel
 
-data class ManageRoleState(
+data class PanelState(
+    val isCleanStorageBottomSheetVisible: Boolean = false,
     val isButtonCleanStorageLoading: Boolean = false,
 
     val isRequestDetailsLoading: Boolean = true,
@@ -12,7 +12,7 @@ data class ManageRoleState(
     val requestDetails: List<RequestDetailModel> = emptyList(),
 
     val isGrantRequestBottomSheetVisible: Boolean = false,
-    val requestToGrant: RequestModel = RequestModel.EMPTY,
+    val requestToGrant: RequestDetailModel = RequestDetailModel.EMPTY,
 
     val isContributorProfilesLoading: Boolean = true,
     val isContributorProfilesError: String? = null,

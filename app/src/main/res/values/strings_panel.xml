@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="panel">Panel</string>
+
+    <string name="panel_pending_request">Pending Request</string>
+    <string name="panel_contributor">Contributor</string>
+
+    <string name="panel_grant_request">Grant Request</string>
+    <string name="panel_grant_request_accept">Accept</string>
+
+    <string name="panel_detach_contributor">Detach Contributor</string>
+    <string name="panel_detach_contributor_accept">Accept</string>
+
+    <string name="panel_clean_cloud_storage">Clean Cloud Storage</string>
+    <string name="panel_clean_cloud_storage_msg">
+        This action will perform file deletion all orphan file on cloud storage
+    </string>
+    <string name="panel_clean_cloud_storage_accept">Clean</string>
+</resources>

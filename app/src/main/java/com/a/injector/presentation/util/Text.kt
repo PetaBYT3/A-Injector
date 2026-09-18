@@ -40,3 +40,16 @@ fun CustomCenterTextMessage(
         )
     }
 }
+
+@Composable
+fun CustomSurfaceText(
+    modifier: Modifier = Modifier,
+    text: String
+) {
+    Text(
+        modifier = modifier
+            .padding(start = 6.dp, end = 6.dp),
+        style = MaterialTheme.typography.bodyMedium,
+        text = text
+    )
+}

@@ -27,8 +27,8 @@ import com.a.injector.presentation.landing.LandingScreen
 import com.a.injector.presentation.loading.LoadingScreen
 import com.a.injector.presentation.managehero.ManageHeroScreen
 import com.a.injector.presentation.managereplace.ManageReplaceScreen
-import com.a.injector.presentation.managerole.ManageRoleScreen
 import com.a.injector.presentation.manageskin.ManageSkinScreen
+import com.a.injector.presentation.panel.PanelScreen
 import com.a.injector.presentation.signin.SignInScreen
 import com.a.injector.presentation.signup.SignUpScreen
 import org.koin.compose.koinInject
@@ -142,7 +142,7 @@ fun NavigationScreen(
                 }
                 is NavigationRoute.ManageRoleScreen -> {
                     NavEntry(navKey) {
-                        ManageRoleScreen(
+                        PanelScreen(
                             navBackStack = navBackStack
                         )
                     }

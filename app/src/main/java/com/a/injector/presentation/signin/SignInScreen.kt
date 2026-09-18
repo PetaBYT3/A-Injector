@@ -86,7 +86,7 @@ private fun Screen(
         topBar = {
             CustomMediumTopAppBar(
                 scrollBehavior = scrollBehaviour,
-                title = { Text(stringResource(R.string.title_sign_in)) }
+                title = { Text(stringResource(R.string.sign_in)) }
             )
         },
         content = { innerPadding ->
@@ -101,7 +101,7 @@ private fun Screen(
         floatingActionButton = {
             CustomExtendedFloatingActionButton(
                 onClick = { onAction(SignInAction.SignInButton) },
-                content = { Text(text = stringResource(R.string.title_sign_in)) },
+                content = { Text(text = stringResource(R.string.sign_in)) },
                 isLoading = state.isSingInButtonLoading
             )
         }
@@ -125,14 +125,14 @@ private fun Content(
     ) {
         item {
             CustomTextListTitle(
-                text = stringResource(R.string.title_email)
+                text = stringResource(R.string.sign_in_email)
             )
         }
         item {
             TextField(
                 modifier = Modifier
                     .fillMaxWidth(),
-                placeholder = { Text(text = stringResource(R.string.title_email)) },
+                placeholder = { Text(text = stringResource(R.string.sign_in_email)) },
                 value = state.emailTextField,
                 onValueChange = { onAction(SignInAction.EmailTextField(it)) }
             )
@@ -140,14 +140,14 @@ private fun Content(
         spacer()
         item {
             CustomTextListTitle(
-                text = stringResource(R.string.title_password)
+                text = stringResource(R.string.sign_in_password)
             )
         }
         item {
             TextField(
                 modifier = Modifier
                     .fillMaxWidth(),
-                placeholder = { Text(text = stringResource(R.string.title_password)) },
+                placeholder = { Text(text = stringResource(R.string.sign_in_password)) },
                 value = state.passwordTextField,
                 onValueChange = { onAction(SignInAction.PasswordTextField(it)) },
                 visualTransformation = if (isPasswordVisible) {
@@ -168,7 +168,7 @@ private fun Content(
                 ToggleButton(
                     checked = isPasswordVisible,
                     onCheckedChange = { isPasswordVisible = it },
-                    content = { Text(text = stringResource(R.string.action_show_password)) }
+                    content = { Text(text = stringResource(R.string.sign_in_show_password)) }
                 )
             }
         }

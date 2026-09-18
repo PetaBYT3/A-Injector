@@ -1,18 +1,17 @@
 package com.a.injector.presentation.hero
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.InstallMobile
 import androidx.compose.material.icons.rounded.MoreVert
-import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,24 +32,27 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
+import com.a.injector.data.util.toDateTime
+import com.a.injector.data.util.toMegaBytes
 import com.a.injector.domain.model.HeroDetailModel
 import com.a.injector.presentation.component.DefaultClickableListItem
 import com.a.injector.presentation.component.DefaultListItem
 import com.a.injector.presentation.component.ErrorListItem
 import com.a.injector.presentation.component.PrimaryListItem
 import com.a.injector.presentation.component.SkinDetailListItem
+import com.a.injector.presentation.navigation.NavigationRoute
+import com.a.injector.presentation.navigation.popBackStack
 import com.a.injector.presentation.util.CustomBottomSheet
 import com.a.injector.presentation.util.CustomCenterCircularWavyProgressIndicator
 import com.a.injector.presentation.util.CustomCenterTextMessage
+import com.a.injector.presentation.util.CustomFloatingActionButton
+import com.a.injector.presentation.util.CustomFloatingActionToolBar
 import com.a.injector.presentation.util.CustomSlideUpAnimatedVisibility
 import com.a.injector.presentation.util.CustomTextListTitle
+import com.a.injector.presentation.util.CustomTonalButton
 import com.a.injector.presentation.util.CustomTopAppBar
 import com.a.injector.presentation.util.SnackBarEffectLauncher
 import com.a.injector.presentation.util.spacer
-import com.a.injector.presentation.navigation.NavigationRoute
-import com.a.injector.presentation.navigation.popBackStack
-import com.a.injector.presentation.util.CustomFloatingActionButton
-import com.a.injector.presentation.util.CustomFloatingActionToolBar
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -104,7 +107,7 @@ private fun Screen(
         topBar = {
             CustomTopAppBar(
                 navigationClick = { navBackStack.popBackStack() },
-                title = stringResource(R.string.title_hero)
+                title = stringResource(R.string.hero)
             )
         },
         content = { innerPadding ->
@@ -117,23 +120,25 @@ private fun Screen(
         },
         snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         floatingActionButton = {
-            CustomSlideUpAnimatedVisibility(
-                visible = !state.isContentLoading
-            ) {
-                CustomFloatingActionToolBar(
-                    floatingActionButton = {
-                        CustomFloatingActionButton(
-                            onClick = {
-                                val targetRoute = NavigationRoute.ManageSkinScreen(
-                                    heroId = state.heroDetail.id,
-                                    skinId = ""
-                                )
-                                navBackStack.add(targetRoute)
-                            },
-                            content = { Icon(Icons.Rounded.Add, null) }
-                        )
-                    }
-                )
+            if (state.isModifyEnabled) {
+                CustomSlideUpAnimatedVisibility(
+                    visible = !state.isContentLoading
+                ) {
+                    CustomFloatingActionToolBar(
+                        floatingActionButton = {
+                            CustomFloatingActionButton(
+                                onClick = {
+                                    val targetRoute = NavigationRoute.ManageSkinScreen(
+                                        heroId = state.heroDetail.id,
+                                        skinId = ""
+                                    )
+                                    navBackStack.add(targetRoute)
+                                },
+                                content = { Icon(Icons.Rounded.Add, null) }
+                            )
+                        }
+                    )
+                }
             }
         }
     )
@@ -231,75 +236,83 @@ private fun Content(
                         text = state.heroDetail.name,
                         style = MaterialTheme.typography.displaySmall
                     )
-                },
-                trailingContent = {
-                    IconButton(
-                        onClick = {},
-                        content = { Icon(Icons.Rounded.Edit, null) }
-                    )
                 }
             )
         }
         spacer()
         item("skinTitle") {
-            CustomTextListTitle(text = stringResource(R.string.title_skin))
+            CustomTextListTitle(text = stringResource(R.string.hero_available_skin))
         }
-        when {
-            state.heroDetail.skins.isEmpty() -> {
-                item("isSkinWithReplaceEmpty") {
-                    CustomCenterTextMessage(
-                        modifier = Modifier
-                            .animateItem(),
-                        text = stringResource(R.string.title_empty)
-                    )
-                }
+        if (state.heroDetail.skins.isEmpty()) {
+            item("isSkinWithReplaceEmpty") {
+                CustomCenterTextMessage(
+                    modifier = Modifier
+                        .animateItem(),
+                    text = stringResource(R.string.title_empty)
+                )
             }
-            else -> {
-                itemsIndexed(
-                    items = state.heroDetail.skins,
-                    key = { _, skin -> skin.id }
-                ) { index, skin ->
-                    SkinDetailListItem(
-                        modifier = Modifier
-                            .animateItem(),
-                        skinDetail = skin,
-                        skinTrailingContent = {
-                            IconButton(
-                                onClick = {
-                                    onAction(HeroAction.ShowActionSkinBottomSheet(skin))
-                                },
-                                content = { Icon(Icons.Rounded.MoreVert, null) }
-                            )
-                        },
-                        replaceTrailingContent = { replace ->
-                            IconButton(
-                                onClick = {
-                                    val targetRoute = NavigationRoute.ManageReplaceScreen(
-                                        heroId = state.heroDetail.id,
-                                        skinId = skin.id,
-                                        replaceId = replace.id
-                                    )
-                                    navBackStack.add(targetRoute)
-                                },
-                                content = { Icon(Icons.Rounded.Edit, null) }
-                            )
-                            IconButton(
-                                onClick = { onAction(HeroAction.StartInject(replace)) },
-                                content = {
-                                    if (state.isInjectLoading[replace.id] != null) {
-                                        CircularWavyProgressIndicator(
-                                            modifier = Modifier
-                                                .size(24.dp)
-                                        )
-                                    } else {
-                                        Icon(Icons.Rounded.InstallMobile, null)
-                                    }
-                                }
-                            )
+            return@LazyColumn
+        }
+        itemsIndexed(
+            items = state.heroDetail.skins,
+            key = { _, skin -> skin.id }
+        ) { index, skin ->
+            SkinDetailListItem(
+                modifier = Modifier
+                    .animateItem(),
+                skinDetail = skin,
+                skinTrailingContent = {
+                    if (state.isModifyEnabled) {
+                        IconButton(
+                            onClick = {
+                                onAction(HeroAction.ShowActionSkinBottomSheet(skin))
+                            },
+                            content = { Icon(Icons.Rounded.MoreVert, null) }
+                        )
+                    }
+                },
+                replaceTrailingContent = { replace ->
+                    val isFileExist = replace.lastUpdate != null || replace.fileSize != null
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(10.dp),
+                        horizontalAlignment = Alignment.End
+                    ) {
+                        val dateAndSize = if (isFileExist) {
+                            "${replace.lastUpdate?.toDateTime()} | ${replace.fileSize?.toMegaBytes()}"
+                        } else {
+                            stringResource(R.string.hero_file_does_not_exist)
                         }
-                    )
+                        Text(
+                            text = dateAndSize,
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(5.dp)
+                        ) {
+                            if (state.isModifyEnabled) {
+                                IconButton(
+                                    onClick = {
+                                        val targetRoute = NavigationRoute.ManageReplaceScreen(
+                                            heroId = state.heroDetail.id,
+                                            skinId = skin.id,
+                                            replaceId = replace.id
+                                        )
+                                        navBackStack.add(targetRoute)
+                                    },
+                                    content = { Icon(Icons.Rounded.Edit, null) }
+                                )
+                            }
+                            if (isFileExist) {
+                                CustomTonalButton(
+                                    onClick = { onAction(HeroAction.StartInject(replace)) },
+                                    text = stringResource(R.string.hero_install),
+                                    isLoading = state.isInjectLoading[replace.id] != null
+                                )
+                            }
+                        }
+                    }
                 }
-            }
+            )
         }
     }
 }

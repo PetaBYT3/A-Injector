@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
@@ -15,29 +14,19 @@ import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Search
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItemDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SegmentedListItem
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -48,14 +37,13 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
 import com.a.injector.presentation.component.DefaultClickableListItem
 import com.a.injector.presentation.component.ErrorListItem
-import com.a.injector.presentation.util.CustomMediumTopAppBar
 import com.a.injector.presentation.navigation.NavigationRoute
 import com.a.injector.presentation.util.CustomCenterCircularWavyProgressIndicator
 import com.a.injector.presentation.util.CustomCenterTextMessage
 import com.a.injector.presentation.util.CustomFloatingActionButton
 import com.a.injector.presentation.util.CustomFloatingActionToolBar
+import com.a.injector.presentation.util.CustomSlideUpAnimatedVisibility
 import com.a.injector.presentation.util.CustomTopAppBar
-import com.a.injector.presentation.util.SnackBarEffectLauncher
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -93,7 +81,7 @@ private fun Screen(
         contentWindowInsets = WindowInsets.statusBars,
         topBar = {
             CustomTopAppBar(
-                title = stringResource(R.string.title_script)
+                title = stringResource(R.string.script)
             )
         },
         content = { innerPadding ->
@@ -106,54 +94,73 @@ private fun Screen(
             )
         },
         floatingActionButton = {
-            var isSearchExpand by rememberSaveable {
-                mutableStateOf(false)
-            }
-            CustomFloatingActionToolBar(
-                floatingActionButton ={
+            ScriptFloatingActionButton(
+                navBackStack = navBackStack,
+                state = state,
+                onAction = onAction
+            )
+        }
+    )
+}
+
+@Composable
+private fun ScriptFloatingActionButton(
+    navBackStack: NavBackStack<NavKey>,
+    state: ScriptState,
+    onAction: (ScriptAction) -> Unit
+) {
+    var isSearchExpand by rememberSaveable {
+        mutableStateOf(false)
+    }
+    CustomSlideUpAnimatedVisibility(
+        visible = !state.isContentLoading
+    ) {
+        CustomFloatingActionToolBar(
+            floatingActionButton = if (state.isModifyEnabled) {
+                {
                     CustomFloatingActionButton(
                         onClick = { navBackStack.add(NavigationRoute.ManageHeroScreen("")) },
                         content = { Icon(Icons.Rounded.Add, null) }
                     )
-                },
-                content = {
-                    AnimatedContent(
-                        targetState = isSearchExpand
-                    ) { animatedContentState ->
-                        if (animatedContentState) {
-                            OutlinedTextField(
-                                modifier = Modifier
-                                    .width(250.dp),
-                                colors = TextFieldDefaults.colors(
-                                    focusedContainerColor = Color.Transparent,
-                                    unfocusedContainerColor = Color.Transparent,
-                                    focusedIndicatorColor = Color.Transparent,
-                                    unfocusedIndicatorColor = Color.Transparent
-                                ),
-                                placeholder = { Text(text = stringResource(R.string.action_search)) },
-                                value = state.searchTextField,
-                                onValueChange = { onAction(ScriptAction.SearchTextField(it)) },
-                                trailingIcon = {
-                                    IconButton(
-                                        onClick = {
-                                            isSearchExpand = false
-                                            onAction(ScriptAction.SearchTextField(""))
-                                        },
-                                        content = { Icon(Icons.Rounded.Close, null) }
-                                    )
-                                }
-                            )
-                        } else {
-                            IconButton(
-                                onClick = { isSearchExpand = true },
-                                content = { Icon(Icons.Rounded.Search, null) }
-                            )
-                        }
+                }
+            } else null,
+            content = {
+                AnimatedContent(
+                    targetState = isSearchExpand
+                ) { animatedContentState ->
+                    if (animatedContentState) {
+                        OutlinedTextField(
+                            modifier = Modifier
+                                .width(250.dp),
+                            colors = TextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent
+                            ),
+                            placeholder = { Text(text = stringResource(R.string.script_search)) },
+                            value = state.searchTextField,
+                            onValueChange = { onAction(ScriptAction.SearchTextField(it)) },
+                            trailingIcon = {
+                                IconButton(
+                                    onClick = {
+                                        isSearchExpand = false
+                                        onAction(ScriptAction.SearchTextField(""))
+                                    },
+                                    content = { Icon(Icons.Rounded.Close, null) }
+                                )
+                            }
+                        )
+                    } else {
+                        IconButton(
+                            onClick = { isSearchExpand = true },
+                            content = { Icon(Icons.Rounded.Search, null) }
+                        )
                     }
                 }
-            )
-        }
-    )
+            }
+        )
+    }
 }
 
 @Composable
@@ -210,15 +217,17 @@ private fun Content(
                         onClick = { navBackStack.add(NavigationRoute.HeroScreen(hero.id)) },
                         content = { Text(text = hero.name) },
                         trailingContent = {
-                            IconButton(
-                                onClick = {
-                                    val targetRoute = NavigationRoute.ManageHeroScreen(
-                                        heroId = hero.id
-                                    )
-                                    navBackStack.add(targetRoute)
-                                },
-                                content = { Icon(Icons.Rounded.Edit, null) }
-                            )
+                            if (state.isModifyEnabled) {
+                                IconButton(
+                                    onClick = {
+                                        val targetRoute = NavigationRoute.ManageHeroScreen(
+                                            heroId = hero.id
+                                        )
+                                        navBackStack.add(targetRoute)
+                                    },
+                                    content = { Icon(Icons.Rounded.Edit, null) }
+                                )
+                            }
                         }
                     )
                 }

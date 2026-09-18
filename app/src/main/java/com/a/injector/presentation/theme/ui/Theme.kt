@@ -1,8 +1,8 @@
 package com.a.injector.presentation.theme.ui
 
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MotionScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -40,11 +40,10 @@ fun AInjectorTheme(
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+        dynamicColor -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
@@ -52,6 +51,7 @@ fun AInjectorTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
+        motionScheme = MotionScheme.expressive(),
         content = content
     )
 }

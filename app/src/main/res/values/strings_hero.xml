@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hero">Hero</string>
+
+    <string name="hero_available_skin">Available Skin</string>
+
+    <string name="hero_replace">Replace</string>
+    <string name="hero_file_does_not_exist">File Does Not Exist</string>
+    <string name="hero_install">Install</string>
+</resources>

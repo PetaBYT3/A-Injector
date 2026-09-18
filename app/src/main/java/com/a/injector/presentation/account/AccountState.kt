@@ -1,11 +1,11 @@
-package com.a.injector.presentation.profile
+package com.a.injector.presentation.account
 
 import com.a.injector.R
 import com.a.injector.domain.model.ProfileModel
 import com.a.injector.domain.model.state.RequestState
 import io.github.jan.supabase.auth.user.UserInfo
 
-data class ProfileState(
+data class AccountState(
     val isGuestAccount: Boolean = false,
 
     val isProfileLoading: Boolean = true,

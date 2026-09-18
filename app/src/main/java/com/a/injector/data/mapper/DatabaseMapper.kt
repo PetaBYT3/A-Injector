@@ -63,6 +63,6 @@ fun ReplaceModel.toReplaceDto(): ReplaceDto = ReplaceDto(
     skinId = this.skinId,
     label = this.label,
     name = this.name,
-    lastUpdate = null,
-    fileSize = null
+    lastUpdate = this.lastUpdate,
+    fileSize = this.fileSize
 )

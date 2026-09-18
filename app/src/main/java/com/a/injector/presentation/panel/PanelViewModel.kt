@@ -1,8 +1,9 @@
-package com.a.injector.presentation.managerole
+package com.a.injector.presentation.panel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a.injector.data.dto.Role
+import com.a.injector.domain.model.RequestModel
 import com.a.injector.domain.repository.AccountRepository
 import com.a.injector.domain.repository.DatabaseRepository
 import com.a.injector.presentation.util.ScreenEffect
@@ -17,11 +18,11 @@ import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
-class ManageRoleViewModel(
+class PanelViewModel(
     private val accountRepository: AccountRepository,
     private val databaseRepository: DatabaseRepository
 ): ViewModel() {
-    private val _state = MutableStateFlow(ManageRoleState())
+    private val _state = MutableStateFlow(PanelState())
     val state = _state.asStateFlow()
 
     private val _effect = Channel<ScreenEffect>()
@@ -71,12 +72,19 @@ class ManageRoleViewModel(
         }
     }
 
-    fun onAction(action: ManageRoleAction) {
+    fun onAction(action: PanelRoleAction) {
         when (action) {
-            ManageRoleAction.ButtonCleanStorage -> {
-                buttonCleanStorage()
+            PanelRoleAction.CleanStorageBottomSheet -> {
+                _state.update { currentState ->
+                    currentState.copy(
+                        isCleanStorageBottomSheetVisible = !currentState.isCleanStorageBottomSheetVisible
+                    )
+                }
             }
-            is ManageRoleAction.ShowGrantRequestBottomSheet -> {
+            PanelRoleAction.CleanStorageButton -> {
+                cleanStorageButton()
+            }
+            is PanelRoleAction.ShowGrantRequestBottomSheet -> {
                 _state.update { currentState ->
                     currentState.copy(
                         requestToGrant = action.requestModel,
@@ -84,15 +92,15 @@ class ManageRoleViewModel(
                     )
                 }
             }
-            ManageRoleAction.DismissGrantRequestBottomSheet -> {
+            PanelRoleAction.DismissGrantRequestBottomSheet -> {
                 _state.update { currentState ->
                     currentState.copy(isGrantRequestBottomSheetVisible = false)
                 }
             }
-            ManageRoleAction.GrantRequestButton -> {
+            PanelRoleAction.GrantRequestButton -> {
                 grantRequestButton()
             }
-            is ManageRoleAction.ShowDetachProfileBottomSheet -> {
+            is PanelRoleAction.ShowDetachProfileBottomSheet -> {
                 _state.update { currentState ->
                     currentState.copy(
                         profileToDetach = action.profileModel,
@@ -100,18 +108,18 @@ class ManageRoleViewModel(
                     )
                 }
             }
-            ManageRoleAction.DismissDetachProfileBottomSheet -> {
+            PanelRoleAction.DismissDetachProfileBottomSheet -> {
                 _state.update { currentState ->
                     currentState.copy(isDetachProfileBottomSheetVisible = false)
                 }
             }
-            ManageRoleAction.DetachProfileButton -> {
+            PanelRoleAction.DetachProfileButton -> {
                 detachProfileButton()
             }
         }
     }
 
-    private fun buttonCleanStorage() {
+    private fun cleanStorageButton() {
         viewModelScope.launch {
             databaseRepository.cleanStorage().onStart {
                 _state.update { currentState ->
@@ -134,11 +142,12 @@ class ManageRoleViewModel(
     private fun grantRequestButton() {
         viewModelScope.launch {
             accountRepository.grantRequest(
-                requestModel = _state.value.requestToGrant
+                requestModel = RequestModel(
+                    id = _state.value.requestToGrant.id,
+                    role = _state.value.requestToGrant.role
+                )
             ).collect { either ->
-                either.onRight { message ->
-                    _effect.send(ScreenEffect.ShowSnackBar(message))
-                }.onLeft { error ->
+                either.onLeft { error ->
                     _effect.send(ScreenEffect.ShowSnackBar(error))
                 }
             }
@@ -152,9 +161,7 @@ class ManageRoleViewModel(
                     role = Role.User
                 )
             ).collect { either ->
-                either.onRight { message ->
-                    _effect.send(ScreenEffect.ShowSnackBar(message))
-                }.onLeft { error ->
+                either.onLeft { error ->
                     _effect.send(ScreenEffect.ShowSnackBar(error))
                 }
             }

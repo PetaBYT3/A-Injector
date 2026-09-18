@@ -38,9 +38,9 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
 import com.a.injector.data.local.CommandService
-import com.a.injector.domain.model.StaticModel
 import com.a.injector.presentation.component.DefaultClickableListItem
 import com.a.injector.presentation.component.DefaultListItem
+import com.a.injector.presentation.component.ErrorListItem
 import com.a.injector.presentation.component.PrimaryListItem
 import com.a.injector.presentation.util.CustomCenterCircularWavyProgressIndicator
 import com.a.injector.presentation.util.CustomTextListTitle
@@ -83,7 +83,7 @@ private fun Screen(
         contentWindowInsets = WindowInsets.statusBars,
         topBar = {
             CustomTopAppBar(
-                title = stringResource(R.string.title_home)
+                title = stringResource(R.string.home)
             )
         },
         content = { innerPadding ->
@@ -103,25 +103,6 @@ private fun Content(
     state: HomeState,
     onAction: (HomeAction) -> Unit
 ) {
-    val aboutDeveloperList = listOf(
-        StaticModel(
-            onClick = {},
-            contentTextResId = R.string.title_github
-        ),
-        StaticModel(
-            onClick = {},
-            contentTextResId = R.string.linkedin
-        ),
-        StaticModel(
-            onClick = {},
-            contentTextResId = R.string.instagram
-        ),
-        StaticModel(
-            onClick = {},
-            contentTextResId = R.string.title_support
-        )
-    )
-
     LazyColumn(
         modifier = modifier,
         contentPadding = PaddingValues(start = 10.dp, end = 10.dp, bottom = 100.dp),
@@ -137,27 +118,26 @@ private fun Content(
                 verticalArrangement = Arrangement.spacedBy(2.5.dp)
             ) {
                 PrimaryListItem(
-                    overlineContent = { Text(text = stringResource(R.string.title_command_service)) },
+                    overlineContent = { Text(text = stringResource(R.string.home_command_service)) },
                     content = { Text(text = state.commandService.name.name) },
                     supportingContent = {
-                        Text(
-                            text = when (state.commandService.name) {
-                                CommandService.Shizuku -> {
-                                    if (state.commandService.isRunning) {
-                                        stringResource(R.string.title_authorized)
-                                    } else {
-                                        stringResource(R.string.title_unauthorized)
-                                    }
-                                }
-                                CommandService.Superuser -> {
-                                    if (state.commandService.isRunning) {
-                                        stringResource(R.string.state_granted)
-                                    } else {
-                                        stringResource(R.string.title_denied)
-                                    }
+                        val supportingText = when (state.commandService.name) {
+                            CommandService.Shizuku -> {
+                                if (state.commandService.isRunning) {
+                                    stringResource(R.string.home_shizuku_running)
+                                } else {
+                                    stringResource(R.string.home_shizuku_inactive)
                                 }
                             }
-                        )
+                            CommandService.Superuser -> {
+                                if (state.commandService.isRunning) {
+                                    stringResource(R.string.home_superuser_granted)
+                                } else {
+                                    stringResource(R.string.message_superuser_denied)
+                                }
+                            }
+                        }
+                        Text(text = supportingText)
                     },
                     trailingContent = {
                         val rotateIcon by animateFloatAsState(
@@ -207,19 +187,24 @@ private fun Content(
             CustomTextListTitle(
                 modifier = Modifier
                     .animateItem(),
-                text = stringResource(R.string.title_about_developer)
+                text = stringResource(R.string.home_about_developer_title)
             )
         }
         itemsIndexed(
-            items = aboutDeveloperList,
-            key = { _, staticModel -> staticModel.id }
+            items = homeAboutDeveloperItems,
+            key = { _, staticModel -> staticModel.id.name }
         ) { index, staticModel ->
             DefaultClickableListItem(
                 modifier = Modifier
                     .animateItem(),
                 index = index,
-                count = aboutDeveloperList.size,
-                onClick = { staticModel.onClick?.invoke() },
+                count = homeAboutDeveloperItems.size,
+                onClick = {
+                    when (staticModel.id) {
+                        HomeAboutDeveloperId.Github -> {}
+                        HomeAboutDeveloperId.Support -> {}
+                    }
+                },
                 content = { Text(text = stringResource(staticModel.contentTextResId)) },
                 trailingContent = { Icon(Icons.Rounded.OpenInNew, null) }
             )
@@ -229,7 +214,7 @@ private fun Content(
             CustomTextListTitle(
                 modifier = Modifier
                     .animateItem(),
-                text = stringResource(R.string.title_contributor)
+                text = stringResource(R.string.home_top_script_contributor)
             )
         }
         when {
@@ -243,7 +228,11 @@ private fun Content(
             }
             state.isHighestContributionProfileError != null -> {
                 item("isHighestContributionProfileError") {
-
+                    ErrorListItem(
+                        modifier = Modifier
+                            .animateItem(),
+                        text = state.isHighestContributionProfileError
+                    )
                 }
             }
             else -> {
@@ -257,8 +246,11 @@ private fun Content(
                         index = index,
                         count = state.highestContributionProfile.size,
                         content = { Text(text = profileModel.username) },
-                        trailingContent = {
-                            Text(text = "${profileModel.contribution} Files Uploaded")
+                        supportingContent = {
+                            Text(
+                                text = "${profileModel.contribution} " +
+                                        stringResource(R.string.home_total_files_uploaded)
+                            )
                         }
                     )
                 }

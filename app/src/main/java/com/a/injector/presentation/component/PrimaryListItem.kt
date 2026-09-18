@@ -21,9 +21,10 @@ fun PrimaryListItem(
         modifier = modifier,
         colors = ListItemDefaults.colors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
+            overlineContentColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-            supportingContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-            trailingContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            supportingContentColor = MaterialTheme.colorScheme.primary,
+            trailingContentColor = MaterialTheme.colorScheme.primary
         ),
         shapes = ListItemDefaults.segmentedShapes(
             index = index,

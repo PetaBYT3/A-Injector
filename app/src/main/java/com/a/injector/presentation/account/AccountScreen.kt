@@ -1,19 +1,14 @@
-package com.a.injector.presentation.profile
+package com.a.injector.presentation.account
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.OpenInNew
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -39,15 +34,17 @@ import com.a.injector.presentation.navigation.NavigationRoute
 import com.a.injector.presentation.util.CustomBottomSheet
 import com.a.injector.presentation.util.CustomButton
 import com.a.injector.presentation.util.CustomCenterCircularWavyProgressIndicator
+import com.a.injector.presentation.util.CustomSurfaceText
+import com.a.injector.presentation.util.CustomTextListTitle
 import com.a.injector.presentation.util.CustomTopAppBar
 import com.a.injector.presentation.util.SnackBarEffectLauncher
 import com.a.injector.presentation.util.spacer
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun ProfileScreen(
+fun AccountScreen(
     navBackStack: NavBackStack<NavKey>,
-    viewModel: ProfileViewModel = koinViewModel()
+    viewModel: AccountViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val onAction = viewModel::onAction
@@ -71,7 +68,7 @@ fun ProfileScreen(
 private fun Preview() {
     Screen(
         navBackStack = rememberNavBackStack(),
-        state = ProfileState(
+        state = AccountState(
             isProfileLoading = false,
             profile = ProfileModel.EMPTY.copy(
                 role = Role.Administrator
@@ -86,15 +83,15 @@ private fun Preview() {
 @Composable
 private fun Screen(
     navBackStack: NavBackStack<NavKey>,
-    state: ProfileState,
-    onAction: (ProfileAction) -> Unit,
+    state: AccountState,
+    onAction: (AccountAction) -> Unit,
     snackBarHostState: SnackbarHostState
 ) {
     Scaffold(
         contentWindowInsets = WindowInsets.statusBars,
         topBar = {
             CustomTopAppBar(
-                title = stringResource(R.string.title_profile)
+                title = stringResource(R.string.account)
             )
         },
         content = { innerPadding ->
@@ -111,18 +108,20 @@ private fun Screen(
 
     CustomBottomSheet(
         visible = state.isSignOutBottomSheetVisible,
-        onDismiss = { onAction(ProfileAction.SignOutBottomSheet) },
-        title = "Sign Out",
+        onDismiss = { onAction(AccountAction.SignOutBottomSheet) },
+        title = stringResource(R.string.account_sign_out),
         content = {
-            item { Text(text = stringResource(R.string.lorem_ipsum)) }
+            item {
+                CustomSurfaceText(text = stringResource(R.string.account_sign_out_msg))
+            }
         },
         bottomBar = {
             CustomButton(
                 onClick = {
-                    onAction(ProfileAction.SignOutBottomSheet)
-                    onAction(ProfileAction.SignOutButton)
+                    onAction(AccountAction.SignOutBottomSheet)
+                    onAction(AccountAction.SignOutButton)
                 },
-                text = "Confirm",
+                text = stringResource(R.string.account_sign_out_confirm),
                 isError = true
             )
         }
@@ -133,8 +132,8 @@ private fun Screen(
 private fun Content(
     modifier: Modifier = Modifier,
     navBackStack: NavBackStack<NavKey>,
-    state: ProfileState,
-    onAction: (ProfileAction) -> Unit
+    state: AccountState,
+    onAction: (AccountAction) -> Unit
 ) {
     LazyColumn(
         modifier = modifier,
@@ -166,66 +165,85 @@ private fun Content(
                         modifier = Modifier
                             .animateItem(),
                         onClick = { navBackStack.add(NavigationRoute.ManageRoleScreen) },
-                        content = { Text(text = "Manage Role") }
+                        content = { Text(text = stringResource(R.string.account_administrator_panel)) },
+                        supportingContent = {
+                            Text(text = stringResource(R.string.account_administrator_panel_desc))
+                        }
                     )
                 }
                 spacer()
             }
 
-            val profileItems = 3
-            item("usernameItem") {
-                DefaultListItem(
+            item("profileTitle") {
+                CustomTextListTitle(
                     modifier = Modifier
                         .animateItem(),
-                    index = 0,
-                    count = profileItems,
-                    content = { Text(text = "Username") },
-                    supportingContent = { Text(text = state.profile.username) }
+                    text = stringResource(R.string.account_profile_title)
                 )
             }
-            item("contributionItem") {
+            itemsIndexed(
+                items = profileAccountItems,
+                key = { _, staticModel -> staticModel.id.name }
+            ) { index, staticModel ->
                 DefaultListItem(
                     modifier = Modifier
                         .animateItem(),
-                    index = 1,
-                    count = profileItems,
-                    content = { Text(text = stringResource(R.string.title_contribution)) },
-                    supportingContent = { Text(text = state.profile.contribution.toString()) }
-                )
-            }
-            item("roleItem") {
-                DefaultListItem(
-                    modifier = Modifier
-                        .animateItem(),
-                    index = 2,
-                    count = profileItems,
-                    content = { Text(text = stringResource(R.string.title_role)) },
-                    supportingContent = { Text(text = state.profile.role.name) },
-                    trailingContent = {
-                        if (state.profile.role == Role.User) {
+                    index = index,
+                    count = profileAccountItems.size,
+                    content = { Text(text = stringResource(staticModel.contentTextResId)) },
+                    supportingContent = {
+                        val supportingText = when (staticModel.id) {
+                            ProfileAccountId.Username -> state.profile.username
+                            ProfileAccountId.Contribution -> state.profile.contribution.toString()
+                            ProfileAccountId.Role -> state.profile.role.name
+                        }
+                        Text(text = supportingText)
+                    },
+                    trailingContent = if (staticModel.id == ProfileAccountId.Role && state.profile.role == Role.User) {
+                        {
                             FilledTonalButton(
-                                onClick = { onAction(ProfileAction.RequestContributorButton) },
-                                enabled = state.requestState == RequestState.NotApplied
-                            ) {
-                                Row(
-                                    horizontalArrangement = Arrangement.spacedBy(5.dp)
-                                ) {
+                                onClick = { onAction(AccountAction.RequestContributorButton) },
+                                enabled = state.requestState == RequestState.NotApplied,
+                                content = {
                                     Text(
                                         text = when (state.requestState) {
                                             RequestState.Applied -> "Requested"
                                             RequestState.NotApplied -> "Apply Contributor"
                                         }
                                     )
-                                    Icon(
-                                        modifier = Modifier
-                                            .size(ButtonDefaults.IconSize),
-                                        imageVector = Icons.Rounded.OpenInNew,
-                                        contentDescription = null
-                                    )
                                 }
-                            }
+                            )
                         }
-                    }
+                    } else null
+                )
+            }
+            spacer()
+            item("manageTitle") {
+                CustomTextListTitle(
+                    modifier = Modifier
+                        .animateItem(),
+                    text = stringResource(R.string.account_manage_title)
+                )
+            }
+            itemsIndexed(
+                items = manageAccountItems,
+                key = { _, staticModel -> staticModel.id.name }
+            ) { index, staticModel ->
+                DefaultClickableListItem(
+                    modifier = Modifier
+                        .animateItem(),
+                    index = index,
+                    count = manageAccountItems.size,
+                    onClick = {
+                        when (staticModel.id) {
+                            ManageAccountId.ChangePassword -> {}
+                            ManageAccountId.DeleteAccount -> {}
+                        }
+                    },
+                    content = { Text(text = stringResource(staticModel.contentTextResId)) },
+                    supportingContent = if (staticModel.supportingTextResId != null) {
+                        { Text(text = stringResource(staticModel.supportingTextResId)) }
+                    } else null
                 )
             }
         }
@@ -234,7 +252,7 @@ private fun Content(
             CustomButton(
                 modifier = Modifier
                     .fillMaxWidth(),
-                onClick = { onAction(ProfileAction.SignOutBottomSheet) },
+                onClick = { onAction(AccountAction.SignOutBottomSheet) },
                 text = "Sign Out",
                 isError = true
             )

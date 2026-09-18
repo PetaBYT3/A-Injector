@@ -1,4 +1,4 @@
-package com.a.injector.presentation.profile
+package com.a.injector.presentation.account
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,11 +20,11 @@ import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
-class ProfileViewModel(
+class AccountViewModel(
     private val accountRepository: AccountRepository,
     private val navigationRepository: NavigationRepository
 ): ViewModel() {
-    private val _state = MutableStateFlow(ProfileState())
+    private val _state = MutableStateFlow(AccountState())
     val state = _state.asStateFlow()
 
     private val _effect = Channel<ScreenEffect>()
@@ -62,17 +62,17 @@ class ProfileViewModel(
         }
     }
 
-    fun onAction(action: ProfileAction) {
+    fun onAction(action: AccountAction) {
         when (action) {
-            ProfileAction.RequestContributorButton -> {
+            AccountAction.RequestContributorButton -> {
                 requestContributorButton()
             }
-            ProfileAction.SignOutBottomSheet -> {
+            AccountAction.SignOutBottomSheet -> {
                 _state.update { currentState ->
                     currentState.copy(isSignOutBottomSheetVisible = !currentState.isSignOutBottomSheetVisible)
                 }
             }
-            ProfileAction.SignOutButton -> {
+            AccountAction.SignOutButton -> {
                 signOutButton()
             }
         }

@@ -3,6 +3,9 @@ package com.a.injector.presentation.script
 import com.a.injector.domain.model.HeroModel
 
 data class ScriptState(
+    val isProfileLoading: Boolean = true,
+    val isModifyEnabled: Boolean = false,
+
     val isHeroesLoading: Boolean = true,
     val isHeroesError: String? = null,
     val heroes: List<HeroModel> = emptyList(),
@@ -11,5 +14,6 @@ data class ScriptState(
     val searchTextField: String = "",
 ) {
     val isContentLoading: Boolean get() =
+        isProfileLoading &&
         isHeroesLoading
 }

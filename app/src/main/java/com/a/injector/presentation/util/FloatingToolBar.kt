@@ -2,7 +2,6 @@ package com.a.injector.presentation.util
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -15,12 +14,20 @@ fun CustomFloatingActionToolBar(
     content: @Composable (() -> Unit)? = null
 ) {
     if (content != null) {
-        HorizontalFloatingToolbar(
-            modifier = modifier,
-            expanded = true,
-            floatingActionButton = { floatingActionButton?.invoke() },
-            content = { content.invoke() }
-        )
+        if (floatingActionButton != null) {
+            HorizontalFloatingToolbar(
+                modifier = modifier,
+                expanded = true,
+                floatingActionButton = { floatingActionButton() },
+                content = { content.invoke() }
+            )
+        } else {
+            HorizontalFloatingToolbar(
+                modifier = modifier,
+                expanded = true,
+                content = { content.invoke() }
+            )
+        }
     } else {
         Box(
             modifier = Modifier

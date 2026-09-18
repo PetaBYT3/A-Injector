@@ -16,8 +16,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import com.a.injector.R
-import com.a.injector.data.util.toDateTime
-import com.a.injector.data.util.toMegaBytes
 import com.a.injector.domain.model.ReplaceModel
 import com.a.injector.domain.model.SkinDetailModel
 
@@ -54,8 +52,8 @@ fun SkinDetailListItem(
                 index = 0,
                 count = skinDetail.replaces.size + 1
             ),
-            overlineContent = { Text(text = skinDetail.label) },
-            content = { Text(text = skinDetail.name) },
+            content = { Text(text = skinDetail.label) },
+            supportingContent = { Text(text = skinDetail.name) },
             trailingContent = skinTrailingContent
         )
         skinDetail.replaces.fastForEachIndexed { index, replace ->
@@ -67,13 +65,9 @@ fun SkinDetailListItem(
                     index = index + 1,
                     count = skinDetail.replaces.size + 1
                 ),
-                overlineContent = { Text(text = "${stringResource(R.string.title_replace)} ${replace.label}") },
-                content = { Text(text = replace.name) },
-                supportingContent = {
-                    Text(
-                        text = "${replace.lastUpdate?.toDateTime()} | ${replace.fileSize?.toMegaBytes()}"
-                    )
-                },
+                overlineContent = { Text(text = stringResource(R.string.hero_replace)) },
+                content = { Text(text = replace.label) },
+                supportingContent = { Text(text = replace.name) },
                 trailingContent = {
                     Row(
                         verticalAlignment = Alignment.CenterVertically
