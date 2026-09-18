@@ -87,10 +87,10 @@ class InjectRepositoryImpl(
                 if (file.isDirectory) {
                     when (currentService) {
                         CommandService.Shizuku -> {
-                            shizukuCommandService.copy(extractedDir.absolutePath, TARGET_PATH)
+                            shizukuCommandService.copy(file.absolutePath, TARGET_PATH)
                         }
                         CommandService.Superuser -> {
-                            superuserCommandService.copy(extractedDir.absolutePath, TARGET_PATH)
+                            superuserCommandService.copy(file.absolutePath, TARGET_PATH)
                         }
                     }
                 }

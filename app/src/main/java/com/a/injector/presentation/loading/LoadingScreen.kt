@@ -1,5 +1,6 @@
 package com.a.injector.presentation.loading
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -17,6 +18,10 @@ import androidx.navigation3.runtime.rememberNavBackStack
 fun LoadingScreen(
     navBackStack: NavBackStack<NavKey>
 ) {
+    BackHandler(enabled = false) {
+
+    }
+
     Scaffold(
         content = { innerPadding ->
             Box(

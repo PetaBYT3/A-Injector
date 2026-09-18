@@ -14,6 +14,7 @@ import io.github.jan.supabase.postgrest.query.Order
 import io.github.jan.supabase.realtime.PostgresAction
 import io.github.jan.supabase.realtime.channel
 import io.github.jan.supabase.realtime.postgresChangeFlow
+import io.github.jan.supabase.realtime.realtime
 import io.github.jan.supabase.realtime.selectAsFlow
 import io.github.jan.supabase.realtime.selectSingleValueAsFlow
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,11 +24,13 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import org.koin.core.annotation.Single
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.uuid.Uuid
 
 @Single
 class ProfileApiImpl(
@@ -41,12 +44,15 @@ class ProfileApiImpl(
     }
 
     override fun getProfileByHighestContribution(): Flow<List<ProfileDto>> {
-        val channel = supabaseClient.channel("getProfile:highestContribution")
+        val channel = supabaseClient.channel("getProfileByHighestContribution:${Uuid.random()}")
         return channel.postgresChangeFlow<PostgresAction>(
             schema = SupabaseConstanta.SCHEMA,
             filter = { table = SupabaseConstanta.PROFILE_TABLE }
         ).map(::postgrestActionToUnit).debounce(300.milliseconds).onStart {
             emit(Unit)
+            channel.subscribe()
+        }.onCompletion {
+            supabaseClient.realtime.removeChannel(channel)
         }.flatMapLatest {
             val data = supabaseClient.from(SupabaseConstanta.PROFILE_TABLE).select(
                 request = {

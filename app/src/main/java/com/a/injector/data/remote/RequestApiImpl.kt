@@ -25,13 +25,14 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import org.koin.core.annotation.Single
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.uuid.Uuid
 
 @Single
 class RequestApiImpl(
     private val supabaseClient: SupabaseClient
 ): RequestApi {
     override fun getRequestDetails(): Flow<List<RequestDetailDto>> {
-        val channel = supabaseClient.channel("requestDetail:all")
+        val channel = supabaseClient.channel("getRequestDetail:${Uuid.random()}")
         return merge(
             channel.postgresChangeFlow<PostgresAction>(
                 schema = SupabaseConstanta.SCHEMA,
@@ -43,6 +44,9 @@ class RequestApiImpl(
             )
         ).map(::postgrestActionToUnit).debounce(300.milliseconds).onStart {
             emit(Unit)
+            channel.subscribe()
+        }.onCompletion {
+            supabaseClient.realtime.removeChannel(channel)
         }.flatMapLatest {
             val data = supabaseClient.from(SupabaseConstanta.REQUEST_TABLE).select(
                 columns = Columns.raw(
@@ -54,7 +58,7 @@ class RequestApiImpl(
     }
 
     override fun getRequestDetail(id: String): Flow<RequestDetailDto?> {
-        val channel = supabaseClient.channel("requestDetail:$id")
+        val channel = supabaseClient.channel("getRequestDetail:${Uuid.random()}")
         return merge(
             channel.postgresChangeFlow<PostgresAction>(
                 schema = SupabaseConstanta.SCHEMA,
@@ -66,6 +70,7 @@ class RequestApiImpl(
             )
         ).map(::postgrestActionToUnit).debounce(300.milliseconds).onStart {
             emit(Unit)
+            channel.subscribe()
         }.onCompletion {
             supabaseClient.realtime.removeChannel(channel)
         }.map {
@@ -74,7 +79,7 @@ class RequestApiImpl(
                 columns = Columns.raw(
                     "*, ${SupabaseConstanta.PROFILE_TABLE}(*)"
                 )
-            ).decodeAsOrNull<RequestDetailDto>()
+            ).decodeSingleOrNull<RequestDetailDto>()
         }
     }
 

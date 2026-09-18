@@ -51,6 +51,8 @@ class SuperuserCommandServiceImpl(
                 os.writeBytes(command)
                 os.writeBytes("exit\n")
                 os.flush()
+
+                process?.waitFor()
             } finally {
                 os.close()
                 process?.destroy()

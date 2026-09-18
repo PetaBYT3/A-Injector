@@ -4,8 +4,10 @@ import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.SignOutScope
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.providers.builtin.Email
+import io.github.jan.supabase.auth.status.SessionStatus
 import io.github.jan.supabase.auth.user.UserInfo
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import org.koin.core.annotation.Single
 
@@ -13,7 +15,9 @@ import org.koin.core.annotation.Single
 class AuthApiImpl(
     private val supabaseClient: SupabaseClient
 ): AuthApi {
-    private val _currentAuth = supabaseClient.auth.sessionStatus.map {
+    private val _currentAuth = supabaseClient.auth.sessionStatus.filter { sessionStatus ->
+        sessionStatus !is SessionStatus.Initializing
+    }.map {
         supabaseClient.auth.currentUserOrNull()
     }
     override val currentAuth: Flow<UserInfo?> = _currentAuth

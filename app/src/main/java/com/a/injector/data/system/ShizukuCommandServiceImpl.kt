@@ -3,10 +3,12 @@ package com.a.injector.data.system
 import android.content.Context
 import android.content.pm.PackageManager
 import com.a.injector.R
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.withContext
 import org.koin.core.annotation.Single
 import rikka.shizuku.Shizuku
 
@@ -48,17 +50,20 @@ class ShizukuCommandServiceImpl(
     }
 
     override suspend fun copy(sourcePath: String, targetPath: String) {
-        if (!_isAuthorized.value) throw Exception(context.getString(R.string.message_shizuku_unauthorized))
+        withContext(Dispatchers.IO) {
+            if (!_isAuthorized.value) throw Exception(context.getString(R.string.message_shizuku_unauthorized))
 
-        val command = arrayOf("sh", "-c", "cp -rf '$sourcePath' '$targetPath'")
-        val newProcess = Shizuku::class.java.getDeclaredMethod(
-            "newProcess",
-            Array<String>::class.java,
-            Array<String>::class.java,
-            String::class.java
-        )
-        newProcess.isAccessible = true
-        newProcess.invoke(null, command, null, null) as Process
+            val command = arrayOf("sh", "-c", "cp -rf '$sourcePath' '$targetPath'")
+            val newProcess = Shizuku::class.java.getDeclaredMethod(
+                "newProcess",
+                Array<String>::class.java,
+                Array<String>::class.java,
+                String::class.java
+            )
+            newProcess.isAccessible = true
+            val process = newProcess.invoke(null, command, null, null) as Process
+            process.waitFor()
+        }
     }
 
     override suspend fun destroy() {
