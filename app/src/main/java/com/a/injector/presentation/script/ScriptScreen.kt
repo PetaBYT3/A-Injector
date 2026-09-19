@@ -16,17 +16,14 @@ import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -44,6 +41,7 @@ import com.a.injector.presentation.util.CustomFloatingActionButton
 import com.a.injector.presentation.util.CustomFloatingActionToolBar
 import com.a.injector.presentation.util.CustomSlideUpAnimatedVisibility
 import com.a.injector.presentation.util.CustomTopAppBar
+import com.a.injector.presentation.util.TransparentTextField
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -81,7 +79,7 @@ private fun Screen(
         contentWindowInsets = WindowInsets.statusBars,
         topBar = {
             CustomTopAppBar(
-                title = stringResource(R.string.script)
+                title = stringResource(R.string.title_script)
             )
         },
         content = { innerPadding ->
@@ -129,16 +127,10 @@ private fun ScriptFloatingActionButton(
                     targetState = isSearchExpand
                 ) { animatedContentState ->
                     if (animatedContentState) {
-                        OutlinedTextField(
+                        TransparentTextField(
                             modifier = Modifier
                                 .width(250.dp),
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor = Color.Transparent,
-                                unfocusedContainerColor = Color.Transparent,
-                                focusedIndicatorColor = Color.Transparent,
-                                unfocusedIndicatorColor = Color.Transparent
-                            ),
-                            placeholder = { Text(text = stringResource(R.string.script_search)) },
+                            placeholder = stringResource(R.string.action_search),
                             value = state.searchTextField,
                             onValueChange = { onAction(ScriptAction.SearchTextField(it)) },
                             trailingIcon = {
@@ -200,7 +192,7 @@ private fun Content(
                     CustomCenterTextMessage(
                         modifier = Modifier
                             .animateItem(),
-                        text = stringResource(R.string.title_empty)
+                        text = stringResource(R.string.item_empty)
                     )
                 }
             }

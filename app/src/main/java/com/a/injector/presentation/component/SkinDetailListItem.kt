@@ -1,6 +1,6 @@
 package com.a.injector.presentation.component
 
-import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,8 +40,7 @@ fun SkinDetailListItem(
     replaceTrailingContent: @Composable ((ReplaceModel) -> Unit)? = null
 ) {
     Column(
-        modifier = modifier
-            .animateContentSize(),
+        modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(2.5.dp)
     ) {
         SegmentedListItem(
@@ -56,26 +55,34 @@ fun SkinDetailListItem(
             supportingContent = { Text(text = skinDetail.name) },
             trailingContent = skinTrailingContent
         )
-        skinDetail.replaces.fastForEachIndexed { index, replace ->
-            SegmentedListItem(
-                colors = ListItemDefaults.colors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainer
-                ),
-                shapes = ListItemDefaults.segmentedShapes(
-                    index = index + 1,
-                    count = skinDetail.replaces.size + 1
-                ),
-                overlineContent = { Text(text = stringResource(R.string.hero_replace)) },
-                content = { Text(text = replace.label) },
-                supportingContent = { Text(text = replace.name) },
-                trailingContent = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        replaceTrailingContent?.invoke(replace)
-                    }
+        AnimatedVisibility(
+            visible = skinDetail.replaces.isNotEmpty()
+        ) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(2.5.dp)
+            ) {
+                skinDetail.replaces.fastForEachIndexed { index, replace ->
+                    SegmentedListItem(
+                        colors = ListItemDefaults.colors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainer
+                        ),
+                        shapes = ListItemDefaults.segmentedShapes(
+                            index = index + 1,
+                            count = skinDetail.replaces.size + 1
+                        ),
+                        overlineContent = { Text(text = stringResource(R.string.item_replace)) },
+                        content = { Text(text = replace.label) },
+                        supportingContent = { Text(text = replace.name) },
+                        trailingContent = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                replaceTrailingContent?.invoke(replace)
+                            }
+                        }
+                    )
                 }
-            )
+            }
         }
     }
 }

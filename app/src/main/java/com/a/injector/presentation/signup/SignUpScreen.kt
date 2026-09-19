@@ -17,7 +17,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
@@ -39,9 +38,12 @@ import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
+import com.a.injector.presentation.navigation.popBackStack
 import com.a.injector.presentation.util.CustomExtendedFloatingActionButton
 import com.a.injector.presentation.util.CustomMediumTopAppBar
+import com.a.injector.presentation.util.CustomTextField
 import com.a.injector.presentation.util.CustomTextListTitle
 import com.a.injector.presentation.util.SnackBarEffectLauncher
 import com.a.injector.presentation.util.spacer
@@ -62,6 +64,7 @@ fun SignUpScreen(
     )
 
     Screen(
+        navBackStack = navBackStack,
         state = state,
         onAction = onAction,
         snackBarHostState = snackBarHostState
@@ -72,6 +75,7 @@ fun SignUpScreen(
 @Preview
 private fun Preview() {
     Screen(
+        navBackStack = rememberNavBackStack(),
         state = SignUpState(),
         onAction = {},
         snackBarHostState = SnackbarHostState()
@@ -80,6 +84,7 @@ private fun Preview() {
 
 @Composable
 private fun Screen(
+    navBackStack: NavBackStack<NavKey>,
     state: SignUpState,
     onAction: (SignUpAction) -> Unit,
     snackBarHostState: SnackbarHostState
@@ -94,7 +99,8 @@ private fun Screen(
         topBar = {
             CustomMediumTopAppBar(
                 scrollBehavior = scrollBehaviour,
-                title = { Text(stringResource(R.string.sign_up)) }
+                navigationClick = { navBackStack.popBackStack() },
+                title = { Text(stringResource(R.string.title_sign_up)) }
             )
         },
         content = { innerPadding ->
@@ -109,7 +115,7 @@ private fun Screen(
         floatingActionButton = {
             CustomExtendedFloatingActionButton(
                 onClick = { onAction(SignUpAction.SignUpButton) },
-                content = { Text(text = stringResource(R.string.sign_up)) },
+                content = { Text(text = stringResource(R.string.action_sign_up)) },
                 isLoading = state.isSignUpButtonLoading
             )
         }
@@ -125,20 +131,6 @@ private fun Content(
     var isPasswordVisible by rememberSaveable {
         mutableStateOf(false)
     }
-    val passwordValidation = listOf(
-        Pair(
-            first = state.isPasswordMoreThan8Character,
-            second = stringResource(R.string.title_8_character)
-        ),
-        Pair(
-            first = state.isPasswordContainUppercase,
-            second = stringResource(R.string.title_uppercase)
-        ),
-        Pair(
-            first = state.isPasswordContainNumber,
-            second = stringResource(R.string.title_number)
-        )
-    )
 
     LazyColumn(
         modifier = modifier,
@@ -147,14 +139,12 @@ private fun Content(
     ) {
         item {
             CustomTextListTitle(
-                text = stringResource(R.string.sign_up_email)
+                text = stringResource(R.string.item_email)
             )
         }
         item {
-            TextField(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                placeholder = { Text(text = stringResource(R.string.sign_up_email)) },
+            CustomTextField(
+                placeholder = stringResource(R.string.item_email),
                 value = state.emailTextField,
                 onValueChange = { onAction(SignUpAction.EmailTextField(it)) }
             )
@@ -162,14 +152,12 @@ private fun Content(
         spacer()
         item {
             CustomTextListTitle(
-                text = stringResource(R.string.sign_up_password)
+                text = stringResource(R.string.item_password)
             )
         }
         item {
-            TextField(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                placeholder = { Text(text = stringResource(R.string.sign_up_password)) },
+            CustomTextField(
+                placeholder = stringResource(R.string.item_password),
                 value = state.passwordTextField,
                 onValueChange = { onAction(SignUpAction.PasswordTextField(it)) },
                 visualTransformation = if (isPasswordVisible) {
@@ -255,7 +243,15 @@ private fun Content(
                         .align(Alignment.TopEnd),
                     checked = isPasswordVisible,
                     onCheckedChange = { isPasswordVisible = it },
-                    content = { Text(text = stringResource(R.string.action_show_password)) }
+                    content = {
+                        Text(
+                            text = if (isPasswordVisible) {
+                                stringResource(R.string.action_hide_password)
+                            } else {
+                                stringResource(R.string.action_show_password)
+                            }
+                        )
+                    }
                 )
             }
         }

@@ -4,21 +4,25 @@ import com.a.injector.R
 import com.a.injector.domain.model.StaticModel
 
 enum class ProfileAccountId {
-    Username, Contribution, Role
+    Email, Username, Contribution, Role
 }
 
 val profileAccountItems = listOf(
     StaticModel(
+        id = ProfileAccountId.Email,
+        contentTextResId = R.string.item_email
+    ),
+    StaticModel(
         id = ProfileAccountId.Username,
-        contentTextResId = R.string.account_username
+        contentTextResId = R.string.item_username
     ),
     StaticModel(
         id = ProfileAccountId.Contribution,
-        contentTextResId = R.string.account_contribution
+        contentTextResId = R.string.item_contribution
     ),
     StaticModel(
         id = ProfileAccountId.Role,
-        contentTextResId = R.string.account_role
+        contentTextResId = R.string.item_role
     )
 )
 
@@ -29,12 +33,12 @@ enum class ManageAccountId {
 val manageAccountItems = listOf(
     StaticModel(
         id = ManageAccountId.ChangePassword,
-        contentTextResId = R.string.account_change_password,
-        supportingTextResId = R.string.account_change_password_desc
+        contentTextResId = R.string.item_change_password,
+        supportingTextResId = R.string.item_change_password_desc
     ),
     StaticModel(
         id = ManageAccountId.DeleteAccount,
-        contentTextResId = R.string.account_delete_account,
-        supportingTextResId = R.string.account_delete_account_desc
+        contentTextResId = R.string.item_delete_account,
+        supportingTextResId = R.string.item_delete_account_desc
     )
 )

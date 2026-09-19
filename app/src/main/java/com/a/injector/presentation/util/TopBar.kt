@@ -40,7 +40,7 @@ fun CustomTopAppBar(
 @Composable
 fun CustomMediumTopAppBar(
     scrollBehavior: TopAppBarScrollBehavior? = null,
-    navigationIcon: @Composable (() -> Unit) = {},
+    navigationClick: (() -> Unit)? = null,
     title: @Composable (() -> Unit),
     actions: @Composable (RowScope.() -> Unit) = {},
 ) {
@@ -50,7 +50,14 @@ fun CustomMediumTopAppBar(
             containerColor = Color.Transparent,
             scrolledContainerColor = Color.Transparent
         ),
-        navigationIcon = navigationIcon,
+        navigationIcon = {
+            if (navigationClick != null) {
+                IconButton(
+                    onClick = navigationClick,
+                    content = { Icon(Icons.Rounded.ArrowBack, null) }
+                )
+            }
+        },
         title = title,
         actions = actions
     )

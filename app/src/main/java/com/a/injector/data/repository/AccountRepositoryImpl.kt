@@ -21,10 +21,14 @@ import com.a.injector.domain.model.RequestDetailModel
 import com.a.injector.domain.model.RequestModel
 import com.a.injector.domain.model.state.RequestState
 import com.a.injector.domain.repository.AccountRepository
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
@@ -32,6 +36,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import org.koin.core.annotation.Single
 import kotlin.time.Duration.Companion.seconds
 import kotlin.uuid.Uuid
@@ -43,7 +48,9 @@ class AccountRepositoryImpl(
     private val profileApi: ProfileApi,
     private val requestApi: RequestApi
 ): AccountRepository {
-    override val currentAuth: Flow<AuthState> = authApi.currentAuth.flatMapLatest { userInfo ->
+    private val repositoryScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+    override val currentAuth: StateFlow<AuthState> = authApi.currentAuth.flatMapLatest { userInfo ->
         when {
             userInfo == null -> flowOf(AuthState.Unauthorized)
             userInfo.isAnonymous == true -> flowOf(AuthState.Guest)
@@ -56,7 +63,11 @@ class AccountRepositoryImpl(
                 }
             }
         }
-    }
+    }.stateIn(
+        scope = repositoryScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = AuthState.Unauthorized
+    )
 
     override fun signIn(email: String, password: String): Flow<Either<String, Unit>> {
         return flow<Either<String, Unit>> {

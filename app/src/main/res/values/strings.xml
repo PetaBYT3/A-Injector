@@ -1,24 +1,4 @@
 <resources>
     <string name="app_name">A Injector</string>
     <string name="developer_name">Andrea Hussanini</string>
-
-    <string name="github">Github</string>
-    <string name="linkedin">Linkedin</string>
-    <string name="instagram">Instagram</string>
-
-    <string name="state_access">Access</string>
-    <string name="state_not_active_or_not_installed">Not Active Or Not Installed</string>
-    <string name="state_denied">Denied</string>
-    <string name="state_granted">Granted</string>
-
-    Action
-    <string name="action_get_started">Get Started</string>
-    <string name="action_anonymous">Anonymous</string>
-    <string name="action_show_password">Show Password</string>
-
-    <string name="action_search">Search Here…</string>
-
-    <string name="lorem_ipsum">Lorem ipsum dolor sit amet, commodo dolor do minim exercitation laboris ex. Ea laboris veniam excepteur ut in sed nisi non sint do. Enim sunt deserunt tempor qui eu ad esse. Consequat id proident commodo aliquip laboris cillum quis occaecat occaecat.
-
-Laboris labore incididunt incididunt est fugiat aute in. Laborum adipiscing proident labore excepteur in dolore aute id sunt eiusmod reprehenderit. Consequat consequat ea ex consequat duis ut in reprehenderit nulla commodo. Est minim velit nisi minim mollit sunt consectetur.</string>
 </resources>

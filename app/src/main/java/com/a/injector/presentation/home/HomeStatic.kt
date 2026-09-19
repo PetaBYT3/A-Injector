@@ -10,10 +10,10 @@ enum class HomeAboutDeveloperId {
 val homeAboutDeveloperItems = listOf(
     StaticModel(
         id = HomeAboutDeveloperId.Github,
-        contentTextResId = R.string.home_github
+        contentTextResId = R.string.item_github
     ),
     StaticModel(
         id = HomeAboutDeveloperId.Support,
-        contentTextResId = R.string.home_support
+        contentTextResId = R.string.item_support
     )
 )

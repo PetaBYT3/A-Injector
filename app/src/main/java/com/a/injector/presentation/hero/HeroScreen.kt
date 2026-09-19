@@ -107,7 +107,7 @@ private fun Screen(
         topBar = {
             CustomTopAppBar(
                 navigationClick = { navBackStack.popBackStack() },
-                title = stringResource(R.string.hero)
+                title = stringResource(R.string.title_hero)
             )
         },
         content = { innerPadding ->
@@ -241,7 +241,7 @@ private fun Content(
         }
         spacer()
         item("skinTitle") {
-            CustomTextListTitle(text = stringResource(R.string.hero_available_skin))
+            CustomTextListTitle(text = stringResource(R.string.item_skin))
         }
         if (state.heroDetail.skins.isEmpty()) {
             item("isSkinWithReplaceEmpty") {
@@ -280,7 +280,7 @@ private fun Content(
                         val dateAndSize = if (isFileExist) {
                             "${replace.lastUpdate?.toDateTime()} | ${replace.fileSize?.toMegaBytes()}"
                         } else {
-                            stringResource(R.string.hero_file_does_not_exist)
+                            stringResource(R.string.item_no_file)
                         }
                         Text(
                             text = dateAndSize,
@@ -289,6 +289,13 @@ private fun Content(
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(5.dp)
                         ) {
+                            if (isFileExist) {
+                                CustomTonalButton(
+                                    onClick = { onAction(HeroAction.StartInject(replace)) },
+                                    text = stringResource(R.string.action_install),
+                                    isLoading = state.isInjectLoading[replace.id] != null
+                                )
+                            }
                             if (state.isModifyEnabled) {
                                 IconButton(
                                     onClick = {
@@ -300,13 +307,6 @@ private fun Content(
                                         navBackStack.add(targetRoute)
                                     },
                                     content = { Icon(Icons.Rounded.Edit, null) }
-                                )
-                            }
-                            if (isFileExist) {
-                                CustomTonalButton(
-                                    onClick = { onAction(HeroAction.StartInject(replace)) },
-                                    text = stringResource(R.string.hero_install),
-                                    isLoading = state.isInjectLoading[replace.id] != null
                                 )
                             }
                         }

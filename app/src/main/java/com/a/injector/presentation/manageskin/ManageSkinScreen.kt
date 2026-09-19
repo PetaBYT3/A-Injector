@@ -1,37 +1,22 @@
 package com.a.injector.presentation.manageskin
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Save
-import androidx.compose.material.icons.rounded.UploadFile
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.FilledTonalIconButton
-import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItemDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,14 +29,16 @@ import com.a.injector.R
 import com.a.injector.presentation.component.DefaultListItem
 import com.a.injector.presentation.navigation.popBackStack
 import com.a.injector.presentation.util.CustomBottomSheet
+import com.a.injector.presentation.util.CustomButton
 import com.a.injector.presentation.util.CustomCenterCircularWavyProgressIndicator
 import com.a.injector.presentation.util.CustomFloatingActionButton
 import com.a.injector.presentation.util.CustomFloatingActionToolBar
 import com.a.injector.presentation.util.CustomIconButton
 import com.a.injector.presentation.util.CustomSlideUpAnimatedVisibility
+import com.a.injector.presentation.util.CustomSurfaceText
+import com.a.injector.presentation.util.CustomTextField
 import com.a.injector.presentation.util.CustomTextListTitle
 import com.a.injector.presentation.util.CustomTopAppBar
-import com.a.injector.presentation.util.CustomUndismissableBottomSheet
 import com.a.injector.presentation.util.SnackBarEffectLauncher
 import com.a.injector.presentation.util.spacer
 import org.koin.compose.viewmodel.koinViewModel
@@ -110,7 +97,11 @@ private fun Screen(
         topBar = {
             CustomTopAppBar(
                 navigationClick = { navBackStack.popBackStack() },
-                title = if (state.isOnEdit) stringResource(R.string.title_edit) else stringResource(R.string.title_add),
+                title = if (state.isOnEdit) {
+                    stringResource(R.string.action_edit)
+                } else {
+                    stringResource(R.string.action_add)
+                },
             )
         },
         content = { innerPadding ->
@@ -150,26 +141,20 @@ private fun Screen(
     CustomBottomSheet(
         visible = state.isDeleteBottomSheetVisible,
         onDismiss = { onAction(ManageSkinAction.DeleteBottomSheet) },
-        title = stringResource(R.string.title_delete),
+        title = stringResource(R.string.action_delete),
         content = {
             item {
-                Text(
-                    text = stringResource(R.string.message_delete_hero),
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                CustomSurfaceText(text = stringResource(R.string.message_delete_skin))
             }
         },
         bottomBar = {
-            Button(
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.error,
-                    contentColor = MaterialTheme.colorScheme.onError
-                ),
+            CustomButton(
                 onClick = {
                     onAction(ManageSkinAction.DeleteBottomSheet)
                     onAction(ManageSkinAction.DeleteButton)
                 },
-                content = { Text(text = stringResource(R.string.title_delete)) }
+                text = stringResource(R.string.action_confirm),
+                isError = true
             )
         }
     )
@@ -207,28 +192,29 @@ private fun Content(
         }
         spacer()
         item("skinTitle") {
-            CustomTextListTitle(text = stringResource(R.string.title_skin))
-        }
-        item("skinLabelTextField") {
-            TextField(
+            CustomTextListTitle(
                 modifier = Modifier
-                    .fillMaxWidth()
                     .animateItem(),
-                placeholder = { Text(text = stringResource(R.string.title_label)) },
-                value = state.skin.label,
-                onValueChange = { onAction(ManageSkinAction.SkinLabelTextField(it)) }
+                text = stringResource(R.string.item_skin)
             )
         }
-        spacer(5.dp)
-        item("skinNameTextField") {
-            TextField(
+        item("skinItem") {
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
                     .animateItem(),
-                placeholder = { Text(text = stringResource(R.string.title_name)) },
-                value = state.skin.name,
-                onValueChange = { onAction(ManageSkinAction.SkinNameTextField(it)) }
-            )
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                CustomTextField(
+                    label = stringResource(R.string.item_label),
+                    value = state.skin.label,
+                    onValueChange = { onAction(ManageSkinAction.SkinLabelTextField(it)) }
+                )
+                CustomTextField(
+                    label = stringResource(R.string.item_name),
+                    value = state.skin.name,
+                    onValueChange = { onAction(ManageSkinAction.SkinNameTextField(it)) }
+                )
+            }
         }
     }
 }

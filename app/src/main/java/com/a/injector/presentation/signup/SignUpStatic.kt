@@ -10,14 +10,14 @@ enum class SignUpPasswordRequirementId {
 val signUpPasswordRequirementItem = listOf(
     StaticModel(
         id = SignUpPasswordRequirementId.MoreThanEightCharacter,
-        contentTextResId = R.string.sign_up_8_character
+        contentTextResId = R.string.item_eight_character
     ),
     StaticModel(
         id = SignUpPasswordRequirementId.ContainUppercase,
-        contentTextResId = R.string.sign_up_uppercase
+        contentTextResId = R.string.item_uppercase
     ),
     StaticModel(
         id = SignUpPasswordRequirementId.ContainNumber,
-        contentTextResId = R.string.sign_up_number
+        contentTextResId = R.string.item_number
     )
 )

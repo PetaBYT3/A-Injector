@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="item_email">Email</string>
+    <string name="item_password">Password</string>
+    <string name="item_eight_character">8 Character</string>
+    <string name="item_uppercase">Uppercase</string>
+    <string name="item_number">Number</string>
+
+    <string name="item_command_service">Command Service</string>
+    <string name="item_shizuku_true">Running</string>
+    <string name="item_shizuku_false">Inactive</string>
+    <string name="item_superuser_true">Granted</string>
+    <string name="item_superuser_false">Denied</string>
+
+    <string name="item_about_developer">About Developer</string>
+    <string name="item_github">Github</string>
+    <string name="item_support">Support</string>
+
+    <string name="item_top_contributor">Top Contributor</string>
+    <string name="item_files_uploaded">Files Uploaded</string>
+
+    <string name="item_admin_panel">Administrator Panel</string>
+    <string name="item_admin_panel_desc">
+        Manage other user role permission, database, and storage
+    </string>
+
+    <string name="item_pending_request">Pending Request</string>
+    <string name="item_contributor">Contributor</string>
+
+    <string name="item_profile">Profile</string>
+    <string name="item_username">Username</string>
+    <string name="item_contribution">Contribution</string>
+    <string name="item_role">Role</string>
+
+    <string name="item_manage">Manage</string>
+    <string name="item_change_password">Change Password</string>
+    <string name="item_change_password_desc">
+        Change your account through email
+    </string>
+    <string name="item_delete_account">Delete Account</string>
+    <string name="item_delete_account_desc">
+        Delete your account and all of your entire data
+    </string>
+
+    <string name="item_hero">Hero</string>
+    <string name="item_skin">Skin</string>
+    <string name="item_replace">Replace</string>
+
+    <string name="item_label">Label</string>
+    <string name="item_name">Name</string>
+
+    <string name="item_no_file">No File</string>
+
+    <string name="item_empty">Empty</string>
+</resources>

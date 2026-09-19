@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="title_sign_in">Sign In</string>
+    <string name="title_sign_up">Sign Up</string>
+    <string name="title_guest">Guest</string>
+
     <string name="title_home">Home</string>
     <string name="title_script">Script</string>
+    <string name="title_account">Account</string>
+    <string name="title_panel">Panel</string>
+
     <string name="title_profile">Profile</string>
     <string name="title_hero">Hero</string>
     <string name="title_skin">Skin</string>
@@ -39,10 +46,6 @@
 
     <string name="title_developer">Developer</string>
     <string name="title_contributor">Contributor</string>
-
-    <string name="title_sign_in">Sign In</string>
-    <string name="title_sign_up">Sign Up</string>
-    <string name="title_guest">Guest</string>
 
     <string name="title_email">Email</string>
     <string name="title_password">Password</string>

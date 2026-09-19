@@ -1,34 +1,27 @@
 package com.a.injector.presentation.managereplace
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.InsertDriveFile
 import androidx.compose.material.icons.rounded.Save
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -40,11 +33,14 @@ import com.a.injector.presentation.component.DefaultClickableListItem
 import com.a.injector.presentation.component.DefaultListItem
 import com.a.injector.presentation.navigation.popBackStack
 import com.a.injector.presentation.util.CustomBottomSheet
+import com.a.injector.presentation.util.CustomButton
 import com.a.injector.presentation.util.CustomCenterCircularWavyProgressIndicator
 import com.a.injector.presentation.util.CustomFloatingActionButton
 import com.a.injector.presentation.util.CustomFloatingActionToolBar
 import com.a.injector.presentation.util.CustomIconButton
 import com.a.injector.presentation.util.CustomSlideUpAnimatedVisibility
+import com.a.injector.presentation.util.CustomSurfaceText
+import com.a.injector.presentation.util.CustomTextField
 import com.a.injector.presentation.util.CustomTextListTitle
 import com.a.injector.presentation.util.CustomTopAppBar
 import com.a.injector.presentation.util.SnackBarEffectLauncher
@@ -110,7 +106,11 @@ private fun Screen(
         topBar = {
             CustomTopAppBar(
                 navigationClick = { navBackStack.popBackStack() },
-                title = if (state.isOnEdit) stringResource(R.string.title_edit) else stringResource(R.string.title_add)
+                title = if (state.isOnEdit) {
+                    stringResource(R.string.action_edit)
+                } else {
+                    stringResource(R.string.action_add)
+                }
             )
         },
         content = { innerPadding ->
@@ -152,26 +152,20 @@ private fun Screen(
     CustomBottomSheet(
         visible = state.isDeleteBottomSheetVisible,
         onDismiss = { onAction(ManageReplaceAction.DeleteBottomSheet) },
-        title = stringResource(R.string.title_delete),
+        title = stringResource(R.string.action_delete),
         content = {
             item {
-                Text(
-                    text = stringResource(R.string.message_delete_hero),
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                CustomSurfaceText(text = stringResource(R.string.message_delete_replace))
             }
         },
         bottomBar = {
-            Button(
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.error,
-                    contentColor = MaterialTheme.colorScheme.onError
-                ),
+            CustomButton(
                 onClick = {
                     onAction(ManageReplaceAction.DeleteBottomSheet)
                     onAction(ManageReplaceAction.DeleteButton)
                 },
-                content = { Text(text = stringResource(R.string.title_delete)) }
+                text = stringResource(R.string.action_confirm),
+                isError = true
             )
         }
     )
@@ -214,7 +208,7 @@ private fun Content(
                     .animateItem(),
                 index = 0,
                 count = 2,
-                content = { Text(text = state.hero?.name ?: stringResource(R.string.title_unknown)) }
+                content = { Text(text = state.hero.name) }
             )
         }
         item("skinItem") {
@@ -223,8 +217,8 @@ private fun Content(
                     .animateItem(),
                 index = 1,
                 count = 2,
-                overlineContent = { Text(text = state.skin?.label ?: stringResource(R.string.title_unknown)) },
-                content = { Text(text = state.skin?.name ?: stringResource(R.string.title_unknown)) },
+                content = { Text(text = state.skin.label) },
+                supportingContent = { Text(text = state.skin.name) }
             )
         }
         spacer()
@@ -235,32 +229,42 @@ private fun Content(
                 text = stringResource(R.string.title_replace)
             )
         }
-        item("labelTextField") {
-            TextField(
+        item("replaceItem") {
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth(),
-                label = { Text(text = stringResource(R.string.title_label)) },
-                value = state.replace.label,
-                onValueChange = { onAction(ManageReplaceAction.LabelTextField(it)) }
-            )
-        }
-        spacer(5.dp)
-        item("nameTextField") {
-            TextField(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                label = { Text(text = stringResource(R.string.title_name)) },
-                value = state.replace.name,
-                onValueChange = { onAction(ManageReplaceAction.NameTextField(it)) }
-            )
-        }
-        spacer(5.dp)
-        item("replaceFilePicker") {
-            DefaultClickableListItem(
-                onClick = { filePicker.launch() },
-                leadingContent = { Icon(Icons.Rounded.InsertDriveFile, null) },
-                content = { Text(text = state.replaceFile?.name ?: stringResource(R.string.message_no_file)) }
-            )
+                    .animateItem(),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                CustomTextField(
+                    label = stringResource(R.string.item_label),
+                    value = state.replace.label,
+                    onValueChange = { onAction(ManageReplaceAction.LabelTextField(it)) }
+                )
+                CustomTextField(
+                    label = stringResource(R.string.item_name),
+                    value = state.replace.name,
+                    onValueChange = { onAction(ManageReplaceAction.NameTextField(it)) }
+                )
+                DefaultClickableListItem(
+                    onClick = { filePicker.launch() },
+                    leadingContent = { Icon(Icons.Rounded.InsertDriveFile, null) },
+                    content = {
+                        Text(text = state.replaceFile?.name ?: stringResource(R.string.message_no_file))
+                    },
+                    trailingContent = {
+                        if (state.replaceFile != null) {
+                            IconButton(
+                                colors = IconButtonDefaults.iconButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                                    contentColor = MaterialTheme.colorScheme.onErrorContainer
+                                ),
+                                onClick = { onAction(ManageReplaceAction.ReplaceFilePicker(null)) },
+                                content = { Icon(Icons.Rounded.Delete, null) }
+                            )
+                        }
+                    }
+                )
+            }
         }
     }
 }

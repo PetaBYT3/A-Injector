@@ -8,9 +8,10 @@ import com.a.injector.domain.model.RequestDetailModel
 import com.a.injector.domain.model.RequestModel
 import com.a.injector.domain.model.state.RequestState
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 
 interface AccountRepository {
-    val currentAuth: Flow<AuthState>
+    val currentAuth: StateFlow<AuthState>
     fun signIn(email: String, password: String): Flow<Either<String, Unit>>
     fun signUp(email: String, password: String): Flow<Either<String, Unit>>
     fun signGuest(): Flow<Either<String, Unit>>

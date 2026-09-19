@@ -107,7 +107,7 @@ private fun Screen(
         topBar = {
             CustomTopAppBar(
                 navigationClick = { navBackStack.popBackStack() },
-                title = stringResource(R.string.panel),
+                title = stringResource(R.string.title_panel),
                 actions = {
                     CustomIconButton(
                         onClick = { onAction(PanelRoleAction.CleanStorageBottomSheet) },
@@ -131,10 +131,10 @@ private fun Screen(
     CustomBottomSheet(
         visible = state.isCleanStorageBottomSheetVisible,
         onDismiss = { onAction(PanelRoleAction.CleanStorageBottomSheet) },
-        title = stringResource(R.string.panel_clean_cloud_storage),
+        title = stringResource(R.string.action_clean),
         content = {
             item {
-                CustomSurfaceText(text = stringResource(R.string.panel_clean_cloud_storage_msg))
+                CustomSurfaceText(text = stringResource(R.string.message_clean))
             }
         },
         bottomBar = {
@@ -143,7 +143,7 @@ private fun Screen(
                     onAction(PanelRoleAction.CleanStorageBottomSheet)
                     onAction(PanelRoleAction.CleanStorageButton)
                 },
-                text = stringResource(R.string.panel_clean_cloud_storage_accept)
+                text = stringResource(R.string.action_confirm)
             )
         }
     )
@@ -151,7 +151,7 @@ private fun Screen(
     CustomBottomSheet(
         visible = state.isGrantRequestBottomSheetVisible,
         onDismiss = { onAction(PanelRoleAction.DismissGrantRequestBottomSheet) },
-        title = stringResource(R.string.panel_grant_request),
+        title = stringResource(R.string.action_grant_permission),
         content = {
             item {
                 DefaultListItem(
@@ -166,7 +166,7 @@ private fun Screen(
                     onAction(PanelRoleAction.DismissGrantRequestBottomSheet)
                     onAction(PanelRoleAction.GrantRequestButton)
                 },
-                text = stringResource(R.string.panel_grant_request_accept)
+                text = stringResource(R.string.action_confirm)
             )
         }
     )
@@ -174,7 +174,7 @@ private fun Screen(
     CustomBottomSheet(
         visible = state.isDetachProfileBottomSheetVisible,
         onDismiss = { onAction(PanelRoleAction.DismissDetachProfileBottomSheet) },
-        title = stringResource(R.string.panel_detach_contributor),
+        title = stringResource(R.string.action_detach_permission),
         content = {
             item {
                 DefaultListItem(
@@ -189,7 +189,7 @@ private fun Screen(
                     onAction(PanelRoleAction.DismissDetachProfileBottomSheet)
                     onAction(PanelRoleAction.DetachProfileButton)
                 },
-                text = stringResource(R.string.panel_detach_contributor_accept),
+                text = stringResource(R.string.action_confirm),
                 isError = true
             )
         }
@@ -203,12 +203,8 @@ private fun Content(
     onAction: (PanelRoleAction) -> Unit
 ) {
     val scope = rememberCoroutineScope()
-    val tabList = listOf(
-        "Pending Request",
-        Role.Contributor.name
-    )
     val pagerState = rememberPagerState(
-        pageCount = { tabList.size }
+        pageCount = { panelPermissionItems.size }
     )
     Column(
         modifier = modifier,
@@ -221,13 +217,12 @@ private fun Content(
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             itemsIndexed(
-                items = tabList
-            ) { index, tab ->
+                items = panelPermissionItems
+            ) { index, staticModel ->
                 FilterChip(
                     selected = pagerState.currentPage == index,
                     onClick = { scope.launch { pagerState.animateScrollToPage(index) } },
-                    contentPadding = PaddingValues(all = 0.dp),
-                    label = { Text(text = tab) }
+                    label = { Text(text = stringResource(staticModel.contentTextResId)) }
                 )
             }
         }
@@ -285,7 +280,7 @@ private fun PendingRequestPager(
                     CustomCenterTextMessage(
                         modifier = Modifier
                             .animateItem(),
-                        text = stringResource(R.string.title_empty)
+                        text = stringResource(R.string.item_empty)
                     )
                 }
             }
@@ -306,7 +301,7 @@ private fun PendingRequestPager(
                                 onClick = {
                                     onAction(PanelRoleAction.ShowGrantRequestBottomSheet(requestDetail))
                                 },
-                                text = stringResource(R.string.panel_grant_request)
+                                text = stringResource(R.string.action_grant_permission)
                             )
                         }
                     )
@@ -342,7 +337,7 @@ private fun ContributorPager(
                     CustomCenterTextMessage(
                         modifier = Modifier
                             .animateItem(),
-                        text = stringResource(R.string.title_empty)
+                        text = stringResource(R.string.item_empty)
                     )
                 }
             }
@@ -363,7 +358,7 @@ private fun ContributorPager(
                                 onClick = {
                                     onAction(PanelRoleAction.ShowDetachProfileBottomSheet(grantedRequest))
                                 },
-                                text = stringResource(R.string.panel_detach_contributor),
+                                text = stringResource(R.string.action_detach_permission),
                                 isError = true
                             )
                         }

@@ -43,6 +43,7 @@ import com.a.injector.presentation.component.DefaultListItem
 import com.a.injector.presentation.component.ErrorListItem
 import com.a.injector.presentation.component.PrimaryListItem
 import com.a.injector.presentation.util.CustomCenterCircularWavyProgressIndicator
+import com.a.injector.presentation.util.CustomCenterTextMessage
 import com.a.injector.presentation.util.CustomTextListTitle
 import com.a.injector.presentation.util.CustomTopAppBar
 import com.a.injector.presentation.util.spacer
@@ -83,7 +84,7 @@ private fun Screen(
         contentWindowInsets = WindowInsets.statusBars,
         topBar = {
             CustomTopAppBar(
-                title = stringResource(R.string.home)
+                title = stringResource(R.string.title_home)
             )
         },
         content = { innerPadding ->
@@ -118,22 +119,22 @@ private fun Content(
                 verticalArrangement = Arrangement.spacedBy(2.5.dp)
             ) {
                 PrimaryListItem(
-                    overlineContent = { Text(text = stringResource(R.string.home_command_service)) },
+                    overlineContent = { Text(text = stringResource(R.string.item_command_service)) },
                     content = { Text(text = state.commandService.name.name) },
                     supportingContent = {
                         val supportingText = when (state.commandService.name) {
                             CommandService.Shizuku -> {
                                 if (state.commandService.isRunning) {
-                                    stringResource(R.string.home_shizuku_running)
+                                    stringResource(R.string.item_shizuku_true)
                                 } else {
-                                    stringResource(R.string.home_shizuku_inactive)
+                                    stringResource(R.string.item_shizuku_false)
                                 }
                             }
                             CommandService.Superuser -> {
                                 if (state.commandService.isRunning) {
-                                    stringResource(R.string.home_superuser_granted)
+                                    stringResource(R.string.item_superuser_true)
                                 } else {
-                                    stringResource(R.string.message_superuser_denied)
+                                    stringResource(R.string.item_superuser_false)
                                 }
                             }
                         }
@@ -187,7 +188,7 @@ private fun Content(
             CustomTextListTitle(
                 modifier = Modifier
                     .animateItem(),
-                text = stringResource(R.string.home_about_developer_title)
+                text = stringResource(R.string.item_about_developer)
             )
         }
         itemsIndexed(
@@ -214,7 +215,7 @@ private fun Content(
             CustomTextListTitle(
                 modifier = Modifier
                     .animateItem(),
-                text = stringResource(R.string.home_top_script_contributor)
+                text = stringResource(R.string.item_top_contributor)
             )
         }
         when {
@@ -235,6 +236,15 @@ private fun Content(
                     )
                 }
             }
+            state.highestContributionProfile.isEmpty() -> {
+                item("isHighestContributionProfileEmpty") {
+                    CustomCenterTextMessage(
+                        modifier = Modifier
+                            .animateItem(),
+                        text = stringResource(R.string.item_empty)
+                    )
+                }
+            }
             else -> {
                 itemsIndexed(
                     items = state.highestContributionProfile,
@@ -248,8 +258,7 @@ private fun Content(
                         content = { Text(text = profileModel.username) },
                         supportingContent = {
                             Text(
-                                text = "${profileModel.contribution} " +
-                                        stringResource(R.string.home_total_files_uploaded)
+                                text = "${profileModel.contribution} ${stringResource(R.string.item_files_uploaded)}"
                             )
                         }
                     )

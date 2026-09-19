@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="message_delete_hero">
+        This action will permanently delete hero and all of its skin, replaces data and files
+    </string>
+
+    <string name="message_delete_skin">
+        This action will permanently delete skin and all of its replaces data and files
+    </string>
+
+    <string name="message_delete_replace">
+        This action will permanently delete this replace data and file
+    </string>
+
+    <string name="message_clean">
+        This action will perform file deletion all orphan file on cloud storage
+    </string>
+
+    <string name="message_sign_out">
+        Are your sure you want to sign out ?
+    </string>
+
     <string name="message_credential_invalid">Email or password incorrect</string>
     <string name="message_email_invalid">Email invalid</string>
     <string name="message_email_unverified">Email not verified</string>
@@ -16,8 +36,6 @@
     <string name="message_superuser_denied">Cannot perform action, cause superuser access denied</string>
 
     <string name="message_no_data">Data has been does not exist or has been deleted</string>
-
-    <string name="message_delete_hero">This hero will be permanently deleted and all of its skin and script data</string>
 
     <string name="message_no_file">No file picked</string>
 </resources>

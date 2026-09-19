@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_get_started">Get Started</string>
+
+    <string name="action_sign_in">Sign In</string>
+    <string name="action_sign_up">Sign Up</string>
+    <string name="action_sign_guest">Guest</string>
+    <string name="action_sign_out">Sign Out</string>
+
+    <string name="action_show_password">Show Password</string>
+    <string name="action_hide_password">Hide Password</string>
+
+    <string name="action_action">Action</string>
+    <string name="action_install">Install</string>
+    <string name="action_add">Add</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_clear">Clear</string>
+    <string name="action_clean">Clean</string>
+    <string name="action_confirm">Confirm</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_grant_permission">Grant Permission</string>
+    <string name="action_detach_permission">Detach Permission</string>
+
+    <string name="action_search">Search Here…</string>
+</resources>

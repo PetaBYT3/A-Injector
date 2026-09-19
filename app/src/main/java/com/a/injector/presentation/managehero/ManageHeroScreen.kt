@@ -2,26 +2,15 @@ package com.a.injector.presentation.managehero
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Save
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -36,15 +25,17 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
 import com.a.injector.presentation.navigation.popBackStack
 import com.a.injector.presentation.util.CustomBottomSheet
+import com.a.injector.presentation.util.CustomButton
 import com.a.injector.presentation.util.CustomCenterCircularWavyProgressIndicator
 import com.a.injector.presentation.util.CustomFloatingActionButton
 import com.a.injector.presentation.util.CustomFloatingActionToolBar
 import com.a.injector.presentation.util.CustomIconButton
 import com.a.injector.presentation.util.CustomSlideUpAnimatedVisibility
+import com.a.injector.presentation.util.CustomSurfaceText
+import com.a.injector.presentation.util.CustomTextField
 import com.a.injector.presentation.util.CustomTextListTitle
 import com.a.injector.presentation.util.CustomTopAppBar
 import com.a.injector.presentation.util.SnackBarEffectLauncher
-import com.a.injector.presentation.util.spacer
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -100,7 +91,11 @@ private fun Screen(
         topBar = {
             CustomTopAppBar(
                 navigationClick = { navBackStack.popBackStack() },
-                title = if (state.isOnEdit) stringResource(R.string.title_edit) else stringResource(R.string.title_add)
+                title = if (state.isOnEdit) {
+                    stringResource(R.string.action_edit)
+                } else {
+                    stringResource(R.string.action_add)
+                }
             )
         },
         content = { innerPadding ->
@@ -145,23 +140,17 @@ private fun Screen(
         title = stringResource(R.string.title_delete),
         content = {
             item {
-                Text(
-                    text = stringResource(R.string.message_delete_hero),
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                CustomSurfaceText(text = stringResource(R.string.message_delete_hero))
             }
         },
         bottomBar = {
-            Button(
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.error,
-                    contentColor = MaterialTheme.colorScheme.onError
-                ),
+            CustomButton(
                 onClick = {
                     onAction(ManageHeroAction.DeleteBottomSheet)
                     onAction(ManageHeroAction.DeleteButton)
                 },
-                content = { Text(text = stringResource(R.string.title_delete)) }
+                text = stringResource(R.string.action_confirm),
+                isError = true
             )
         }
     )
@@ -189,14 +178,17 @@ private fun Content(
             return@LazyColumn
         }
         item("heroTitle") {
-            CustomTextListTitle(text = stringResource(R.string.title_hero))
-        }
-        item("nameTextField") {
-            TextField(
+            CustomTextListTitle(
                 modifier = Modifier
-                    .fillMaxWidth()
                     .animateItem(),
-                placeholder = { Text(text = stringResource(R.string.title_name)) },
+                text = stringResource(R.string.item_hero)
+            )
+        }
+        item("heroItem") {
+            CustomTextField(
+                modifier = Modifier
+                    .animateItem(),
+                label = stringResource(R.string.item_name),
                 value = state.hero.name,
                 onValueChange = { onAction(ManageHeroAction.HeroNameTextField(it)) }
             )

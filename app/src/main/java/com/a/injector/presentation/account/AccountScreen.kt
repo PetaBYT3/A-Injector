@@ -91,7 +91,7 @@ private fun Screen(
         contentWindowInsets = WindowInsets.statusBars,
         topBar = {
             CustomTopAppBar(
-                title = stringResource(R.string.account)
+                title = stringResource(R.string.title_account)
             )
         },
         content = { innerPadding ->
@@ -109,10 +109,10 @@ private fun Screen(
     CustomBottomSheet(
         visible = state.isSignOutBottomSheetVisible,
         onDismiss = { onAction(AccountAction.SignOutBottomSheet) },
-        title = stringResource(R.string.account_sign_out),
+        title = stringResource(R.string.action_sign_out),
         content = {
             item {
-                CustomSurfaceText(text = stringResource(R.string.account_sign_out_msg))
+                CustomSurfaceText(text = stringResource(R.string.message_sign_out))
             }
         },
         bottomBar = {
@@ -121,7 +121,7 @@ private fun Screen(
                     onAction(AccountAction.SignOutBottomSheet)
                     onAction(AccountAction.SignOutButton)
                 },
-                text = stringResource(R.string.account_sign_out_confirm),
+                text = stringResource(R.string.action_confirm),
                 isError = true
             )
         }
@@ -165,9 +165,9 @@ private fun Content(
                         modifier = Modifier
                             .animateItem(),
                         onClick = { navBackStack.add(NavigationRoute.ManageRoleScreen) },
-                        content = { Text(text = stringResource(R.string.account_administrator_panel)) },
+                        content = { Text(text = stringResource(R.string.item_admin_panel)) },
                         supportingContent = {
-                            Text(text = stringResource(R.string.account_administrator_panel_desc))
+                            Text(text = stringResource(R.string.item_admin_panel_desc))
                         }
                     )
                 }
@@ -178,7 +178,7 @@ private fun Content(
                 CustomTextListTitle(
                     modifier = Modifier
                         .animateItem(),
-                    text = stringResource(R.string.account_profile_title)
+                    text = stringResource(R.string.item_profile)
                 )
             }
             itemsIndexed(
@@ -193,6 +193,7 @@ private fun Content(
                     content = { Text(text = stringResource(staticModel.contentTextResId)) },
                     supportingContent = {
                         val supportingText = when (staticModel.id) {
+                            ProfileAccountId.Email -> state.userInfo?.email ?: ""
                             ProfileAccountId.Username -> state.profile.username
                             ProfileAccountId.Contribution -> state.profile.contribution.toString()
                             ProfileAccountId.Role -> state.profile.role.name
@@ -222,7 +223,7 @@ private fun Content(
                 CustomTextListTitle(
                     modifier = Modifier
                         .animateItem(),
-                    text = stringResource(R.string.account_manage_title)
+                    text = stringResource(R.string.item_manage)
                 )
             }
             itemsIndexed(

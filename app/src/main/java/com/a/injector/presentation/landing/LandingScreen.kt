@@ -127,19 +127,19 @@ private fun Screen(
                             modifier = Modifier
                                 .fillMaxWidth(),
                             onClick = { navBackStack.add(NavigationRoute.SignInScreen) },
-                            content = { Text(text = stringResource(R.string.title_sign_in)) }
+                            content = { Text(text = stringResource(R.string.action_sign_in)) }
                         )
                         FilledTonalButton(
                             modifier = Modifier
                                 .fillMaxWidth(),
                             onClick = { navBackStack.add(NavigationRoute.SignUpScreen) },
-                            content = { Text(text = stringResource(R.string.title_sign_up)) }
+                            content = { Text(text = stringResource(R.string.action_sign_up)) }
                         )
                         CustomTonalButton(
                             modifier = Modifier
                                 .fillMaxWidth(),
                             onClick = { onAction(LandingAction.ButtonSignGuest) },
-                            text = stringResource(R.string.title_guest),
+                            text = stringResource(R.string.action_sign_guest),
                             isLoading = state.isGuestButtonLoading
                         )
                     }
