@@ -29,7 +29,6 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import org.koin.core.annotation.Single
-import kotlin.time.Duration.Companion.milliseconds
 import kotlin.uuid.Uuid
 
 @Single
@@ -48,7 +47,7 @@ class ProfileApiImpl(
         return channel.postgresChangeFlow<PostgresAction>(
             schema = SupabaseConstanta.SCHEMA,
             filter = { table = SupabaseConstanta.PROFILE_TABLE }
-        ).map(::postgrestActionToUnit).debounce(300.milliseconds).onStart {
+        ).map(::postgrestActionToUnit).debounce(SupabaseConstanta.DEBOUNCE).onStart {
             emit(Unit)
             channel.subscribe()
         }.onCompletion {

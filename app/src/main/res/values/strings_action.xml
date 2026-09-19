@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="action_get_started">Get Started</string>
+    
+    <string name="action_maintenance">Maintenance</string>
+    <string name="action_update">Update</string>
 
     <string name="action_sign_in">Sign In</string>
     <string name="action_sign_up">Sign Up</string>

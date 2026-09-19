@@ -27,7 +27,6 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import org.koin.core.annotation.Single
-import kotlin.time.Duration.Companion.milliseconds
 import kotlin.uuid.Uuid
 
 @Single
@@ -49,7 +48,7 @@ class HeroApiImpl(
                 schema = SupabaseConstanta.SCHEMA,
                 filter = { table = SupabaseConstanta.REPLACE_TABLE }
             )
-        ).map(::postgrestActionToUnit).debounce(300.milliseconds).onStart {
+        ).map(::postgrestActionToUnit).debounce(SupabaseConstanta.DEBOUNCE).onStart {
             emit(Unit)
             channel.subscribe()
         }.onCompletion {
@@ -79,7 +78,7 @@ class HeroApiImpl(
                 schema = SupabaseConstanta.SCHEMA,
                 filter = { table = SupabaseConstanta.REPLACE_TABLE }
             )
-        ).map(::postgrestActionToUnit).debounce(300.milliseconds).onStart {
+        ).map(::postgrestActionToUnit).debounce(SupabaseConstanta.DEBOUNCE).onStart {
             emit(Unit)
             channel.subscribe()
         }.onCompletion {

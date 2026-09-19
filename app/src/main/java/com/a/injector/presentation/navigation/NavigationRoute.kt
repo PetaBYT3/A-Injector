@@ -18,6 +18,9 @@ sealed interface NavigationRoute: NavKey {
     data object SignUpScreen: NavigationRoute, NavKey
 
     @Serializable
+    data object VerifyEmailScreen: NavigationRoute, NavKey
+
+    @Serializable
     data object BottomNavigation: NavigationRoute, NavKey
 
     @Serializable

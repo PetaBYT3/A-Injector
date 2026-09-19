@@ -8,7 +8,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -18,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -34,7 +38,9 @@ import com.a.injector.presentation.navigation.NavigationRoute
 import com.a.injector.presentation.util.CustomBottomSheet
 import com.a.injector.presentation.util.CustomButton
 import com.a.injector.presentation.util.CustomCenterCircularWavyProgressIndicator
+import com.a.injector.presentation.util.CustomIconButton
 import com.a.injector.presentation.util.CustomSurfaceText
+import com.a.injector.presentation.util.CustomTextField
 import com.a.injector.presentation.util.CustomTextListTitle
 import com.a.injector.presentation.util.CustomTopAppBar
 import com.a.injector.presentation.util.SnackBarEffectLauncher
@@ -126,6 +132,30 @@ private fun Screen(
             )
         }
     )
+
+    CustomBottomSheet(
+        visible = state.isUpsertProfileBottomSheetVisible,
+        onDismiss = { onAction(AccountAction.DismissUpsertProfileBottomSheet) },
+        title = stringResource(R.string.title_profile),
+        content = {
+            item {
+                CustomTextField(
+                    label = stringResource(R.string.item_username),
+                    value = state.profileToUpsert.username,
+                    onValueChange = { onAction(AccountAction.UsernameTextField(it)) }
+                )
+            }
+        },
+        bottomBar = {
+            CustomButton(
+                onClick = {
+                    onAction(AccountAction.DismissUpsertProfileBottomSheet)
+                    onAction(AccountAction.UpsertProfileButton)
+                },
+                text = stringResource(R.string.action_confirm)
+            )
+        }
+    )
 }
 
 @Composable
@@ -150,7 +180,7 @@ private fun Content(
             return@LazyColumn
         }
 
-        if (state.isGuestAccount) {
+        if (state.profile == ProfileModel.GUEST) {
             item("guestAccount") {
                 DefaultListItem(
                     modifier = Modifier
@@ -198,24 +228,42 @@ private fun Content(
                             ProfileAccountId.Contribution -> state.profile.contribution.toString()
                             ProfileAccountId.Role -> state.profile.role.name
                         }
-                        Text(text = supportingText)
+                        Text(
+                            text = supportingText,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
                     },
-                    trailingContent = if (staticModel.id == ProfileAccountId.Role && state.profile.role == Role.User) {
-                        {
-                            FilledTonalButton(
-                                onClick = { onAction(AccountAction.RequestContributorButton) },
-                                enabled = state.requestState == RequestState.NotApplied,
-                                content = {
-                                    Text(
-                                        text = when (state.requestState) {
-                                            RequestState.Applied -> "Requested"
-                                            RequestState.NotApplied -> "Apply Contributor"
+                    trailingContent = {
+                        when (staticModel.id) {
+                            ProfileAccountId.Username -> {
+                                CustomIconButton(
+                                    onClick = {
+                                        onAction(AccountAction.ShowUpsertProfileBottomSheet(state.profile))
+                                    },
+                                    content = { Icon(Icons.Rounded.Edit, null) },
+                                    isLoading = state.isUpsertProfileButtonLoading
+                                )
+                            }
+                            ProfileAccountId.Role -> {
+                                if (state.profile.role == Role.User) {
+                                    FilledTonalButton(
+                                        onClick = { onAction(AccountAction.RequestContributorButton) },
+                                        enabled = state.requestState == RequestState.NotApplied,
+                                        content = {
+                                            Text(
+                                                text = when (state.requestState) {
+                                                    RequestState.Applied -> "Requested"
+                                                    RequestState.NotApplied -> "Apply Contributor"
+                                                }
+                                            )
                                         }
                                     )
                                 }
-                            )
+                            }
+                            else -> {}
                         }
-                    } else null
+                    }
                 )
             }
             spacer()

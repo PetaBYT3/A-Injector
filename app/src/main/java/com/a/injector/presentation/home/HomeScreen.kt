@@ -29,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
@@ -255,8 +256,14 @@ private fun Content(
                             .animateItem(),
                         index = index,
                         count = state.highestContributionProfile.size,
-                        content = { Text(text = profileModel.username) },
-                        supportingContent = {
+                        content = {
+                            Text(
+                                text = profileModel.username,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        },
+                        trailingContent = {
                             Text(
                                 text = "${profileModel.contribution} ${stringResource(R.string.item_files_uploaded)}"
                             )

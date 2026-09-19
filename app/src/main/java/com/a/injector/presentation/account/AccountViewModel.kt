@@ -3,7 +3,6 @@ package com.a.injector.presentation.account
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a.injector.data.dto.Role
-import com.a.injector.domain.model.AuthState
 import com.a.injector.domain.model.RequestModel
 import com.a.injector.domain.repository.AccountRepository
 import com.a.injector.domain.repository.NavigationRepository
@@ -12,6 +11,7 @@ import com.a.injector.presentation.util.ScreenEffect
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -32,23 +32,17 @@ class AccountViewModel(
 
     init {
         viewModelScope.launch {
-            accountRepository.currentAuth.collect { authState ->
-                if (authState is AuthState.Authorized) {
-                    _state.update { currentState ->
-                        currentState.copy(
-                            userInfo = authState.userInfo,
-                            profile = authState.profileModel,
-                            isGuestAccount = false,
-                            isProfileLoading = false
-                        )
-                    }
-                } else {
-                    _state.update { currentState ->
-                        currentState.copy(
-                            isGuestAccount = true,
-                            isProfileLoading = false
-                        )
-                    }
+            accountRepository.currentUserInfo.filterNotNull().collect { userInfo ->
+                _state.update { currentState ->
+                    currentState.copy(userInfo = userInfo, isUserInfoLoading = false)
+                }
+            }
+        }
+
+        viewModelScope.launch {
+            accountRepository.currentProfile.collect { profileModel ->
+                _state.update { currentState ->
+                    currentState.copy(profile = profileModel, isProfileLoading = false)
                 }
             }
         }
@@ -64,6 +58,29 @@ class AccountViewModel(
 
     fun onAction(action: AccountAction) {
         when (action) {
+            is AccountAction.ShowUpsertProfileBottomSheet -> {
+                _state.update { currentState ->
+                    currentState.copy(
+                        profileToUpsert = action.profileModel,
+                        isUpsertProfileBottomSheetVisible = true
+                    )
+                }
+            }
+            AccountAction.DismissUpsertProfileBottomSheet -> {
+                _state.update { currentState ->
+                    currentState.copy(isUpsertProfileBottomSheetVisible = false)
+                }
+            }
+            is AccountAction.UsernameTextField -> {
+                _state.update { currentState ->
+                    currentState.copy(
+                        profileToUpsert = currentState.profileToUpsert.copy(username = action.username)
+                    )
+                }
+            }
+            AccountAction.UpsertProfileButton -> {
+                upsertProfileButton()
+            }
             AccountAction.RequestContributorButton -> {
                 requestContributorButton()
             }
@@ -74,6 +91,22 @@ class AccountViewModel(
             }
             AccountAction.SignOutButton -> {
                 signOutButton()
+            }
+        }
+    }
+
+    private fun upsertProfileButton() {
+        viewModelScope.launch {
+            accountRepository.upsertProfile(
+                profileModel = _state.value.profileToUpsert
+            ).onStart {
+                _state.update { it.copy(isUpsertProfileButtonLoading = true) }
+            }.onCompletion {
+                _state.update { it.copy(isUpsertProfileButtonLoading = false) }
+            }.collect { either ->
+                either.onLeft { error ->
+                    _effect.send(ScreenEffect.ShowSnackBar(error))
+                }
             }
         }
     }

@@ -15,5 +15,12 @@ data class ProfileModel(
             role = Role.User,
             contribution = 0
         )
+
+        val GUEST = ProfileModel(
+            id = "Guest",
+            username = "Guest",
+            role = Role.User,
+            contribution = 0
+        )
     }
 }

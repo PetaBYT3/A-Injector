@@ -4,6 +4,7 @@ import android.content.Context
 import arrow.core.Either
 import com.a.injector.R
 import com.a.injector.data.dto.Bucket
+import com.a.injector.data.mapper.VersionMapper
 import com.a.injector.data.mapper.toHeroDto
 import com.a.injector.data.mapper.toHeroModel
 import com.a.injector.data.mapper.toHeroWithSkinModel
@@ -17,11 +18,13 @@ import com.a.injector.data.remote.ProfileApi
 import com.a.injector.data.remote.ReplaceApi
 import com.a.injector.data.remote.SkinApi
 import com.a.injector.data.remote.StorageApi
+import com.a.injector.data.remote.VersionApi
 import com.a.injector.data.util.toMessage
 import com.a.injector.domain.model.HeroDetailModel
 import com.a.injector.domain.model.HeroModel
 import com.a.injector.domain.model.ReplaceModel
 import com.a.injector.domain.model.SkinModel
+import com.a.injector.domain.model.VersionModel
 import com.a.injector.domain.repository.DatabaseRepository
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.readBytes
@@ -39,6 +42,7 @@ import kotlin.time.Clock
 @Single
 class DatabaseRepositoryImpl(
     private val context: Context,
+    private val versionApi: VersionApi,
     private val authApi: AuthApi,
     private val profileApi: ProfileApi,
     private val heroApi: HeroApi,
@@ -46,6 +50,19 @@ class DatabaseRepositoryImpl(
     private val replaceApi: ReplaceApi,
     private val storageApi: StorageApi
 ): DatabaseRepository {
+
+    override fun getVersion(): Flow<Either<String, VersionModel>> {
+        return versionApi.getVersion().map { versionDto ->
+            if (versionDto != null) {
+                Either.Right(VersionMapper.toModel(versionDto))
+            } else {
+                Either.Left(context.getString(R.string.message_no_data))
+            }
+        }.catch { throwable ->
+            emit(Either.Left(throwable.toMessage(context)))
+        }
+    }
+
     override fun getHeroDetails(): Flow<Either<String, List<HeroDetailModel>>> {
         return heroApi.getHeroDetails().map { heroSkinReplaceDtos ->
             val heroSkinReplaceModels = heroSkinReplaceDtos.map { it.toHeroWithSkinModel() }

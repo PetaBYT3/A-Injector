@@ -4,6 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import com.a.injector.data.system.ShizukuCommandService
@@ -15,7 +19,6 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
-    private val viewModel: MainViewModel by inject()
     private val directoryRepository: DirectoryRepository by inject()
 
     private val shizukuCommandService: ShizukuCommandService by inject()
@@ -31,10 +34,15 @@ class MainActivity : ComponentActivity() {
         }
 
         enableEdgeToEdge()
-        installSplashScreen().setKeepOnScreenCondition { viewModel.isSplashScreenVisible.value }
+        installSplashScreen()
         setContent {
             AInjectorTheme {
-                NavigationScreen()
+                Surface(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    color = MaterialTheme.colorScheme.surface,
+                    content = { NavigationScreen() }
+                )
             }
         }
     }

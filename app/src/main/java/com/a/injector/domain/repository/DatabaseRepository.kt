@@ -5,10 +5,13 @@ import com.a.injector.domain.model.HeroDetailModel
 import com.a.injector.domain.model.HeroModel
 import com.a.injector.domain.model.ReplaceModel
 import com.a.injector.domain.model.SkinModel
+import com.a.injector.domain.model.VersionModel
 import io.github.vinceglb.filekit.PlatformFile
 import kotlinx.coroutines.flow.Flow
 
 interface DatabaseRepository {
+    fun getVersion(): Flow<Either<String, VersionModel>>
+
     fun getHeroDetails(): Flow<Either<String, List<HeroDetailModel>>>
     fun getHeroDetail(id: String): Flow<Either<String, HeroDetailModel>>
     fun getHeroes(): Flow<Either<String, List<HeroModel>>>

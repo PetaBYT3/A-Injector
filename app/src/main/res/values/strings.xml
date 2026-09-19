@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">A Injector</string>
     <string name="developer_name">Andrea Hussanini</string>
+
+    <string name="lorem_ipsum">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas facilisis erat sapien, a suscipit dolor commodo nec. Proin iaculis accumsan diam, in posuere dui tincidunt et. Vestibulum nec metus dignissim, rhoncus sem vitae, imperdiet justo.
+    </string>
 </resources>

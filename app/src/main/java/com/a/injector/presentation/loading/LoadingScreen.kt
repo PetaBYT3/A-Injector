@@ -7,21 +7,36 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
-import androidx.navigation3.runtime.rememberNavBackStack
+import com.a.injector.R
+import com.a.injector.presentation.util.CustomSurfaceText
+import com.a.injector.presentation.util.CustomUndismissableBottomSheet
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun LoadingScreen(
-    navBackStack: NavBackStack<NavKey>
+    navBackStack: NavBackStack<NavKey>,
+    viewModel: LoadingViewModel = koinViewModel()
 ) {
-    BackHandler(enabled = false) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
-    }
+    Screen(
+        state = state
+    )
+}
 
+@Composable
+private fun Screen(
+    state: LoadingState
+) {
+    BackHandler(enabled = true) {}
     Scaffold(
         content = { innerPadding ->
             Box(
@@ -34,12 +49,32 @@ fun LoadingScreen(
             }
         }
     )
+
+    CustomUndismissableBottomSheet(
+        visible = state.isMaintenanceBottomSheetVisible,
+        title = stringResource(R.string.action_maintenance),
+        content = {
+            item {
+                CustomSurfaceText(text = stringResource(R.string.lorem_ipsum))
+            }
+        },
+    )
+
+    CustomUndismissableBottomSheet(
+        visible = state.isUpdateBottomSheetVisible,
+        title = stringResource(R.string.action_update),
+        content = {
+            item {
+                CustomSurfaceText(text = stringResource(R.string.lorem_ipsum))
+            }
+        }
+    )
 }
 
 @Composable
 @Preview
 private fun Preview() {
-    LoadingScreen(
-        navBackStack = rememberNavBackStack()
+    Screen(
+        state = LoadingState()
     )
 }

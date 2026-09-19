@@ -3,7 +3,6 @@ package com.a.injector.presentation.script
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a.injector.data.dto.Role
-import com.a.injector.domain.model.AuthState
 import com.a.injector.domain.repository.AccountRepository
 import com.a.injector.domain.repository.DatabaseRepository
 import com.a.injector.presentation.util.ScreenEffect
@@ -28,13 +27,11 @@ class ScriptViewModel(
 
     init {
         viewModelScope.launch {
-            accountRepository.currentAuth.collect { authState ->
-                if (authState is AuthState.Authorized) {
-                    _state.update { currentState ->
-                        currentState.copy(
-                            isModifyEnabled = authState.profileModel.role != Role.User
-                        )
-                    }
+            accountRepository.currentProfile.collect { profileModel ->
+                _state.update { currentState ->
+                    currentState.copy(
+                        isModifyEnabled = profileModel.role != Role.User
+                    )
                 }
             }
         }

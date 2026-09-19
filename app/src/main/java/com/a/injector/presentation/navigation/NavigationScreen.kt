@@ -31,6 +31,7 @@ import com.a.injector.presentation.manageskin.ManageSkinScreen
 import com.a.injector.presentation.panel.PanelScreen
 import com.a.injector.presentation.signin.SignInScreen
 import com.a.injector.presentation.signup.SignUpScreen
+import com.a.injector.presentation.verifyemail.VerifyEmailScreen
 import org.koin.compose.koinInject
 
 @Composable
@@ -94,6 +95,13 @@ fun NavigationScreen(
                 is NavigationRoute.SignUpScreen -> {
                     NavEntry(navKey) {
                         SignUpScreen(
+                            navBackStack = navBackStack
+                        )
+                    }
+                }
+                is NavigationRoute.VerifyEmailScreen -> {
+                    NavEntry(navKey) {
+                        VerifyEmailScreen(
                             navBackStack = navBackStack
                         )
                     }

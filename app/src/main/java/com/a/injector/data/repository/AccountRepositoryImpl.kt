@@ -15,12 +15,13 @@ import com.a.injector.data.remote.AuthApi
 import com.a.injector.data.remote.ProfileApi
 import com.a.injector.data.remote.RequestApi
 import com.a.injector.data.util.toMessage
-import com.a.injector.domain.model.AuthState
 import com.a.injector.domain.model.ProfileModel
 import com.a.injector.domain.model.RequestDetailModel
 import com.a.injector.domain.model.RequestModel
+import com.a.injector.domain.model.state.AuthResult
 import com.a.injector.domain.model.state.RequestState
 import com.a.injector.domain.repository.AccountRepository
+import io.github.jan.supabase.auth.user.UserInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -50,23 +51,34 @@ class AccountRepositoryImpl(
 ): AccountRepository {
     private val repositoryScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    override val currentAuth: StateFlow<AuthState> = authApi.currentAuth.flatMapLatest { userInfo ->
-        when {
-            userInfo == null -> flowOf(AuthState.Unauthorized)
-            userInfo.isAnonymous == true -> flowOf(AuthState.Guest)
-            else -> {
-                profileApi.getProfile(userInfo.id).map { profileDto ->
-                    AuthState.Authorized(
-                        userInfo = userInfo,
-                        profileModel = profileDto?.toProfileModel() ?: ProfileModel.EMPTY
-                    )
-                }
-            }
+    override val authState: StateFlow<AuthResult?> = authApi.currentAuth.flatMapLatest { userInfo ->
+        val authResult = when {
+            userInfo == null -> AuthResult.Unauthenticated
+            userInfo.emailConfirmedAt == null -> AuthResult.EmailNotVerified
+            else -> AuthResult.Authenticated
+        }
+        flowOf(authResult)
+    }.stateIn(
+        scope = repositoryScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = null
+    )
+    override val currentUserInfo: StateFlow<UserInfo?> = authApi.currentAuth.stateIn(
+        scope = repositoryScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = null
+    )
+
+    override val currentProfile: StateFlow<ProfileModel> = authApi.currentAuth.flatMapLatest { userInfo ->
+        when (userInfo?.isAnonymous) {
+            false -> profileApi.getProfile(userInfo.id).map { it?.toProfileModel() ?: ProfileModel.EMPTY }
+            true -> flowOf(ProfileModel.GUEST)
+            else -> flowOf(ProfileModel.EMPTY)
         }
     }.stateIn(
         scope = repositoryScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = AuthState.Unauthorized
+        initialValue = ProfileModel.EMPTY
     )
 
     override fun signIn(email: String, password: String): Flow<Either<String, Unit>> {
