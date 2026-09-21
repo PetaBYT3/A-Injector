@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Person4
 import androidx.compose.material.icons.rounded.Save
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -187,6 +188,7 @@ private fun Content(
             DefaultListItem(
                 modifier = Modifier
                     .animateItem(),
+                leadingContent = { Icon(Icons.Rounded.Person4, null) },
                 content = { Text(text = state.hero.name) }
             )
         }

@@ -1,6 +1,6 @@
 package com.a.injector.domain.model
 
-import com.a.injector.data.local.CommandService
+import com.a.injector.domain.model.state.CommandService
 
 data class CommandServiceModel(
     val name: CommandService,

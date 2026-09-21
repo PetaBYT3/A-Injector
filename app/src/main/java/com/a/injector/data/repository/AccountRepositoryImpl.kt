@@ -54,16 +54,16 @@ class AccountRepositoryImpl(
     override val authState: StateFlow<AuthResult?> = authApi.currentAuth.flatMapLatest { userInfo ->
         val authResult = when {
             userInfo == null -> AuthResult.Unauthenticated
-            userInfo.emailConfirmedAt == null -> AuthResult.EmailNotVerified
             else -> AuthResult.Authenticated
         }
         flowOf(authResult)
-    }.stateIn(
+    }.flowOn(Dispatchers.IO).stateIn(
         scope = repositoryScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = null
     )
-    override val currentUserInfo: StateFlow<UserInfo?> = authApi.currentAuth.stateIn(
+
+    override val currentUserInfo: StateFlow<UserInfo?> = authApi.currentAuth.flowOn(Dispatchers.IO).stateIn(
         scope = repositoryScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = null
@@ -75,7 +75,7 @@ class AccountRepositoryImpl(
             true -> flowOf(ProfileModel.GUEST)
             else -> flowOf(ProfileModel.EMPTY)
         }
-    }.stateIn(
+    }.flowOn(Dispatchers.IO).stateIn(
         scope = repositoryScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = ProfileModel.EMPTY
@@ -132,6 +132,17 @@ class AccountRepositoryImpl(
         }.flowOn(Dispatchers.IO)
     }
 
+    override fun sendResetPassword(email: String): Flow<Either<String, String>> {
+        return flow<Either<String, String>> {
+            authApi.sendResetPassword(
+                email = email
+            )
+            emit(Either.Right(context.getString(R.string.title_success)))
+        }.catch { throwable ->
+            emit(Either.Left(throwable.toMessage(context)))
+        }.flowOn(Dispatchers.IO)
+    }
+
     override fun getProfileByHighestContribution(): Flow<Either<String, List<ProfileModel>>> {
         return profileApi.getProfileByHighestContribution().map { profileDtos ->
             val profileModels = profileDtos.map { it.toProfileModel() }
@@ -161,7 +172,7 @@ class AccountRepositoryImpl(
             } else {
                 flowOf(RequestState.NotApplied)
             }
-        }
+        }.flowOn(Dispatchers.IO)
     }
 
     override fun getRequestDetails(): Flow<Either<String, List<RequestDetailModel>>> {

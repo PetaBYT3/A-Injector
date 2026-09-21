@@ -43,6 +43,7 @@ class ManageReplaceViewModel(
                         currentState.copy(hero = heroModel, isHeroLoading = false)
                     }
                 }.onLeft { error ->
+                    navigationRepository.popBackStack()
                     _state.update { currentState ->
                         currentState.copy(isHeroError = error, isHeroLoading = false)
                     }
@@ -59,6 +60,7 @@ class ManageReplaceViewModel(
                         currentState.copy(skin = skinModel, isSkinLoading = false)
                     }
                 }.onLeft { error ->
+                    navigationRepository.popBackStack()
                     _state.update { currentState ->
                         currentState.copy(isSkinError = error, isSkinLoading = false)
                     }
@@ -76,6 +78,7 @@ class ManageReplaceViewModel(
                             currentState.copy(replace = replaceModel, isReplaceLoading = false)
                         }
                     }.onLeft { error ->
+                        navigationRepository.popBackStack()
                         _state.update { currentState ->
                             currentState.copy(isReplaceError = error, isReplaceLoading = false)
                         }

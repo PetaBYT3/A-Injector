@@ -1,7 +1,13 @@
+@file:OptIn(ExperimentalLayoutApi::class)
+
 package com.a.injector.presentation.bottomnavigation
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
@@ -31,6 +37,7 @@ fun BottomNavigation(
     navBackStack: NavBackStack<NavKey>
 ) {
     val scope = rememberCoroutineScope()
+    val isKeyboardVisible = WindowInsets.isImeVisible
 
     val bottomNavigationItems = listOf(
         Pair(
@@ -77,26 +84,30 @@ fun BottomNavigation(
                 }
             }
         }
-        NavigationBar(
-            content = {
-                bottomNavigationItems.fastForEachIndexed { index, pair ->
-                    NavigationBarItem(
-                        selected = pagerState.currentPage == index,
-                        onClick = {
-                            scope.launch {
-                                pagerState.animateScrollToPage(index)
+        AnimatedVisibility(
+            visible = !isKeyboardVisible
+        ) {
+            NavigationBar(
+                content = {
+                    bottomNavigationItems.fastForEachIndexed { index, pair ->
+                        NavigationBarItem(
+                            selected = pagerState.currentPage == index,
+                            onClick = {
+                                scope.launch {
+                                    pagerState.animateScrollToPage(index)
+                                }
+                            },
+                            icon = {
+                                Icon(
+                                    imageVector = pair.first,
+                                    contentDescription = null
+                                )
                             }
-                        },
-                        icon = {
-                            Icon(
-                                imageVector = pair.first,
-                                contentDescription = null
-                            )
-                        }
-                    )
+                        )
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 }
 

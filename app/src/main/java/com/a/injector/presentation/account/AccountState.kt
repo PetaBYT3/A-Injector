@@ -16,6 +16,12 @@ data class AccountState(
     val profileToUpsert: ProfileModel = ProfileModel.EMPTY,
     val isUpsertProfileButtonLoading: Boolean = false,
 
+    val isCleanStorageBottomSheetVisible: Boolean = false,
+    val isCleanStorageButtonLoading: Boolean = false,
+
+    val isChangePasswordBottomSheetVisible: Boolean = false,
+    val isChangePasswordButtonLoading: Boolean = false,
+
     val isSignOutBottomSheetVisible: Boolean = false,
     val isSingOutButtonLoading: Boolean = false
 ) {

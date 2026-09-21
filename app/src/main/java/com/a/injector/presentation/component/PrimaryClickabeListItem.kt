@@ -22,6 +22,7 @@ fun PrimaryClickableListItem(
         modifier = modifier,
         colors = ListItemDefaults.colors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
+            leadingContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
             overlineContentColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
             supportingContentColor = MaterialTheme.colorScheme.primary,

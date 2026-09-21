@@ -1,4 +1,4 @@
-package com.a.injector.presentation.panel
+package com.a.injector.presentation.managerole
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,10 +11,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -41,8 +38,6 @@ import com.a.injector.presentation.util.CustomBottomSheet
 import com.a.injector.presentation.util.CustomButton
 import com.a.injector.presentation.util.CustomCenterCircularWavyProgressIndicator
 import com.a.injector.presentation.util.CustomCenterTextMessage
-import com.a.injector.presentation.util.CustomIconButton
-import com.a.injector.presentation.util.CustomSurfaceText
 import com.a.injector.presentation.util.CustomTonalButton
 import com.a.injector.presentation.util.CustomTopAppBar
 import com.a.injector.presentation.util.SnackBarEffectLauncher
@@ -50,9 +45,9 @@ import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun PanelScreen(
+fun ManageRoleScreen(
     navBackStack: NavBackStack<NavKey>,
-    viewModel: PanelViewModel = koinViewModel()
+    viewModel: ManageRoleViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val onAction = viewModel::onAction
@@ -76,7 +71,7 @@ fun PanelScreen(
 private fun Preview() {
     Screen(
         navBackStack = rememberNavBackStack(),
-        state = PanelState(
+        state = ManageRoleState(
             isRequestDetailsLoading = false,
             requestDetails = listOf(
                 RequestDetailModel(
@@ -99,22 +94,15 @@ private fun Preview() {
 @Composable
 private fun Screen(
     navBackStack: NavBackStack<NavKey>,
-    state: PanelState,
-    onAction: (PanelRoleAction) -> Unit,
+    state: ManageRoleState,
+    onAction: (ManageRoleAction) -> Unit,
     snackBarHostState: SnackbarHostState
 ) {
     Scaffold(
         topBar = {
             CustomTopAppBar(
                 navigationClick = { navBackStack.popBackStack() },
-                title = stringResource(R.string.title_panel),
-                actions = {
-                    CustomIconButton(
-                        onClick = { onAction(PanelRoleAction.CleanStorageBottomSheet) },
-                        content = { Icon(Icons.Rounded.Delete, null) },
-                        isLoading = state.isButtonCleanStorageLoading
-                    )
-                }
+                title = stringResource(R.string.title_panel)
             )
         },
         content = { innerPadding ->
@@ -129,28 +117,8 @@ private fun Screen(
     )
 
     CustomBottomSheet(
-        visible = state.isCleanStorageBottomSheetVisible,
-        onDismiss = { onAction(PanelRoleAction.CleanStorageBottomSheet) },
-        title = stringResource(R.string.action_clean),
-        content = {
-            item {
-                CustomSurfaceText(text = stringResource(R.string.message_clean))
-            }
-        },
-        bottomBar = {
-            CustomButton(
-                onClick = {
-                    onAction(PanelRoleAction.CleanStorageBottomSheet)
-                    onAction(PanelRoleAction.CleanStorageButton)
-                },
-                text = stringResource(R.string.action_confirm)
-            )
-        }
-    )
-
-    CustomBottomSheet(
         visible = state.isGrantRequestBottomSheetVisible,
-        onDismiss = { onAction(PanelRoleAction.DismissGrantRequestBottomSheet) },
+        onDismiss = { onAction(ManageRoleAction.DismissGrantRequestBottomSheet) },
         title = stringResource(R.string.action_grant_permission),
         content = {
             item {
@@ -163,8 +131,8 @@ private fun Screen(
         bottomBar = {
             CustomButton(
                 onClick = {
-                    onAction(PanelRoleAction.DismissGrantRequestBottomSheet)
-                    onAction(PanelRoleAction.GrantRequestButton)
+                    onAction(ManageRoleAction.DismissGrantRequestBottomSheet)
+                    onAction(ManageRoleAction.GrantRequestButton)
                 },
                 text = stringResource(R.string.action_confirm)
             )
@@ -173,7 +141,7 @@ private fun Screen(
 
     CustomBottomSheet(
         visible = state.isDetachProfileBottomSheetVisible,
-        onDismiss = { onAction(PanelRoleAction.DismissDetachProfileBottomSheet) },
+        onDismiss = { onAction(ManageRoleAction.DismissDetachProfileBottomSheet) },
         title = stringResource(R.string.action_detach_permission),
         content = {
             item {
@@ -186,8 +154,8 @@ private fun Screen(
         bottomBar = {
             CustomButton(
                 onClick = {
-                    onAction(PanelRoleAction.DismissDetachProfileBottomSheet)
-                    onAction(PanelRoleAction.DetachProfileButton)
+                    onAction(ManageRoleAction.DismissDetachProfileBottomSheet)
+                    onAction(ManageRoleAction.DetachProfileButton)
                 },
                 text = stringResource(R.string.action_confirm),
                 isError = true
@@ -199,8 +167,8 @@ private fun Screen(
 @Composable
 private fun Content(
     modifier: Modifier = Modifier,
-    state: PanelState,
-    onAction: (PanelRoleAction) -> Unit
+    state: ManageRoleState,
+    onAction: (ManageRoleAction) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(
@@ -257,8 +225,8 @@ private fun Content(
 @Composable
 private fun PendingRequestPager(
     modifier: Modifier = Modifier,
-    state: PanelState,
-    onAction: (PanelRoleAction) -> Unit
+    state: ManageRoleState,
+    onAction: (ManageRoleAction) -> Unit
 ) {
     LazyColumn(
         modifier = modifier,
@@ -299,7 +267,7 @@ private fun PendingRequestPager(
                         trailingContent = {
                             CustomTonalButton(
                                 onClick = {
-                                    onAction(PanelRoleAction.ShowGrantRequestBottomSheet(requestDetail))
+                                    onAction(ManageRoleAction.ShowGrantRequestBottomSheet(requestDetail))
                                 },
                                 text = stringResource(R.string.action_grant_permission)
                             )
@@ -314,8 +282,8 @@ private fun PendingRequestPager(
 @Composable
 private fun ContributorPager(
     modifier: Modifier = Modifier,
-    state: PanelState,
-    onAction: (PanelRoleAction) -> Unit
+    state: ManageRoleState,
+    onAction: (ManageRoleAction) -> Unit
 ) {
     LazyColumn(
         modifier = modifier,
@@ -356,7 +324,7 @@ private fun ContributorPager(
                         trailingContent = {
                             CustomButton(
                                 onClick = {
-                                    onAction(PanelRoleAction.ShowDetachProfileBottomSheet(grantedRequest))
+                                    onAction(ManageRoleAction.ShowDetachProfileBottomSheet(grantedRequest))
                                 },
                                 text = stringResource(R.string.action_detach_permission),
                                 isError = true

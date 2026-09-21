@@ -26,19 +26,31 @@ val profileAccountItems = listOf(
     )
 )
 
-enum class ManageAccountId {
-    ChangePassword, DeleteAccount
+enum class AdministratorMenuId {
+    RoleManager, CleanStorage
 }
 
-val manageAccountItems = listOf(
+val profileAdministratorMenuItems = listOf(
+    StaticModel(
+        id = AdministratorMenuId.RoleManager,
+        contentTextResId = R.string.item_role_manager,
+        supportingTextResId = R.string.item_role_manager_desc
+    ),
+    StaticModel(
+        id = AdministratorMenuId.CleanStorage,
+        contentTextResId = R.string.item_clean_storage,
+        supportingTextResId = R.string.item_clean_storage_desc
+    ),
+)
+
+enum class ManageAccountId {
+    ChangePassword
+}
+
+val profileManageAccountItems = listOf(
     StaticModel(
         id = ManageAccountId.ChangePassword,
         contentTextResId = R.string.item_change_password,
         supportingTextResId = R.string.item_change_password_desc
-    ),
-    StaticModel(
-        id = ManageAccountId.DeleteAccount,
-        contentTextResId = R.string.item_delete_account,
-        supportingTextResId = R.string.item_delete_account_desc
     )
 )

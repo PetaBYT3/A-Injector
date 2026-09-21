@@ -2,9 +2,10 @@ package com.a.injector.presentation.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.a.injector.data.local.CommandService
+import com.a.injector.domain.model.state.CommandService
 import com.a.injector.domain.repository.AccountRepository
 import com.a.injector.domain.repository.InjectRepository
+import com.a.injector.domain.repository.PermissionRepository
 import com.a.injector.presentation.util.ScreenEffect
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,6 +17,7 @@ import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
 class HomeViewModel(
+    private val permissionRepository: PermissionRepository,
     private val injectRepository: InjectRepository,
     private val accountRepository: AccountRepository
 ): ViewModel() {
@@ -27,9 +29,9 @@ class HomeViewModel(
 
     init {
         viewModelScope.launch {
-            injectRepository.commandService.collect { commandServiceState ->
+            permissionRepository.isManageExternalStorageGranted.collect { isGranted ->
                 _state.update { currentState ->
-                    currentState.copy(commandService = commandServiceState)
+                    currentState.copy(isManageExternalStorageGranted = isGranted)
                 }
             }
         }

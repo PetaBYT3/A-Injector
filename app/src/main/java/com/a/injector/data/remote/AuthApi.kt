@@ -9,4 +9,6 @@ interface AuthApi {
     suspend fun signUp(email: String, password: String)
     suspend fun signGuest()
     suspend fun signOut()
+
+    suspend fun sendResetPassword(email: String)
 }

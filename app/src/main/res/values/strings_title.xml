@@ -3,6 +3,7 @@
     <string name="title_sign_in">Sign In</string>
     <string name="title_sign_up">Sign Up</string>
     <string name="title_guest">Guest</string>
+    <string name="title_reset_password">Reset Password</string>
     <string name="title_verify_email">Verify Email</string>
 
     <string name="title_home">Home</string>

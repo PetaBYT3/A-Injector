@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="message_sign_in">
+        Please enter your email address and password to access your account.
+    </string>
+
+    <string name="message_sign_up">
+        Please fill in your details to register for a new account.
+    </string>
+
+    <string name="message_reset_password">
+        Enter your registered email address. We will send you a link to reset your password.
+    </string>
+
     <string name="message_delete_hero">
         This action will permanently delete hero and all of its skin, replaces data and files
     </string>
@@ -14,6 +26,10 @@
 
     <string name="message_clean">
         This action will perform file deletion all orphan file on cloud storage
+    </string>
+
+    <string name="message_change_password">
+        We will send a form to change your password to your email
     </string>
 
     <string name="message_sign_out">

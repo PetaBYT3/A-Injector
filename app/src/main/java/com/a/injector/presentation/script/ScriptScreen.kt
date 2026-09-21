@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.Person4
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,11 +33,11 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
+import com.a.injector.domain.model.HeroModel
 import com.a.injector.presentation.component.DefaultClickableListItem
-import com.a.injector.presentation.component.ErrorListItem
+import com.a.injector.presentation.component.MessageListItem
 import com.a.injector.presentation.navigation.NavigationRoute
 import com.a.injector.presentation.util.CustomCenterCircularWavyProgressIndicator
-import com.a.injector.presentation.util.CustomCenterTextMessage
 import com.a.injector.presentation.util.CustomFloatingActionButton
 import com.a.injector.presentation.util.CustomFloatingActionToolBar
 import com.a.injector.presentation.util.CustomSlideUpAnimatedVisibility
@@ -64,7 +65,12 @@ fun ScriptScreen(
 private fun Preview() {
     Screen(
         navBackStack = rememberNavBackStack(),
-        state = ScriptState(),
+        state = ScriptState(
+            isHeroesLoading = false,
+            filteredHeroes = List(10) {
+                HeroModel("", "Hero Preview")
+            }
+        ),
         onAction = {}
     )
 }
@@ -180,16 +186,17 @@ private fun Content(
         when {
             state.isHeroesError != null -> {
                 item("isHeroesError") {
-                    ErrorListItem(
+                    MessageListItem(
                         modifier = Modifier
                             .animateItem(),
-                        text = state.isHeroesError
+                        text = state.isHeroesError,
+                        isError = true
                     )
                 }
             }
             state.filteredHeroes.isEmpty() -> {
                 item("isHeroesEmpty") {
-                    CustomCenterTextMessage(
+                    MessageListItem(
                         modifier = Modifier
                             .animateItem(),
                         text = stringResource(R.string.item_empty)
@@ -207,6 +214,7 @@ private fun Content(
                         index = index,
                         count = state.filteredHeroes.size,
                         onClick = { navBackStack.add(NavigationRoute.HeroScreen(hero.id)) },
+                        leadingContent = { Icon(Icons.Rounded.Person4, null) },
                         content = { Text(text = hero.name) },
                         trailingContent = {
                             if (state.isModifyEnabled) {

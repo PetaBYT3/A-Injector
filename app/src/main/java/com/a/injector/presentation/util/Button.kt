@@ -14,7 +14,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.dp
+
+fun buttonCircularStore(density: Density) = Stroke(
+    width = with(density) { 2.dp.toPx() },
+    cap = StrokeCap.Round
+)
 
 @Composable
 fun CustomButton(
@@ -25,12 +35,14 @@ fun CustomButton(
     isLoading: Boolean = false,
     enabled: Boolean = true
 ) {
+    val density = LocalDensity.current
+
     Button(
         modifier = modifier,
         colors = if (isError) {
             ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.error,
-                contentColor = MaterialTheme.colorScheme.onError
+                containerColor = MaterialTheme.colorScheme.errorContainer,
+                contentColor = MaterialTheme.colorScheme.onErrorContainer
             )
         } else {
             ButtonDefaults.buttonColors()
@@ -50,7 +62,9 @@ fun CustomButton(
                 CircularWavyProgressIndicator(
                     modifier = Modifier
                         .size(ButtonDefaults.IconSize)
-                        .graphicsLayer(alpha = if (isLoading) 1f else 0f)
+                        .graphicsLayer(alpha = if (isLoading) 1f else 0f),
+                    stroke = buttonCircularStore(density),
+                    trackStroke = buttonCircularStore(density)
                 )
             }
         },
@@ -66,6 +80,8 @@ fun CustomTonalButton(
     isLoading: Boolean = false,
     enabled: Boolean = true
 ) {
+    val density = LocalDensity.current
+
     FilledTonalButton(
         modifier = modifier,
         onClick = { if (!isLoading) onClick() },
@@ -83,7 +99,9 @@ fun CustomTonalButton(
                 CircularWavyProgressIndicator(
                     modifier = Modifier
                         .size(ButtonDefaults.IconSize)
-                        .graphicsLayer(alpha = if (isLoading) 1f else 0f)
+                        .graphicsLayer(alpha = if (isLoading) 1f else 0f),
+                    stroke = buttonCircularStore(density),
+                    trackStroke = buttonCircularStore(density)
                 )
             }
         },

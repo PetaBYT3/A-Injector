@@ -27,11 +27,11 @@ import com.a.injector.presentation.landing.LandingScreen
 import com.a.injector.presentation.loading.LoadingScreen
 import com.a.injector.presentation.managehero.ManageHeroScreen
 import com.a.injector.presentation.managereplace.ManageReplaceScreen
+import com.a.injector.presentation.managerole.ManageRoleScreen
 import com.a.injector.presentation.manageskin.ManageSkinScreen
-import com.a.injector.presentation.panel.PanelScreen
+import com.a.injector.presentation.resetpassword.ResetPasswordScreen
 import com.a.injector.presentation.signin.SignInScreen
 import com.a.injector.presentation.signup.SignUpScreen
-import com.a.injector.presentation.verifyemail.VerifyEmailScreen
 import org.koin.compose.koinInject
 
 @Composable
@@ -99,9 +99,9 @@ fun NavigationScreen(
                         )
                     }
                 }
-                is NavigationRoute.VerifyEmailScreen -> {
+                is NavigationRoute.ResetPasswordScreen -> {
                     NavEntry(navKey) {
-                        VerifyEmailScreen(
+                        ResetPasswordScreen(
                             navBackStack = navBackStack
                         )
                     }
@@ -150,7 +150,7 @@ fun NavigationScreen(
                 }
                 is NavigationRoute.ManageRoleScreen -> {
                     NavEntry(navKey) {
-                        PanelScreen(
+                        ManageRoleScreen(
                             navBackStack = navBackStack
                         )
                     }

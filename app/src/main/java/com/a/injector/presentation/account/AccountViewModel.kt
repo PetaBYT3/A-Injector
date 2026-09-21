@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.a.injector.data.dto.Role
 import com.a.injector.domain.model.RequestModel
 import com.a.injector.domain.repository.AccountRepository
+import com.a.injector.domain.repository.DatabaseRepository
 import com.a.injector.domain.repository.NavigationRepository
 import com.a.injector.presentation.navigation.NavigationRoute
 import com.a.injector.presentation.util.ScreenEffect
@@ -22,6 +23,7 @@ import org.koin.android.annotation.KoinViewModel
 @KoinViewModel
 class AccountViewModel(
     private val accountRepository: AccountRepository,
+    private val databaseRepository: DatabaseRepository,
     private val navigationRepository: NavigationRepository
 ): ViewModel() {
     private val _state = MutableStateFlow(AccountState())
@@ -84,6 +86,24 @@ class AccountViewModel(
             AccountAction.RequestContributorButton -> {
                 requestContributorButton()
             }
+            AccountAction.CleanStorageBottomSheet -> {
+                _state.update { currentState ->
+                    currentState.copy(isCleanStorageBottomSheetVisible = !currentState.isCleanStorageBottomSheetVisible)
+                }
+            }
+            AccountAction.CleanStorageButton -> {
+                cleanStorageButton()
+            }
+            AccountAction.ChangePasswordBottomSheet -> {
+                _state.update { currentState ->
+                    currentState.copy(
+                        isChangePasswordBottomSheetVisible = !currentState.isChangePasswordBottomSheetVisible
+                    )
+                }
+            }
+            AccountAction.SendChangePasswordEmailButton -> {
+                sendChangePasswordButton()
+            }
             AccountAction.SignOutBottomSheet -> {
                 _state.update { currentState ->
                     currentState.copy(isSignOutBottomSheetVisible = !currentState.isSignOutBottomSheetVisible)
@@ -119,8 +139,42 @@ class AccountViewModel(
                     role = Role.Contributor
                 )
             ).collect { either ->
-                either.onRight {
-                    _effect.send(ScreenEffect.ShowSnackBar("Request Sent"))
+                either.onRight { message ->
+                    _effect.send(ScreenEffect.ShowSnackBar(message))
+                }.onLeft { error ->
+                    _effect.send(ScreenEffect.ShowSnackBar(error))
+                }
+            }
+        }
+    }
+
+    private fun cleanStorageButton() {
+        viewModelScope.launch {
+            databaseRepository.cleanStorage().onStart {
+                _state.update { it.copy(isCleanStorageButtonLoading = true) }
+            }.onCompletion {
+                _state.update { it.copy(isCleanStorageButtonLoading = false) }
+            }.collect { either ->
+                either.onRight { message ->
+                    _effect.send(ScreenEffect.ShowSnackBar(message))
+                }.onLeft { error ->
+                    _effect.send(ScreenEffect.ShowSnackBar(error))
+                }
+            }
+        }
+    }
+
+    private fun sendChangePasswordButton() {
+        viewModelScope.launch {
+            accountRepository.sendResetPassword(
+                email = _state.value.userInfo?.email ?: return@launch
+            ).onStart {
+                _state.update { it.copy(isChangePasswordButtonLoading = true) }
+            }.onCompletion {
+                _state.update { it.copy(isChangePasswordButtonLoading = false) }
+            }.collect { either ->
+                either.onRight { message ->
+                    _effect.send(ScreenEffect.ShowSnackBar(message))
                 }.onLeft { error ->
                     _effect.send(ScreenEffect.ShowSnackBar(error))
                 }

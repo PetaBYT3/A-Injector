@@ -5,11 +5,20 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AdminPanelSettings
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.Email
+import androidx.compose.material.icons.rounded.Password
+import androidx.compose.material.icons.rounded.PermIdentity
+import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.rounded.Upload
+import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -156,6 +165,43 @@ private fun Screen(
             )
         }
     )
+
+    CustomBottomSheet(
+        visible = state.isCleanStorageBottomSheetVisible,
+        onDismiss = { onAction(AccountAction.CleanStorageBottomSheet) },
+        title = stringResource(R.string.action_clean),
+        content = {
+            item {
+                CustomSurfaceText(text = stringResource(R.string.message_clean))
+            }
+        },
+        bottomBar = {
+            CustomButton(
+                onClick = {
+                    onAction(AccountAction.CleanStorageBottomSheet)
+                    onAction(AccountAction.CleanStorageButton)
+                },
+                text = stringResource(R.string.action_confirm)
+            )
+        }
+    )
+
+    CustomBottomSheet(
+        visible = state.isChangePasswordBottomSheetVisible,
+        onDismiss = { onAction(AccountAction.ChangePasswordBottomSheet) },
+        title = stringResource(R.string.item_manage),
+        content = {
+            item {
+                CustomSurfaceText(text = stringResource(R.string.message_reset_password))
+            }
+        },
+        bottomBar = {
+            CustomButton(
+                onClick = { onAction(AccountAction.SendChangePasswordEmailButton) },
+                text = stringResource(R.string.action_send)
+            )
+        }
+    )
 }
 
 @Composable
@@ -189,28 +235,6 @@ private fun Content(
                 )
             }
         } else {
-            if (state.profile.role == Role.Administrator) {
-                item("roleManager") {
-                    DefaultClickableListItem(
-                        modifier = Modifier
-                            .animateItem(),
-                        onClick = { navBackStack.add(NavigationRoute.ManageRoleScreen) },
-                        content = { Text(text = stringResource(R.string.item_admin_panel)) },
-                        supportingContent = {
-                            Text(text = stringResource(R.string.item_admin_panel_desc))
-                        }
-                    )
-                }
-                spacer()
-            }
-
-            item("profileTitle") {
-                CustomTextListTitle(
-                    modifier = Modifier
-                        .animateItem(),
-                    text = stringResource(R.string.item_profile)
-                )
-            }
             itemsIndexed(
                 items = profileAccountItems,
                 key = { _, staticModel -> staticModel.id.name }
@@ -220,12 +244,21 @@ private fun Content(
                         .animateItem(),
                     index = index,
                     count = profileAccountItems.size,
+                    leadingContent = {
+                        val imageVector = when (staticModel.id) {
+                            ProfileAccountId.Email -> Icons.Rounded.Email
+                            ProfileAccountId.Username -> Icons.Rounded.Person
+                            ProfileAccountId.Contribution -> Icons.Rounded.Upload
+                            ProfileAccountId.Role -> Icons.Rounded.PermIdentity
+                        }
+                        Icon(imageVector, null)
+                    },
                     content = { Text(text = stringResource(staticModel.contentTextResId)) },
                     supportingContent = {
                         val supportingText = when (staticModel.id) {
                             ProfileAccountId.Email -> state.userInfo?.email ?: ""
                             ProfileAccountId.Username -> state.profile.username
-                            ProfileAccountId.Contribution -> state.profile.contribution.toString()
+                            ProfileAccountId.Contribution -> "${state.profile.contribution} ${stringResource(R.string.item_files_uploaded)}"
                             ProfileAccountId.Role -> state.profile.role.name
                         }
                         Text(
@@ -267,6 +300,59 @@ private fun Content(
                 )
             }
             spacer()
+            if (state.profile.role == Role.Administrator) {
+                item("administratorTitle") {
+                    CustomTextListTitle(
+                        modifier = Modifier
+                            .animateItem(),
+                        text = stringResource(R.string.item_admin_menu)
+                    )
+                }
+                itemsIndexed(
+                    items = profileAdministratorMenuItems,
+                    key = { _, staticModel -> staticModel.id.name }
+                ) { index, staticModel ->
+                    DefaultClickableListItem(
+                        modifier = Modifier
+                            .animateItem(),
+                        index = index,
+                        count = profileAdministratorMenuItems.size,
+                        onClick = {
+                            when (staticModel.id) {
+                                AdministratorMenuId.RoleManager -> {
+                                    navBackStack.add(NavigationRoute.ManageRoleScreen)
+                                }
+                                AdministratorMenuId.CleanStorage -> {
+                                    onAction(AccountAction.CleanStorageBottomSheet)
+                                }
+                            }
+                        },
+                        leadingContent = {
+                            val imageVector = when (staticModel.id) {
+                                AdministratorMenuId.RoleManager -> Icons.Rounded.AdminPanelSettings
+                                AdministratorMenuId.CleanStorage -> Icons.Rounded.Delete
+                            }
+                            Icon(imageVector, null)
+                        },
+                        content = { Text(text = stringResource(staticModel.contentTextResId)) },
+                        supportingContent = { Text(text = stringResource(staticModel.supportingTextResId!!)) },
+                        trailingContent = {
+                            when (staticModel.id) {
+                                AdministratorMenuId.RoleManager -> {}
+                                AdministratorMenuId.CleanStorage -> {
+                                    if (state.isCleanStorageButtonLoading) {
+                                        CircularWavyProgressIndicator(
+                                            modifier = Modifier
+                                                .size(24.dp)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    )
+                }
+                spacer()
+            }
             item("manageTitle") {
                 CustomTextListTitle(
                     modifier = Modifier
@@ -275,24 +361,43 @@ private fun Content(
                 )
             }
             itemsIndexed(
-                items = manageAccountItems,
+                items = profileManageAccountItems,
                 key = { _, staticModel -> staticModel.id.name }
             ) { index, staticModel ->
                 DefaultClickableListItem(
                     modifier = Modifier
                         .animateItem(),
                     index = index,
-                    count = manageAccountItems.size,
+                    count = profileManageAccountItems.size,
                     onClick = {
                         when (staticModel.id) {
-                            ManageAccountId.ChangePassword -> {}
-                            ManageAccountId.DeleteAccount -> {}
+                            ManageAccountId.ChangePassword -> {
+                                onAction(AccountAction.ChangePasswordBottomSheet)
+                            }
                         }
+                    },
+                    leadingContent = {
+                        val imageVector = when (staticModel.id) {
+                            ManageAccountId.ChangePassword -> Icons.Rounded.Password
+                        }
+                        Icon(imageVector, null)
                     },
                     content = { Text(text = stringResource(staticModel.contentTextResId)) },
                     supportingContent = if (staticModel.supportingTextResId != null) {
                         { Text(text = stringResource(staticModel.supportingTextResId)) }
-                    } else null
+                    } else null,
+                    trailingContent = {
+                        when (staticModel.id) {
+                            ManageAccountId.ChangePassword -> {
+                                if (state.isChangePasswordButtonLoading) {
+                                    CircularWavyProgressIndicator(
+                                        modifier = Modifier
+                                            .size(24.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
                 )
             }
         }

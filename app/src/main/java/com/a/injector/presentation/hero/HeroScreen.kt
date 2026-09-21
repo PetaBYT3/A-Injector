@@ -1,7 +1,6 @@
 package com.a.injector.presentation.hero
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,8 +9,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.Person4
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -22,7 +23,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,12 +32,10 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
-import com.a.injector.data.util.toDateTime
-import com.a.injector.data.util.toMegaBytes
 import com.a.injector.domain.model.HeroDetailModel
 import com.a.injector.presentation.component.DefaultClickableListItem
 import com.a.injector.presentation.component.DefaultListItem
-import com.a.injector.presentation.component.ErrorListItem
+import com.a.injector.presentation.component.MessageListItem
 import com.a.injector.presentation.component.PrimaryListItem
 import com.a.injector.presentation.component.SkinDetailListItem
 import com.a.injector.presentation.navigation.NavigationRoute
@@ -47,9 +45,9 @@ import com.a.injector.presentation.util.CustomCenterCircularWavyProgressIndicato
 import com.a.injector.presentation.util.CustomCenterTextMessage
 import com.a.injector.presentation.util.CustomFloatingActionButton
 import com.a.injector.presentation.util.CustomFloatingActionToolBar
+import com.a.injector.presentation.util.CustomIconButton
 import com.a.injector.presentation.util.CustomSlideUpAnimatedVisibility
 import com.a.injector.presentation.util.CustomTextListTitle
-import com.a.injector.presentation.util.CustomTonalButton
 import com.a.injector.presentation.util.CustomTopAppBar
 import com.a.injector.presentation.util.SnackBarEffectLauncher
 import com.a.injector.presentation.util.spacer
@@ -218,10 +216,11 @@ private fun Content(
 
         if (state.isHeroDetailError != null) {
             item("isHeroDetailError") {
-                ErrorListItem(
+                MessageListItem(
                     modifier = Modifier
                         .animateItem(),
-                    text = state.isHeroDetailError
+                    text = state.isHeroDetailError,
+                    isError = true
                 )
             }
             return@LazyColumn
@@ -231,6 +230,7 @@ private fun Content(
             PrimaryListItem(
                 modifier = Modifier
                     .animateItem(),
+                leadingContent = { Icon(Icons.Rounded.Person4, null) },
                 content = {
                     Text(
                         text = state.heroDetail.name,
@@ -241,7 +241,11 @@ private fun Content(
         }
         spacer()
         item("skinTitle") {
-            CustomTextListTitle(text = stringResource(R.string.item_skin))
+            CustomTextListTitle(
+                modifier = Modifier
+                    .animateItem(),
+                text = stringResource(R.string.item_skin)
+            )
         }
         if (state.heroDetail.skins.isEmpty()) {
             item("isSkinWithReplaceEmpty") {
@@ -273,42 +277,28 @@ private fun Content(
                 },
                 replaceTrailingContent = { replace ->
                     val isFileExist = replace.lastUpdate != null || replace.fileSize != null
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(10.dp),
-                        horizontalAlignment = Alignment.End
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(5.dp)
                     ) {
-                        val dateAndSize = if (isFileExist) {
-                            "${replace.lastUpdate?.toDateTime()} | ${replace.fileSize?.toMegaBytes()}"
-                        } else {
-                            stringResource(R.string.item_no_file)
+                        if (state.isModifyEnabled) {
+                            IconButton(
+                                onClick = {
+                                    val targetRoute = NavigationRoute.ManageReplaceScreen(
+                                        heroId = state.heroDetail.id,
+                                        skinId = skin.id,
+                                        replaceId = replace.id
+                                    )
+                                    navBackStack.add(targetRoute)
+                                },
+                                content = { Icon(Icons.Rounded.Edit, null) }
+                            )
                         }
-                        Text(
-                            text = dateAndSize,
-                            style = MaterialTheme.typography.labelSmall
-                        )
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(5.dp)
-                        ) {
-                            if (isFileExist) {
-                                CustomTonalButton(
-                                    onClick = { onAction(HeroAction.StartInject(replace)) },
-                                    text = stringResource(R.string.action_install),
-                                    isLoading = state.isInjectLoading[replace.id] != null
-                                )
-                            }
-                            if (state.isModifyEnabled) {
-                                IconButton(
-                                    onClick = {
-                                        val targetRoute = NavigationRoute.ManageReplaceScreen(
-                                            heroId = state.heroDetail.id,
-                                            skinId = skin.id,
-                                            replaceId = replace.id
-                                        )
-                                        navBackStack.add(targetRoute)
-                                    },
-                                    content = { Icon(Icons.Rounded.Edit, null) }
-                                )
-                            }
+                        if (isFileExist) {
+                            CustomIconButton(
+                                onClick = { onAction(HeroAction.StartInject(replace)) },
+                                content = { Icon(Icons.Rounded.Download, null) },
+                                isLoading = state.isInjectLoading[replace.id] != null
+                            )
                         }
                     }
                 }

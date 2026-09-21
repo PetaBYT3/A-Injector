@@ -1,4 +1,4 @@
-package com.a.injector.presentation.panel
+package com.a.injector.presentation.managerole
 
 import com.a.injector.R
 import com.a.injector.domain.model.StaticModel

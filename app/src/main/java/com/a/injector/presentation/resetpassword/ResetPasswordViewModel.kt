@@ -1,10 +1,9 @@
-package com.a.injector.presentation.landing
+package com.a.injector.presentation.resetpassword
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a.injector.domain.repository.AccountRepository
 import com.a.injector.domain.repository.NavigationRepository
-import com.a.injector.presentation.navigation.NavigationRoute
 import com.a.injector.presentation.util.ScreenEffect
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,33 +16,40 @@ import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
-class LandingViewModel(
+class ResetPasswordViewModel(
     private val accountRepository: AccountRepository,
     private val navigationRepository: NavigationRepository
 ): ViewModel() {
-    private val _state = MutableStateFlow(LandingState())
+    private val _state = MutableStateFlow(ResetPasswordState())
     val state = _state.asStateFlow()
 
     private val _effect = Channel<ScreenEffect>()
     val effect = _effect.receiveAsFlow()
 
-    fun onAction(action: LandingAction) {
+    fun onAction(action: ResetPasswordAction) {
         when (action) {
-            LandingAction.ButtonSignGuest -> {
-                buttonSignGuest()
+            is ResetPasswordAction.EmailTextField -> {
+                _state.update { currentState ->
+                    currentState.copy(emailTextField = action.email)
+                }
+            }
+            ResetPasswordAction.SendResetButton -> {
+                sendResetButton()
             }
         }
     }
 
-    private fun buttonSignGuest() {
+    private fun sendResetButton() {
         viewModelScope.launch {
-            accountRepository.signGuest().onStart {
-                _state.update { it.copy(isGuestButtonLoading = true) }
+            accountRepository.sendResetPassword(
+                email = _state.value.emailTextField
+            ).onStart {
+                _state.update { it.copy(isSendResetButtonLoading = true) }
             }.onCompletion {
-                _state.update { it.copy(isGuestButtonLoading = false) }
+                _state.update { it.copy(isSendResetButtonLoading = false) }
             }.collect { either ->
                 either.onRight {
-                    navigationRepository.replaceTo(NavigationRoute.BottomNavigation)
+                    navigationRepository.popBackStack()
                 }.onLeft { error ->
                     _effect.send(ScreenEffect.ShowSnackBar(error))
                 }

@@ -2,10 +2,7 @@
 
 package com.a.injector.presentation.home
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
@@ -13,38 +10,36 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowDropDown
 import androidx.compose.material.icons.rounded.OpenInNew
+import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.rounded.Storage
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastForEachIndexed
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
-import com.a.injector.data.local.CommandService
+import com.a.injector.domain.model.state.CommandService
 import com.a.injector.presentation.component.DefaultClickableListItem
 import com.a.injector.presentation.component.DefaultListItem
-import com.a.injector.presentation.component.ErrorListItem
+import com.a.injector.presentation.component.MessageListItem
 import com.a.injector.presentation.component.PrimaryListItem
+import com.a.injector.presentation.component.openStoragePermissionSettings
 import com.a.injector.presentation.util.CustomCenterCircularWavyProgressIndicator
-import com.a.injector.presentation.util.CustomCenterTextMessage
 import com.a.injector.presentation.util.CustomTextListTitle
 import com.a.injector.presentation.util.CustomTopAppBar
 import com.a.injector.presentation.util.spacer
@@ -70,7 +65,9 @@ fun HomeScreen(
 private fun Preview() {
     Screen(
         navBackStack = rememberNavBackStack(),
-        state = HomeState(),
+        state = HomeState(
+            isManageExternalStorageGranted = false
+        ),
         onAction = {}
     )
 }
@@ -105,84 +102,37 @@ private fun Content(
     state: HomeState,
     onAction: (HomeAction) -> Unit
 ) {
+    val context = LocalContext.current
+
     LazyColumn(
         modifier = modifier,
         contentPadding = PaddingValues(start = 10.dp, end = 10.dp, bottom = 100.dp),
         verticalArrangement = Arrangement.spacedBy(2.5.dp)
     ) {
-        item("serviceCommandItem") {
-            var isCommandServiceExpanded by remember {
-                mutableStateOf(false)
-            }
-            Column(
+        item("methodItem") {
+            PrimaryListItem(
                 modifier = Modifier
                     .animateItem(),
-                verticalArrangement = Arrangement.spacedBy(2.5.dp)
-            ) {
-                PrimaryListItem(
-                    overlineContent = { Text(text = stringResource(R.string.item_command_service)) },
-                    content = { Text(text = state.commandService.name.name) },
-                    supportingContent = {
-                        val supportingText = when (state.commandService.name) {
-                            CommandService.Shizuku -> {
-                                if (state.commandService.isRunning) {
-                                    stringResource(R.string.item_shizuku_true)
-                                } else {
-                                    stringResource(R.string.item_shizuku_false)
-                                }
-                            }
-                            CommandService.Superuser -> {
-                                if (state.commandService.isRunning) {
-                                    stringResource(R.string.item_superuser_true)
-                                } else {
-                                    stringResource(R.string.item_superuser_false)
-                                }
-                            }
+                leadingContent = { Icon(Icons.Rounded.Storage, null) },
+                content = { Text(text = CommandService.StoragePermission.title) },
+                supportingContent = {
+                    Text(
+                        text = if (state.isManageExternalStorageGranted) {
+                            stringResource(R.string.title_granted)
+                        } else {
+                            stringResource(R.string.title_denied)
                         }
-                        Text(text = supportingText)
-                    },
-                    trailingContent = {
-                        val rotateIcon by animateFloatAsState(
-                            targetValue = if (isCommandServiceExpanded) 180f else 0f
+                    )
+                },
+                trailingContent = {
+                    if (!state.isManageExternalStorageGranted) {
+                        Button(
+                            onClick = { openStoragePermissionSettings(context) },
+                            content = { Text(text = stringResource(R.string.item_settings)) }
                         )
-                        IconButton(
-                            onClick = { isCommandServiceExpanded = !isCommandServiceExpanded },
-                            content = {
-                                Icon(
-                                    modifier = Modifier
-                                        .rotate(rotateIcon),
-                                    imageVector = Icons.Rounded.ArrowDropDown,
-                                    contentDescription = null
-                                )
-                            }
-                        )
-                    }
-                )
-                AnimatedVisibility(
-                    visible = isCommandServiceExpanded
-                ) {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(2.5.dp)
-                    ) {
-                        CommandService.entries.fastForEachIndexed { index, commandService ->
-                            DefaultClickableListItem(
-                                index = index,
-                                count = CommandService.entries.size,
-                                onClick = {
-                                    onAction(HomeAction.SetCommandServiceButton(commandService))
-                                },
-                                leadingContent = {
-                                    RadioButton(
-                                        selected = state.commandService.name == commandService,
-                                        onClick = null
-                                    )
-                                },
-                                content = { Text(text = commandService.name) }
-                            )
-                        }
                     }
                 }
-            }
+            )
         }
         spacer()
         item("aboutDeveloperTitle") {
@@ -207,6 +157,13 @@ private fun Content(
                         HomeAboutDeveloperId.Support -> {}
                     }
                 },
+                leadingContent = {
+                    val imageVector = when (staticModel.id) {
+                        HomeAboutDeveloperId.Github -> ImageVector.vectorResource(R.drawable.github)
+                        HomeAboutDeveloperId.Support -> ImageVector.vectorResource(R.drawable.support)
+                    }
+                    Icon(imageVector, null)
+                },
                 content = { Text(text = stringResource(staticModel.contentTextResId)) },
                 trailingContent = { Icon(Icons.Rounded.OpenInNew, null) }
             )
@@ -230,16 +187,17 @@ private fun Content(
             }
             state.isHighestContributionProfileError != null -> {
                 item("isHighestContributionProfileError") {
-                    ErrorListItem(
+                    MessageListItem(
                         modifier = Modifier
                             .animateItem(),
-                        text = state.isHighestContributionProfileError
+                        text = state.isHighestContributionProfileError,
+                        isError = true
                     )
                 }
             }
             state.highestContributionProfile.isEmpty() -> {
                 item("isHighestContributionProfileEmpty") {
-                    CustomCenterTextMessage(
+                    MessageListItem(
                         modifier = Modifier
                             .animateItem(),
                         text = stringResource(R.string.item_empty)
@@ -256,6 +214,7 @@ private fun Content(
                             .animateItem(),
                         index = index,
                         count = state.highestContributionProfile.size,
+                        leadingContent = { Icon(Icons.Rounded.Person, null) },
                         content = {
                             Text(
                                 text = profileModel.username,

@@ -1,4 +1,4 @@
-package com.a.injector.presentation.panel
+package com.a.injector.presentation.managerole
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,19 +10,17 @@ import com.a.injector.presentation.util.ScreenEffect
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
-class PanelViewModel(
+class ManageRoleViewModel(
     private val accountRepository: AccountRepository,
     private val databaseRepository: DatabaseRepository
 ): ViewModel() {
-    private val _state = MutableStateFlow(PanelState())
+    private val _state = MutableStateFlow(ManageRoleState())
     val state = _state.asStateFlow()
 
     private val _effect = Channel<ScreenEffect>()
@@ -72,19 +70,9 @@ class PanelViewModel(
         }
     }
 
-    fun onAction(action: PanelRoleAction) {
+    fun onAction(action: ManageRoleAction) {
         when (action) {
-            PanelRoleAction.CleanStorageBottomSheet -> {
-                _state.update { currentState ->
-                    currentState.copy(
-                        isCleanStorageBottomSheetVisible = !currentState.isCleanStorageBottomSheetVisible
-                    )
-                }
-            }
-            PanelRoleAction.CleanStorageButton -> {
-                cleanStorageButton()
-            }
-            is PanelRoleAction.ShowGrantRequestBottomSheet -> {
+            is ManageRoleAction.ShowGrantRequestBottomSheet -> {
                 _state.update { currentState ->
                     currentState.copy(
                         requestToGrant = action.requestModel,
@@ -92,15 +80,15 @@ class PanelViewModel(
                     )
                 }
             }
-            PanelRoleAction.DismissGrantRequestBottomSheet -> {
+            ManageRoleAction.DismissGrantRequestBottomSheet -> {
                 _state.update { currentState ->
                     currentState.copy(isGrantRequestBottomSheetVisible = false)
                 }
             }
-            PanelRoleAction.GrantRequestButton -> {
+            ManageRoleAction.GrantRequestButton -> {
                 grantRequestButton()
             }
-            is PanelRoleAction.ShowDetachProfileBottomSheet -> {
+            is ManageRoleAction.ShowDetachProfileBottomSheet -> {
                 _state.update { currentState ->
                     currentState.copy(
                         profileToDetach = action.profileModel,
@@ -108,33 +96,13 @@ class PanelViewModel(
                     )
                 }
             }
-            PanelRoleAction.DismissDetachProfileBottomSheet -> {
+            ManageRoleAction.DismissDetachProfileBottomSheet -> {
                 _state.update { currentState ->
                     currentState.copy(isDetachProfileBottomSheetVisible = false)
                 }
             }
-            PanelRoleAction.DetachProfileButton -> {
+            ManageRoleAction.DetachProfileButton -> {
                 detachProfileButton()
-            }
-        }
-    }
-
-    private fun cleanStorageButton() {
-        viewModelScope.launch {
-            databaseRepository.cleanStorage().onStart {
-                _state.update { currentState ->
-                    currentState.copy(isButtonCleanStorageLoading = true)
-                }
-            }.onCompletion {
-                _state.update { currentState ->
-                    currentState.copy(isButtonCleanStorageLoading = false)
-                }
-            }.collect { either ->
-                either.onRight { message ->
-                    _effect.send(ScreenEffect.ShowSnackBar(message))
-                }.onLeft { error ->
-                    _effect.send(ScreenEffect.ShowSnackBar(error))
-                }
             }
         }
     }

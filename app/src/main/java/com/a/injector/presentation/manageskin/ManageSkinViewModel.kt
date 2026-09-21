@@ -42,6 +42,7 @@ class ManageSkinViewModel(
                         currentState.copy(hero = hero, isHeroLoading = false)
                     }
                 }.onLeft { error ->
+                    navigationRepository.popBackStack()
                     _state.update { currentState ->
                         currentState.copy(isHeroError = error, isHeroLoading = false)
                     }
@@ -59,6 +60,7 @@ class ManageSkinViewModel(
                             currentState.copy(skin = skin, isSkinLoading = false)
                         }
                     }.onLeft { error ->
+                        navigationRepository.popBackStack()
                         _state.update { currentState ->
                             currentState.copy(isSkinError = error, isSkinLoading = false)
                         }

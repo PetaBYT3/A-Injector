@@ -91,7 +91,7 @@ class HeroViewModel(
 
     private fun startInject(replace: ReplaceModel) {
         injectJob[replace.id] = viewModelScope.launch {
-            injectRepository.start(
+            injectRepository.execute(
                 replaceModel = replace
             ).onStart {
                 _state.update { it.copy(isInjectLoading = it.isInjectLoading + (replace.id to Unit)) }

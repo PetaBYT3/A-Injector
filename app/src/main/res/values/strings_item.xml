@@ -11,6 +11,7 @@
     <string name="item_shizuku_false">Inactive</string>
     <string name="item_superuser_true">Granted</string>
     <string name="item_superuser_false">Denied</string>
+    <string name="item_settings">Settings</string>
 
     <string name="item_about_developer">About Developer</string>
     <string name="item_github">Github</string>
@@ -19,10 +20,11 @@
     <string name="item_top_contributor">Top Contributor</string>
     <string name="item_files_uploaded">Files Uploaded</string>
 
-    <string name="item_admin_panel">Administrator Panel</string>
-    <string name="item_admin_panel_desc">
-        Manage other user role permission, database, and storage
-    </string>
+    <string name="item_admin_menu">Administrator Menu</string>
+    <string name="item_role_manager">Role Manager</string>
+    <string name="item_role_manager_desc">Manage other user role permission</string>
+    <string name="item_clean_storage">Clean Storage</string>
+    <string name="item_clean_storage_desc">Delete all orphan file on the cloud storage</string>
 
     <string name="item_pending_request">Pending Request</string>
     <string name="item_contributor">Contributor</string>

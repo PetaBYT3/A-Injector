@@ -20,6 +20,7 @@ interface AccountRepository {
     fun signUp(email: String, password: String): Flow<Either<String, Unit>>
     fun signGuest(): Flow<Either<String, Unit>>
     fun signOut(): Flow<Either<String, Unit>>
+    fun sendResetPassword(email: String): Flow<Either<String, String>>
 
     fun getProfileByHighestContribution(): Flow<Either<String, List<ProfileModel>>>
     fun upsertProfile(profileModel: ProfileModel): Flow<Either<String, String>>

@@ -19,6 +19,7 @@ fun CustomTextField(
     placeholder: String? = null,
     value: String,
     onValueChange: (String) -> Unit,
+    trailingIcon: @Composable (() -> Unit)? = null,
     visualTransformation: VisualTransformation = VisualTransformation.None
 ) {
     MaterialTheme(
@@ -35,6 +36,7 @@ fun CustomTextField(
             } else null,
             value = value,
             onValueChange = { onValueChange(it) },
+            trailingIcon = trailingIcon,
             visualTransformation = visualTransformation
         )
     }

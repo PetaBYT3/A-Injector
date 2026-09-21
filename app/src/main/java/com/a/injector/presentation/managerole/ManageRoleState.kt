@@ -1,12 +1,9 @@
-package com.a.injector.presentation.panel
+package com.a.injector.presentation.managerole
 
 import com.a.injector.domain.model.ProfileModel
 import com.a.injector.domain.model.RequestDetailModel
 
-data class PanelState(
-    val isCleanStorageBottomSheetVisible: Boolean = false,
-    val isButtonCleanStorageLoading: Boolean = false,
-
+data class ManageRoleState(
     val isRequestDetailsLoading: Boolean = true,
     val isRequestDetailsError: String? = null,
     val requestDetails: List<RequestDetailModel> = emptyList(),

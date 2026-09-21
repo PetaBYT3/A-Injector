@@ -7,7 +7,7 @@
 
     <string name="action_sign_in">Sign In</string>
     <string name="action_sign_up">Sign Up</string>
-    <string name="action_sign_guest">Guest</string>
+    <string name="action_sign_guest">Continue As Guest</string>
     <string name="action_sign_out">Sign Out</string>
 
     <string name="action_show_password">Show Password</string>
@@ -26,4 +26,6 @@
     <string name="action_detach_permission">Detach Permission</string>
 
     <string name="action_search">Search Here…</string>
+
+    <string name="action_send">Send</string>
 </resources>

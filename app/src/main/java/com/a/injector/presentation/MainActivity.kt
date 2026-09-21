@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import com.a.injector.data.system.ShizukuCommandService
 import com.a.injector.data.system.SuperuserCommandService
 import com.a.injector.domain.repository.DirectoryRepository
+import com.a.injector.domain.repository.PermissionRepository
 import com.a.injector.presentation.navigation.NavigationScreen
 import com.a.injector.presentation.theme.ui.AInjectorTheme
 import kotlinx.coroutines.launch
@@ -20,7 +21,7 @@ import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
     private val directoryRepository: DirectoryRepository by inject()
-
+    private val permissionRepository: PermissionRepository by inject()
     private val shizukuCommandService: ShizukuCommandService by inject()
     private val superuserCommandService: SuperuserCommandService by inject()
 
@@ -29,6 +30,7 @@ class MainActivity : ComponentActivity() {
         directoryRepository.initialize()
 
         lifecycleScope.launch {
+            permissionRepository.checkPermission()
             shizukuCommandService.check()
             superuserCommandService.check()
         }
@@ -49,7 +51,9 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
+
         lifecycleScope.launch {
+            permissionRepository.checkPermission()
             shizukuCommandService.check()
             superuserCommandService.check()
         }
@@ -57,6 +61,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+
         lifecycleScope.launch {
             shizukuCommandService.destroy()
         }

@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.InsertDriveFile
+import androidx.compose.material.icons.rounded.Person4
 import androidx.compose.material.icons.rounded.Save
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -21,7 +22,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -208,6 +211,7 @@ private fun Content(
                     .animateItem(),
                 index = 0,
                 count = 2,
+                leadingContent = { Icon(Icons.Rounded.Person4, null) },
                 content = { Text(text = state.hero.name) }
             )
         }
@@ -217,6 +221,7 @@ private fun Content(
                     .animateItem(),
                 index = 1,
                 count = 2,
+                leadingContent = { Icon(ImageVector.vectorResource(R.drawable.skin), null) },
                 content = { Text(text = state.skin.label) },
                 supportingContent = { Text(text = state.skin.name) }
             )

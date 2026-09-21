@@ -42,6 +42,7 @@ class ManageHeroViewModel(
                             currentState.copy(hero = hero, isHeroLoading = false)
                         }
                     }.onLeft { error ->
+                        navigationRepository.popBackStack()
                         _state.update { currentState ->
                             currentState.copy(isHeroError = error, isHeroLoading = false)
                         }

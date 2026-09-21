@@ -48,4 +48,10 @@ class AuthApiImpl(
     override suspend fun signOut() {
         supabaseClient.auth.signOut(SignOutScope.GLOBAL)
     }
+
+    override suspend fun sendResetPassword(email: String) {
+        supabaseClient.auth.resetPasswordForEmail(
+            email = email
+        )
+    }
 }

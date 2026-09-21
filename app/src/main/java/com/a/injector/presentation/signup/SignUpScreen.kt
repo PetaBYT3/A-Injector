@@ -6,20 +6,22 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Visibility
+import androidx.compose.material.icons.rounded.VisibilityOff
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.ToggleButton
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,7 +30,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -41,10 +42,11 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
 import com.a.injector.presentation.navigation.popBackStack
-import com.a.injector.presentation.util.CustomExtendedFloatingActionButton
-import com.a.injector.presentation.util.CustomMediumTopAppBar
+import com.a.injector.presentation.util.CustomButton
+import com.a.injector.presentation.util.CustomSurfaceText
 import com.a.injector.presentation.util.CustomTextField
 import com.a.injector.presentation.util.CustomTextListTitle
+import com.a.injector.presentation.util.CustomTopAppBar
 import com.a.injector.presentation.util.SnackBarEffectLauncher
 import com.a.injector.presentation.util.spacer
 import org.koin.compose.viewmodel.koinViewModel
@@ -89,18 +91,11 @@ private fun Screen(
     onAction: (SignUpAction) -> Unit,
     snackBarHostState: SnackbarHostState
 ) {
-    val scrollBehaviour = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
-        state = rememberTopAppBarState()
-    )
-
     Scaffold(
-        modifier = Modifier
-            .nestedScroll(scrollBehaviour.nestedScrollConnection),
         topBar = {
-            CustomMediumTopAppBar(
-                scrollBehavior = scrollBehaviour,
+            CustomTopAppBar(
                 navigationClick = { navBackStack.popBackStack() },
-                title = { Text(stringResource(R.string.title_sign_up)) }
+                title = stringResource(R.string.title_sign_up)
             )
         },
         content = { innerPadding ->
@@ -111,14 +106,7 @@ private fun Screen(
                 onAction = onAction
             )
         },
-        snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
-        floatingActionButton = {
-            CustomExtendedFloatingActionButton(
-                onClick = { onAction(SignUpAction.SignUpButton) },
-                content = { Text(text = stringResource(R.string.action_sign_up)) },
-                isLoading = state.isSignUpButtonLoading
-            )
-        }
+        snackbarHost = { SnackbarHost(hostState = snackBarHostState) }
     )
 }
 
@@ -137,29 +125,61 @@ private fun Content(
         contentPadding = PaddingValues(start = 10.dp, end = 10.dp, bottom = 100.dp),
         verticalArrangement = Arrangement.spacedBy(2.5.dp)
     ) {
-        item {
+        item("messageTitle") {
+            CustomSurfaceText(
+                modifier = Modifier
+                    .animateItem(),
+                text = stringResource(R.string.message_sign_up)
+            )
+        }
+        spacer()
+        item("emailTitle") {
             CustomTextListTitle(
+                modifier = Modifier
+                    .animateItem(),
                 text = stringResource(R.string.item_email)
             )
         }
-        item {
+        item("signUpEmail") {
             CustomTextField(
+                modifier = Modifier
+                    .animateItem(),
                 placeholder = stringResource(R.string.item_email),
                 value = state.emailTextField,
                 onValueChange = { onAction(SignUpAction.EmailTextField(it)) }
             )
         }
         spacer()
-        item {
+        item("passwordTitle") {
             CustomTextListTitle(
+                modifier = Modifier
+                    .animateItem(),
                 text = stringResource(R.string.item_password)
             )
         }
-        item {
+        item("signUpPassword") {
             CustomTextField(
+                modifier = Modifier
+                    .animateItem(),
                 placeholder = stringResource(R.string.item_password),
                 value = state.passwordTextField,
                 onValueChange = { onAction(SignUpAction.PasswordTextField(it)) },
+                trailingIcon = {
+                    IconToggleButton(
+                        checked = isPasswordVisible,
+                        onCheckedChange = { isPasswordVisible = it },
+                        content = {
+                            Icon(
+                                imageVector = if (isPasswordVisible) {
+                                    Icons.Rounded.VisibilityOff
+                                } else {
+                                    Icons.Rounded.Visibility
+                                },
+                                contentDescription = null
+                            )
+                        }
+                    )
+                },
                 visualTransformation = if (isPasswordVisible) {
                     VisualTransformation.None
                 } else {
@@ -172,6 +192,7 @@ private fun Content(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .animateItem()
             ) {
                 Column(
                     modifier = Modifier
@@ -238,20 +259,13 @@ private fun Content(
                         }
                     }
                 }
-                ToggleButton(
+                CustomButton(
                     modifier = Modifier
+                        .height(ButtonDefaults.MediumContainerHeight)
                         .align(Alignment.TopEnd),
-                    checked = isPasswordVisible,
-                    onCheckedChange = { isPasswordVisible = it },
-                    content = {
-                        Text(
-                            text = if (isPasswordVisible) {
-                                stringResource(R.string.action_hide_password)
-                            } else {
-                                stringResource(R.string.action_show_password)
-                            }
-                        )
-                    }
+                    onClick = { onAction(SignUpAction.SignUpButton) },
+                    text = stringResource(R.string.action_sign_in),
+                    isLoading = state.isSignUpButtonLoading
                 )
             }
         }

@@ -61,9 +61,6 @@ class LoadingViewModel(
                     AuthResult.Unauthenticated -> {
                         navigationRepository.replaceTo(NavigationRoute.LandingScreen)
                     }
-                    AuthResult.EmailNotVerified -> {
-                        navigationRepository.replaceTo(NavigationRoute.VerifyEmailScreen)
-                    }
                     AuthResult.Authenticated -> {
                         navigationRepository.replaceTo(NavigationRoute.BottomNavigation)
                     }
