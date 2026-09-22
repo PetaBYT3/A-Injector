@@ -105,7 +105,7 @@ class InjectRepositoryImpl(
             }
 
             extractedDir.deleteRecursively()
-            emit(Either.Right(context.getString(R.string.title_success)))
+            emit(Either.Right(context.getString(R.string.success_install_script)))
         }.catch { throwable ->
             emit(Either.Left(throwable.toMessage(context)))
         }.flowOn(Dispatchers.IO)
@@ -119,7 +119,7 @@ class InjectRepositoryImpl(
             val extractedReplace = extractAssets(replaceFile)
             copyAssets(extractedReplace)
 
-            emit(Either.Right(context.getString(R.string.title_success)))
+            emit(Either.Right(context.getString(R.string.success_install_script)))
         }.catch { throwable ->
             emit(Either.Left(throwable.toMessage(context)))
         }.flowOn(Dispatchers.IO)

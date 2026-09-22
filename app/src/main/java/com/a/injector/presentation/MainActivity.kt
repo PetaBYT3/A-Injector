@@ -1,9 +1,11 @@
+@file:Suppress("LocalContextConfigurationRead")
+
 package com.a.injector.presentation
 
-import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivityResultRegistryOwner
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,7 +38,6 @@ class MainActivity : ComponentActivity() {
     private val shizukuCommandService: ShizukuCommandService by inject()
     private val superuserCommandService: SuperuserCommandService by inject()
 
-    @SuppressLint("LocalContextConfigurationRead")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         directoryRepository.initialize()
@@ -64,7 +65,8 @@ class MainActivity : ComponentActivity() {
 
                 CompositionLocalProvider(
                     LocalContext provides localizedContext,
-                    LocalConfiguration provides localizedContext.resources.configuration
+                    LocalConfiguration provides localizedContext.resources.configuration,
+                    LocalActivityResultRegistryOwner provides (context as ComponentActivity)
                 ) {
                     Surface(
                         modifier = Modifier
