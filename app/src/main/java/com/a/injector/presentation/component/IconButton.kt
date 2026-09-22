@@ -1,4 +1,4 @@
-package com.a.injector.presentation.util
+package com.a.injector.presentation.component
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularWavyProgressIndicator
@@ -28,6 +28,7 @@ fun CustomIconButton(
                                 .size(24.dp)
                         )
                     }
+
                     false -> {
                         content()
                     }

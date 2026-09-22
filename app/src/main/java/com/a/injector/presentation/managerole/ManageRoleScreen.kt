@@ -32,15 +32,15 @@ import com.a.injector.R
 import com.a.injector.data.dto.Role
 import com.a.injector.domain.model.ProfileModel
 import com.a.injector.domain.model.RequestDetailModel
+import com.a.injector.presentation.component.CustomBottomSheet
+import com.a.injector.presentation.component.CustomButton
+import com.a.injector.presentation.component.CustomCenterCircularWavyProgressIndicator
+import com.a.injector.presentation.component.CustomCenterTextMessage
+import com.a.injector.presentation.component.CustomTonalButton
+import com.a.injector.presentation.component.CustomTopAppBar
 import com.a.injector.presentation.component.DefaultListItem
+import com.a.injector.presentation.component.ScreenEffectLauncher
 import com.a.injector.presentation.navigation.popBackStack
-import com.a.injector.presentation.util.CustomBottomSheet
-import com.a.injector.presentation.util.CustomButton
-import com.a.injector.presentation.util.CustomCenterCircularWavyProgressIndicator
-import com.a.injector.presentation.util.CustomCenterTextMessage
-import com.a.injector.presentation.util.CustomTonalButton
-import com.a.injector.presentation.util.CustomTopAppBar
-import com.a.injector.presentation.util.SnackBarEffectLauncher
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -60,7 +60,7 @@ fun ManageRoleScreen(
         snackBarHostState = snackBarHostState
     )
 
-    SnackBarEffectLauncher(
+    ScreenEffectLauncher(
         snackBarHostState = snackBarHostState,
         screenEffect = viewModel.effect
     )

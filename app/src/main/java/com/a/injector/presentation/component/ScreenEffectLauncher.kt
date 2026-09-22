@@ -1,18 +1,22 @@
-package com.a.injector.presentation.util
+package com.a.injector.presentation.component
 
+import android.widget.Toast
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
+import com.a.injector.presentation.util.ScreenEffect
 import kotlinx.coroutines.flow.Flow
 
 @Composable
-fun SnackBarEffectLauncher(
+fun ScreenEffectLauncher(
     snackBarHostState: SnackbarHostState,
     screenEffect: Flow<ScreenEffect>
 ) {
+    val context = LocalContext.current
     val lifeCycleOwner = LocalLifecycleOwner.current
 
     LaunchedEffect(lifeCycleOwner.lifecycle, screenEffect) {
@@ -24,6 +28,9 @@ fun SnackBarEffectLauncher(
                             message = effect.message,
                             withDismissAction = true
                         )
+                    }
+                    is ScreenEffect.ShowToast -> {
+                        Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
                     }
                 }
             }

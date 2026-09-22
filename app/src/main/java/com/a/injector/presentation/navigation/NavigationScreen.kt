@@ -21,7 +21,7 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.a.injector.domain.model.state.NavigationState
 import com.a.injector.domain.repository.NavigationRepository
-import com.a.injector.presentation.bottomnavigation.BottomNavigation
+import com.a.injector.presentation.bottomnavigation.BottomNavigationScreen
 import com.a.injector.presentation.hero.HeroScreen
 import com.a.injector.presentation.landing.LandingScreen
 import com.a.injector.presentation.loading.LoadingScreen
@@ -108,7 +108,7 @@ fun NavigationScreen(
                 }
                 is NavigationRoute.BottomNavigation -> {
                     NavEntry(navKey) {
-                        BottomNavigation(
+                        BottomNavigationScreen(
                             navBackStack = navBackStack
                         )
                     }

@@ -6,6 +6,7 @@
     <string name="item_uppercase">Uppercase</string>
     <string name="item_number">Number</string>
 
+    <string name="item_storage_permission">Storage Permission</string>
     <string name="item_command_service">Command Service</string>
     <string name="item_shizuku_true">Running</string>
     <string name="item_shizuku_false">Inactive</string>
@@ -54,6 +55,8 @@
     <string name="item_no_file">No File</string>
 
     <string name="item_language">Language</string>
+    <string name="item_clean_cache">Clean Cache</string>
+    <string name="item_clean_cache_desc">Delete all downloaded and extracted script in storage</string>
 
     <string name="item_empty">Empty</string>
 </resources>

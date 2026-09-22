@@ -1,4 +1,4 @@
-package com.a.injector.presentation.util
+package com.a.injector.presentation.component
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularWavyProgressIndicator
@@ -29,6 +29,7 @@ fun CustomFloatingActionButton(
                                 .size(24.dp)
                         )
                     }
+
                     false -> {
                         content()
                     }
@@ -59,6 +60,7 @@ fun CustomExtendedFloatingActionButton(
                                 .size(24.dp)
                         )
                     }
+
                     false -> {
                         content()
                     }

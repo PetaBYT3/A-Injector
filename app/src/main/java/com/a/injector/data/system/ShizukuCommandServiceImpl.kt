@@ -2,7 +2,6 @@ package com.a.injector.data.system
 
 import android.content.Context
 import android.content.pm.PackageManager
-import com.a.injector.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -51,7 +50,7 @@ class ShizukuCommandServiceImpl(
 
     override suspend fun copy(sourcePath: String, targetPath: String) {
         withContext(Dispatchers.IO) {
-            if (!_isAuthorized.value) throw Exception(context.getString(R.string.message_shizuku_unauthorized))
+            if (!_isAuthorized.value) throw Exception("")
 
             val command = arrayOf("sh", "-c", "cp -rf '$sourcePath' '$targetPath'")
             val newProcess = Shizuku::class.java.getDeclaredMethod(

@@ -48,8 +48,8 @@ class ProfileApiImpl(
             schema = SupabaseConstanta.SCHEMA,
             filter = { table = SupabaseConstanta.PROFILE_TABLE }
         ).map(::postgrestActionToUnit).debounce(SupabaseConstanta.DEBOUNCE).onStart {
-            emit(Unit)
             channel.subscribe()
+            emit(Unit)
         }.onCompletion {
             supabaseClient.realtime.removeChannel(channel)
         }.flatMapLatest {

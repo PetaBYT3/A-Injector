@@ -1,4 +1,4 @@
-package com.a.injector.presentation.util
+package com.a.injector.presentation.component
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentScope

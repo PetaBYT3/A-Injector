@@ -137,7 +137,7 @@ class AccountRepositoryImpl(
             authApi.sendResetPassword(
                 email = email
             )
-            emit(Either.Right(context.getString(R.string.title_success)))
+            emit(Either.Right(context.getString(R.string.success_password_reset)))
         }.catch { throwable ->
             emit(Either.Left(throwable.toMessage(context)))
         }.flowOn(Dispatchers.IO)
@@ -157,7 +157,7 @@ class AccountRepositoryImpl(
             profileApi.upsertProfile(
                 profileDto = profileModel.toProfileDto()
             )
-            emit(Either.Right(context.getString(R.string.title_success)))
+            emit(Either.Right(context.getString(R.string.success_update_profile)))
         }.catch { throwable ->
             emit(Either.Left(throwable.toMessage(context)))
         }.flowOn(Dispatchers.IO)
@@ -198,7 +198,7 @@ class AccountRepositoryImpl(
             requestApi.upsertRequest(
                 requestDto = requestModel.toRequestDto()
             )
-            emit(Either.Right(context.getString(R.string.title_success)))
+            emit(Either.Right(context.getString(R.string.success_request_role)))
         }.catch { throwable ->
             emit(Either.Left(throwable.toMessage(context)))
         }.flowOn(Dispatchers.IO)
@@ -213,7 +213,7 @@ class AccountRepositoryImpl(
             requestApi.deleteRequest(
                 requestDto = requestModel.toRequestDto()
             )
-            emit(Either.Left(context.getString(R.string.title_success)))
+            emit(Either.Left(context.getString(R.string.success_grant_role)))
         }.catch { throwable ->
             emit(Either.Left(throwable.toMessage(context)))
         }.flowOn(Dispatchers.IO)

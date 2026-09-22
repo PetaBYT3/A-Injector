@@ -1,4 +1,4 @@
-package com.a.injector.presentation.util
+package com.a.injector.presentation.component
 
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.material.icons.Icons

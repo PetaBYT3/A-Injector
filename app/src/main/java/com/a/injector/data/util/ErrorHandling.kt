@@ -13,17 +13,16 @@ fun Throwable.toMessage(context: Context): String {
         is PostgrestRestException -> {
             when (this.code) {
                 "23505" -> {
-                    context.getString(R.string.message_data_already_exist)
+                    context.getString(R.string.exception_data_already_exist)
                 }
                 "23503" -> {
-                    "Data gagal diproses karena referensi tidak ditemukan (Foreign Key Violation)"
+                    context.getString(R.string.exception_no_data)
                 }
                 "PGRST116" -> {
-                    // Data tidak ditemukan (jika pakai decodeSingle)
-                    context.getString(R.string.message_data_already_exist)
+                    context.getString(R.string.exception_no_data)
                 }
                 else -> {
-                    this.message ?: context.getString(R.string.message_server_error)
+                    this.message ?: context.getString(R.string.exception_server_error)
                 }
             }
         }
@@ -32,39 +31,39 @@ fun Throwable.toMessage(context: Context): String {
             val description = this.description?.lowercase() ?: ""
             when {
                 errorCode == "invalid_grant" || "invalid login credentials" in description -> {
-                    context.getString(R.string.message_credential_invalid)
+                    context.getString(R.string.exception_credential_invalid)
                 }
                 errorCode == "user_already_exists" || "already registered" in description -> {
-                    context.getString(R.string.message_email_used)
+                    context.getString(R.string.exception_email_used)
                 }
                 errorCode == "over_email_send_rate_limit" || errorCode == "too_many_requests" || "rate limit" in description -> {
-                    context.getString(R.string.message_too_many_attempts)
+                    context.getString(R.string.exception_too_many_attempts)
                 }
                 errorCode == "weak_password" || "password should be at least" in description -> {
-                    context.getString(R.string.message_password_weak)
+                    context.getString(R.string.exception_password_weak)
                 }
                 errorCode == "validation_failed" || "invalid email" in description -> {
-                    context.getString(R.string.message_email_invalid)
+                    context.getString(R.string.exception_email_invalid)
                 }
                 errorCode == "email_not_confirmed" || "email not confirmed" in description -> {
-                    context.getString(R.string.message_email_unverified)
+                    context.getString(R.string.exception_email_unverified)
                 }
                 errorCode == "user_not_found" -> {
-                    context.getString(R.string.message_user_not_found)
+                    context.getString(R.string.exception_user_not_found)
                 }
                 else -> {
-                    this.description ?: context.getString(R.string.message_server_error)
+                    this.description ?: context.getString(R.string.exception_server_error)
                 }
             }
         }
         is ConnectTimeoutException -> {
-            context.getString(R.string.message_connection_timeout)
+            context.getString(R.string.exception_connection_timeout)
         }
         is ConnectException, is UnknownHostException -> {
-            context.getString(R.string.message_no_connection)
+            context.getString(R.string.exception_no_connection)
         }
         else -> {
-            this.message ?: context.getString(R.string.message_unknown_error)
+            this.message ?: context.getString(R.string.exception_unknown_error)
         }
     }
 }

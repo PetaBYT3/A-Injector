@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_get_started">Mulai</string>
+
+    <string name="action_maintenance">Pemeliharaan</string>
+    <string name="action_update">Perbarui</string>
+
+    <string name="action_sign_in">Masuk</string>
+    <string name="action_sign_up">Daftar</string>
+    <string name="action_sign_guest">Lanjutkan Sebagai Tamu</string>
+    <string name="action_sign_out">Keluar</string>
+
+    <string name="action_show_password">Tampilkan Sandi</string>
+    <string name="action_hide_password">Sembunyikan Sandi</string>
+
+    <string name="action_action">Aksi</string>
+    <string name="action_install">Pasang</string>
+    <string name="action_add">Tambah</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_delete">Hapus</string>
+    <string name="action_clear">Bersihkan</string>
+    <string name="action_clean">Bersihkan</string>
+    <string name="action_confirm">Konfirmasi</string>
+    <string name="action_cancel">Batal</string>
+    <string name="action_dismiss">Tutup</string>
+    <string name="action_grant_permission">Berikan Izin</string>
+    <string name="action_detach_permission">Cabut Izin</string>
+
+    <string name="action_search">Cari Di Sini…</string>
+
+    <string name="action_apply_contributor">Ajukan Kontributor</string>
+    <string name="action_requested">Diminta</string>
+
+    <string name="action_send">Kirim</string>
+</resources>

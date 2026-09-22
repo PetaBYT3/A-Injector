@@ -41,14 +41,14 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
+import com.a.injector.presentation.component.CustomButton
+import com.a.injector.presentation.component.CustomSurfaceText
+import com.a.injector.presentation.component.CustomTextField
+import com.a.injector.presentation.component.CustomTextListTitle
+import com.a.injector.presentation.component.CustomTopAppBar
+import com.a.injector.presentation.component.ScreenEffectLauncher
+import com.a.injector.presentation.component.spacer
 import com.a.injector.presentation.navigation.popBackStack
-import com.a.injector.presentation.util.CustomButton
-import com.a.injector.presentation.util.CustomSurfaceText
-import com.a.injector.presentation.util.CustomTextField
-import com.a.injector.presentation.util.CustomTextListTitle
-import com.a.injector.presentation.util.CustomTopAppBar
-import com.a.injector.presentation.util.SnackBarEffectLauncher
-import com.a.injector.presentation.util.spacer
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -60,7 +60,7 @@ fun SignUpScreen(
     val onAction = viewModel::onAction
 
     val snackBarHostState = remember { SnackbarHostState() }
-    SnackBarEffectLauncher(
+    ScreenEffectLauncher(
         snackBarHostState = snackBarHostState,
         screenEffect = viewModel.effect
     )

@@ -9,12 +9,17 @@ val settingsSupportedLanguage = listOf(
 )
 
 enum class SettingsMenuId {
-    Language
+    Language, CleanCache
 }
 
 val settingsMenuItem = listOf(
     StaticModel(
         id = SettingsMenuId.Language,
         contentTextResId = R.string.item_language
+    ),
+    StaticModel(
+        id = SettingsMenuId.CleanCache,
+        contentTextResId = R.string.item_clean_cache,
+        supportingTextResId = R.string.item_clean_cache_desc
     )
 )

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="success_password_reset">Password reset form has been sent to your email</string>
+    <string name="success_install_script">Script successfully installed</string>
+    <string name="success_update_profile">Profile updated</string>
+    <string name="success_request_role">Role requested</string>
+    <string name="success_grant_role">Role permission accepted</string>
+</resources>

@@ -56,7 +56,7 @@ class DatabaseRepositoryImpl(
             if (versionDto != null) {
                 Either.Right(VersionMapper.toModel(versionDto))
             } else {
-                Either.Left(context.getString(R.string.message_no_data))
+                Either.Left(context.getString(R.string.exception_no_data))
             }
         }.catch { throwable ->
             emit(Either.Left(throwable.toMessage(context)))
@@ -77,7 +77,7 @@ class DatabaseRepositoryImpl(
             if (heroSkinReplaceDto != null) {
                 Either.Right(heroSkinReplaceDto.toHeroWithSkinModel())
             } else {
-                Either.Left(context.getString(R.string.message_no_data))
+                Either.Left(context.getString(R.string.exception_no_data))
             }
         }.catch { throwable ->
             emit(Either.Left(throwable.toMessage(context)))
@@ -98,7 +98,7 @@ class DatabaseRepositoryImpl(
             if (heroDto != null) {
                 Either.Right(heroDto.toHeroModel())
             } else {
-                Either.Left(context.getString(R.string.message_no_data))
+                Either.Left(context.getString(R.string.exception_no_data))
             }
         }.catch { throwable ->
             emit(Either.Left(throwable.toMessage(context)))
@@ -132,7 +132,7 @@ class DatabaseRepositoryImpl(
             if (skinWithReplaceDto != null) {
                 Either.Right(skinWithReplaceDto.toSkinModel())
             } else {
-                Either.Left(context.getString(R.string.message_no_data))
+                Either.Left(context.getString(R.string.exception_no_data))
             }
         }.catch { throwable ->
             emit(Either.Left(throwable.toMessage(context)))
@@ -166,7 +166,7 @@ class DatabaseRepositoryImpl(
             if (replaceDto != null) {
                 Either.Right(replaceDto.toReplaceModel())
             } else {
-                Either.Left(context.getString(R.string.message_no_data))
+                Either.Left(context.getString(R.string.exception_no_data))
             }
         }.catch { throwable ->
             emit(Either.Left(throwable.toMessage(context)))

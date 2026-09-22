@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="exception_credential_invalid">Email atau kata sandi salah</string>
+    <string name="exception_email_invalid">Email tidak valid</string>
+    <string name="exception_email_unverified">Email belum diverifikasi</string>
+    <string name="exception_email_used">Email sudah digunakan</string>
+    <string name="exception_password_weak">Kata sandi lemah</string>
+    <string name="exception_user_not_found">Pengguna tidak ditemukan</string>
+    <string name="exception_too_many_attempts">Terlalu banyak percobaan</string>
+    <string name="exception_no_connection">Tidak ada koneksi internet, periksa jaringan Anda</string>
+    <string name="exception_connection_timeout">Koneksi habis waktu</string>
+    <string name="exception_server_error">Terjadi kesalahan pada server</string>
+    <string name="exception_unknown_error">Terjadi kesalahan yang tidak diketahui</string>
+    <string name="exception_data_already_exist">Data sudah ada</string>
+    <string name="exception_shizuku_unauthorized">Tidak dapat melakukan aksi, karena tidak diizinkan oleh Shizuku</string>
+    <string name="exception_superuser_denied">Tidak dapat melakukan aksi, karena akses superuser ditolak</string>
+    <string name="exception_no_data">Data tidak ada atau telah dihapus</string>
+</resources>

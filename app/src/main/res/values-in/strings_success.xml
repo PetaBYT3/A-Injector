@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="success_password_reset">Formulir atur ulang kata sandi telah dikirim ke email Anda</string>
+    <string name="success_install_script">Skrip berhasil dipasang</string>
+    <string name="success_update_profile">Profil berhasil diperbarui</string>
+    <string name="success_request_role">Peran telah diminta</string>
+    <string name="success_grant_role">Izin peran telah diberikan</string>
+</resources>

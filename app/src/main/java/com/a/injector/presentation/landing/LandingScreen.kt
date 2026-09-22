@@ -5,7 +5,6 @@ package com.a.injector.presentation.landing
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -32,8 +31,8 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
 import com.a.injector.presentation.component.DefaultClickableListItem
+import com.a.injector.presentation.component.ScreenEffectLauncher
 import com.a.injector.presentation.navigation.NavigationRoute
-import com.a.injector.presentation.util.SnackBarEffectLauncher
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -52,7 +51,7 @@ fun LandingScreen(
         snackBarHostState = snackBarHostState
     )
 
-    SnackBarEffectLauncher(
+    ScreenEffectLauncher(
         snackBarHostState = snackBarHostState,
         screenEffect = viewModel.effect
     )
@@ -78,71 +77,85 @@ private fun Screen(
 ) {
     Scaffold(
         content = { innerPadding ->
-            Column(
+            Content(
                 modifier = Modifier
-                    .padding(innerPadding)
-                    .fillMaxSize()
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        modifier = Modifier
-                            .size(150.dp),
-                        painter = painterResource(R.drawable.inject),
-                        contentDescription = null
-                    )
-                }
-                Column(
-                    modifier = Modifier
-                        .padding(start = 10.dp, end = 10.dp, bottom = 10.dp),
-                    verticalArrangement = Arrangement.spacedBy(2.5.dp)
-                ) {
-                    landingOptionItems.fastForEachIndexed { index, staticModel ->
-                        DefaultClickableListItem(
-                            index = index,
-                            count = landingOptionItems.size,
-                            onClick = {
-                                when (staticModel.id) {
-                                    LandingOptionId.SignIn -> navBackStack.add(NavigationRoute.SignInScreen)
-                                    LandingOptionId.SignUp -> navBackStack.add(NavigationRoute.SignUpScreen)
-                                    LandingOptionId.Guest -> onAction(LandingAction.ButtonSignGuest)
-                                }
-                            },
-                            content = {
-                                if (staticModel.id == LandingOptionId.Guest) {
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth(),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        if (state.isGuestButtonLoading) {
-                                            CircularWavyProgressIndicator(
-                                                modifier = Modifier
-                                                    .size(24.dp)
-                                            )
-                                        } else {
-                                            Text(text = stringResource(staticModel.contentTextResId))
-                                        }
-                                    }
-                                } else {
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth(),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Text(text = stringResource(staticModel.contentTextResId))
-                                    }
-                                }
-                            }
-                        )
-                    }
-                }
-            }
+                    .padding(innerPadding),
+                navBackStack = navBackStack,
+                state = state,
+                onAction = onAction
+            )
         },
         snackbarHost = { SnackbarHost(hostState = snackBarHostState) }
     )
+}
+
+@Composable
+private fun Content(
+    modifier: Modifier = Modifier,
+    navBackStack: NavBackStack<NavKey>,
+    state: LandingState,
+    onAction: (LandingAction) -> Unit
+) {
+    Column(
+        modifier = modifier
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                modifier = Modifier
+                    .size(150.dp),
+                painter = painterResource(R.drawable.inject),
+                contentDescription = null
+            )
+        }
+        Column(
+            modifier = Modifier
+                .padding(start = 10.dp, end = 10.dp, bottom = 10.dp),
+            verticalArrangement = Arrangement.spacedBy(2.5.dp)
+        ) {
+            landingOptionItems.fastForEachIndexed { index, staticModel ->
+                DefaultClickableListItem(
+                    index = index,
+                    count = landingOptionItems.size,
+                    onClick = {
+                        when (staticModel.id) {
+                            LandingOptionId.SignIn -> navBackStack.add(NavigationRoute.SignInScreen)
+                            LandingOptionId.SignUp -> navBackStack.add(NavigationRoute.SignUpScreen)
+                            LandingOptionId.Guest -> onAction(LandingAction.ButtonSignGuest)
+                        }
+                    },
+                    content = {
+                        if (staticModel.id == LandingOptionId.Guest) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                if (state.isGuestButtonLoading) {
+                                    CircularWavyProgressIndicator(
+                                        modifier = Modifier
+                                            .size(24.dp)
+                                    )
+                                } else {
+                                    Text(text = stringResource(staticModel.contentTextResId))
+                                }
+                            }
+                        } else {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(text = stringResource(staticModel.contentTextResId))
+                            }
+                        }
+                    }
+                )
+            }
+        }
+    }
 }

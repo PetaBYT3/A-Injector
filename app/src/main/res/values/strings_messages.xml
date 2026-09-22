@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="message_maintenance">
+        This app is currently undergoing scheduled maintenance to improve our services. During this period,
+        you may experience temporary system instability, minor bugs, or unexpected app crashes.
+        We apologize for any inconvenience this may cause and are working to complete the maintenance as quickly as possible.
+    </string>
+
+    <string name="message_update">
+        A new version is ready to download. We highly recommend updating your application to ensure optimal performance.
+        Continuing to use this outdated version may result in unexpected bugs, feature instability, or app crashes.
+    </string>
+
+    <string name="message_no_browser_installed">No browser installed on your device</string>
+
     <string name="message_sign_in">
         Please enter your email address and password to access your account.
     </string>
@@ -35,23 +48,6 @@
     <string name="message_sign_out">
         Are your sure you want to sign out ?
     </string>
-
-    <string name="message_credential_invalid">Email or password incorrect</string>
-    <string name="message_email_invalid">Email invalid</string>
-    <string name="message_email_unverified">Email not verified</string>
-    <string name="message_email_used">Email already been used</string>
-    <string name="message_password_weak">Password is weak</string>
-    <string name="message_user_not_found">User not found</string>
-    <string name="message_too_many_attempts">Too many attempts</string>
-    <string name="message_no_connection">No internet connection, check your network</string>
-    <string name="message_connection_timeout">Connection timeout</string>
-    <string name="message_server_error">Something went wrong with the server</string>
-    <string name="message_unknown_error">Something went wrong</string>
-    <string name="message_data_already_exist">Data Already Exist</string>
-    <string name="message_shizuku_unauthorized">Cannot perform action, cause unauthorized by shizuku</string>
-    <string name="message_superuser_denied">Cannot perform action, cause superuser access denied</string>
-
-    <string name="message_no_data">Data has been does not exist or has been deleted</string>
 
     <string name="message_no_file">No file picked</string>
 </resources>

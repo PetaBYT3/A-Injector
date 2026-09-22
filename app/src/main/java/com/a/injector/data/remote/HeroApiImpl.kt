@@ -49,8 +49,8 @@ class HeroApiImpl(
                 filter = { table = SupabaseConstanta.REPLACE_TABLE }
             )
         ).map(::postgrestActionToUnit).debounce(SupabaseConstanta.DEBOUNCE).onStart {
-            emit(Unit)
             channel.subscribe()
+            emit(Unit)
         }.onCompletion {
             supabaseClient.realtime.removeChannel(channel)
         }.flatMapLatest {
@@ -79,8 +79,8 @@ class HeroApiImpl(
                 filter = { table = SupabaseConstanta.REPLACE_TABLE }
             )
         ).map(::postgrestActionToUnit).debounce(SupabaseConstanta.DEBOUNCE).onStart {
-            emit(Unit)
             channel.subscribe()
+            emit(Unit)
         }.onCompletion {
             supabaseClient.realtime.removeChannel(channel)
         }.flatMapLatest {

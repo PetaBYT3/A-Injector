@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="item_email">Email</string>
+    <string name="item_password">Kata Sandi</string>
+    <string name="item_eight_character">8 Karakter</string>
+    <string name="item_uppercase">Huruf Kapital</string>
+    <string name="item_number">Angka</string>
+
+    <string name="item_storage_permission">Izin Penyimpanan</string>
+    <string name="item_command_service">Layanan Perintah</string>
+    <string name="item_shizuku_true">Berjalan</string>
+    <string name="item_shizuku_false">Tidak Aktif</string>
+    <string name="item_superuser_true">Diizinkan</string>
+    <string name="item_superuser_false">Ditolak</string>
+    <string name="item_settings">Pengaturan</string>
+
+    <string name="item_about_developer">Tentang Pengembang</string>
+    <string name="item_github">Github</string>
+    <string name="item_support">Dukungan</string>
+
+    <string name="item_top_contributor">Kontributor Teratas</string>
+    <string name="item_files_uploaded">File Diunggah</string>
+
+    <string name="item_admin_menu">Menu Administrator</string>
+    <string name="item_role_manager">Pengelola Peran</string>
+    <string name="item_role_manager_desc">Kelola izin peran pengguna lain</string>
+    <string name="item_clean_storage">Bersihkan Penyimpanan</string>
+    <string name="item_clean_storage_desc">Hapus semua file sisa di penyimpanan awan</string>
+
+    <string name="item_pending_request">Permintaan Tertunda</string>
+    <string name="item_contributor">Kontributor</string>
+
+    <string name="item_profile">Profil</string>
+    <string name="item_username">Nama Pengguna</string>
+    <string name="item_contribution">Kontribusi</string>
+    <string name="item_role">Peran</string>
+
+    <string name="item_manage">Kelola</string>
+    <string name="item_change_password">Ubah Kata Sandi</string>
+    <string name="item_change_password_desc">Ubah kata sandi akun Anda melalui email</string>
+    <string name="item_delete_account">Hapus Akun</string>
+    <string name="item_delete_account_desc">Hapus akun Anda beserta seluruh data Anda</string>
+
+    <string name="item_hero">Hero</string>
+    <string name="item_skin">Skin</string>
+    <string name="item_replace">Ganti</string>
+
+    <string name="item_label">Label</string>
+    <string name="item_name">Nama</string>
+
+    <string name="item_no_file">Tidak Ada File</string>
+
+    <string name="item_language">Bahasa</string>
+    <string name="item_clean_cache">Bersihkan Cache</string>
+    <string name="item_clean_cache_desc">Hapus semua skrip yang diunduh dan diekstrak di penyimpanan lokal</string>
+
+    <string name="item_empty">Kosong</string>
+</resources>

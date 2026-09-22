@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="exception_credential_invalid">Email or password incorrect</string>
+    <string name="exception_email_invalid">Email invalid</string>
+    <string name="exception_email_unverified">Email not verified</string>
+    <string name="exception_email_used">Email already been used</string>
+    <string name="exception_password_weak">Password is weak</string>
+    <string name="exception_user_not_found">User not found</string>
+    <string name="exception_too_many_attempts">Too many attempts</string>
+    <string name="exception_no_connection">No internet connection, check your network</string>
+    <string name="exception_connection_timeout">Connection timeout</string>
+    <string name="exception_server_error">Something went wrong with the server</string>
+    <string name="exception_unknown_error">Something went wrong</string>
+    <string name="exception_data_already_exist">Data Already Exist</string>
+    <string name="exception_shizuku_unauthorized">Cannot perform action, cause unauthorized by shizuku</string>
+    <string name="exception_superuser_denied">Cannot perform action, cause superuser access denied</string>
+    <string name="exception_no_data">Data has been does not exist or has been deleted</string>
+</resources>

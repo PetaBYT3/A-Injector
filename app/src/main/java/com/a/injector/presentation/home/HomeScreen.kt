@@ -33,16 +33,15 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
-import com.a.injector.domain.model.state.CommandService
+import com.a.injector.presentation.component.CustomCenterCircularWavyProgressIndicator
+import com.a.injector.presentation.component.CustomTextListTitle
+import com.a.injector.presentation.component.CustomTopAppBar
 import com.a.injector.presentation.component.DefaultClickableListItem
 import com.a.injector.presentation.component.DefaultListItem
 import com.a.injector.presentation.component.MessageListItem
 import com.a.injector.presentation.component.PrimaryListItem
-import com.a.injector.presentation.component.openStoragePermissionSettings
-import com.a.injector.presentation.util.CustomCenterCircularWavyProgressIndicator
-import com.a.injector.presentation.util.CustomTextListTitle
-import com.a.injector.presentation.util.CustomTopAppBar
-import com.a.injector.presentation.util.spacer
+import com.a.injector.presentation.component.spacer
+import com.a.injector.presentation.util.openStoragePermissionSettings
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -114,7 +113,7 @@ private fun Content(
                 modifier = Modifier
                     .animateItem(),
                 leadingContent = { Icon(Icons.Rounded.Storage, null) },
-                content = { Text(text = CommandService.StoragePermission.title) },
+                content = { Text(text = stringResource(R.string.item_storage_permission)) },
                 supportingContent = {
                     Text(
                         text = if (state.isManageExternalStorageGranted) {

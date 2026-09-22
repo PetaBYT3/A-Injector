@@ -7,11 +7,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.CleaningServices
+import androidx.compose.material.icons.rounded.Language
+import androidx.compose.material3.Icon
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,9 +28,10 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
+import com.a.injector.presentation.component.CustomBottomSheet
+import com.a.injector.presentation.component.CustomTopAppBar
 import com.a.injector.presentation.component.DefaultClickableListItem
-import com.a.injector.presentation.util.CustomBottomSheet
-import com.a.injector.presentation.util.CustomTopAppBar
+import com.a.injector.presentation.component.ScreenEffectLauncher
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -33,11 +41,18 @@ fun SettingsScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val onAction = viewModel::onAction
+    val snackBarHostState = remember { SnackbarHostState() }
 
     Screen(
         navBackStack = navBackStack,
         state = state,
-        onAction = onAction
+        onAction = onAction,
+        snackBarHostState = snackBarHostState
+    )
+
+    ScreenEffectLauncher(
+        snackBarHostState = snackBarHostState,
+        screenEffect = viewModel.effect
     )
 }
 
@@ -47,7 +62,8 @@ private fun Preview() {
     Screen(
         navBackStack = rememberNavBackStack(),
         state = SettingsState(),
-        onAction = {}
+        onAction = {},
+        snackBarHostState = SnackbarHostState()
     )
 }
 
@@ -55,7 +71,8 @@ private fun Preview() {
 private fun Screen(
     navBackStack: NavBackStack<NavKey>,
     state: SettingsState,
-    onAction: (SettingsAction) -> Unit
+    onAction: (SettingsAction) -> Unit,
+    snackBarHostState: SnackbarHostState
 ) {
     Scaffold(
         contentWindowInsets = WindowInsets.statusBars,
@@ -72,7 +89,8 @@ private fun Screen(
                 state = state,
                 onAction = onAction
             )
-        }
+        },
+        snackbarHost = { SnackbarHost(hostState = snackBarHostState) }
     )
 
     CustomBottomSheet(
@@ -135,7 +153,17 @@ private fun Content(
                         SettingsMenuId.Language -> {
                             onAction(SettingsAction.LanguageBottomSheet)
                         }
+                        SettingsMenuId.CleanCache -> {
+
+                        }
                     }
+                },
+                leadingContent = {
+                    val imageVector = when (staticModel.id) {
+                        SettingsMenuId.Language -> Icons.Rounded.Language
+                        SettingsMenuId.CleanCache -> Icons.Rounded.CleaningServices
+                    }
+                    Icon(imageVector, null)
                 },
                 content = { Text(text = stringResource(staticModel.contentTextResId)) },
                 supportingContent = {
@@ -145,6 +173,7 @@ private fun Content(
                             val displayCountry = state.currentLanguage.displayCountry
                             "$displayLanguage ($displayCountry)"
                         }
+                        SettingsMenuId.CleanCache -> stringResource(staticModel.supportingTextResId!!)
                     }
                     Text(text = text)
                 }

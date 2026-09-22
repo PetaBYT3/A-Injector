@@ -23,19 +23,19 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
+import com.a.injector.presentation.component.CustomBottomSheet
+import com.a.injector.presentation.component.CustomButton
+import com.a.injector.presentation.component.CustomCenterCircularWavyProgressIndicator
+import com.a.injector.presentation.component.CustomFloatingActionButton
+import com.a.injector.presentation.component.CustomFloatingActionToolBar
+import com.a.injector.presentation.component.CustomIconButton
+import com.a.injector.presentation.component.CustomSlideUpAnimatedVisibility
+import com.a.injector.presentation.component.CustomSurfaceText
+import com.a.injector.presentation.component.CustomTextField
+import com.a.injector.presentation.component.CustomTextListTitle
+import com.a.injector.presentation.component.CustomTopAppBar
+import com.a.injector.presentation.component.ScreenEffectLauncher
 import com.a.injector.presentation.navigation.popBackStack
-import com.a.injector.presentation.util.CustomBottomSheet
-import com.a.injector.presentation.util.CustomButton
-import com.a.injector.presentation.util.CustomCenterCircularWavyProgressIndicator
-import com.a.injector.presentation.util.CustomFloatingActionButton
-import com.a.injector.presentation.util.CustomFloatingActionToolBar
-import com.a.injector.presentation.util.CustomIconButton
-import com.a.injector.presentation.util.CustomSlideUpAnimatedVisibility
-import com.a.injector.presentation.util.CustomSurfaceText
-import com.a.injector.presentation.util.CustomTextField
-import com.a.injector.presentation.util.CustomTextListTitle
-import com.a.injector.presentation.util.CustomTopAppBar
-import com.a.injector.presentation.util.SnackBarEffectLauncher
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -60,7 +60,7 @@ fun ManageHeroScreen(
         snackBarHostState = snackBarHostState
     )
 
-    SnackBarEffectLauncher(
+    ScreenEffectLauncher(
         snackBarHostState = snackBarHostState,
         screenEffect = viewModel.effect
     )

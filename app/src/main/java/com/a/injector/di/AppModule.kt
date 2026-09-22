@@ -12,7 +12,9 @@ import io.github.jan.supabase.auth.Auth
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.realtime.Realtime
+import io.github.jan.supabase.serializer.KotlinXSerializer
 import io.github.jan.supabase.storage.Storage
+import kotlinx.serialization.json.Json
 import okio.FileSystem
 import okio.Path.Companion.toPath
 import org.koin.core.annotation.ComponentScan
@@ -45,6 +47,14 @@ class AppModule {
                 install(Auth)
                 install(Postgrest)
                 install(Storage)
+
+                defaultSerializer = KotlinXSerializer(
+                    Json {
+                        ignoreUnknownKeys = true
+                        coerceInputValues = true
+                        isLenient = true
+                    }
+                )
             }
         )
     }

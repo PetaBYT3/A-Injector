@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_sign_in">Masuk</string>
+    <string name="title_sign_up">Daftar</string>
+    <string name="title_guest">Tamu</string>
+    <string name="title_reset_password">Atur Ulang Kata Sandi</string>
+    <string name="title_verify_email">Verifikasi Email</string>
+
+    <string name="title_home">Beranda</string>
+    <string name="title_script">Skrip</string>
+    <string name="title_account">Akun</string>
+    <string name="title_settings">Pengaturan</string>
+    <string name="title_panel">Panel</string>
+
+    <string name="title_profile">Profil</string>
+    <string name="title_hero">Hero</string>
+    <string name="title_skin">Skin</string>
+    <string name="title_add">Tambah</string>
+    <string name="title_edit">Edit</string>
+    <string name="title_delete">Hapus</string>
+    <string name="title_name">Nama</string>
+    <string name="title_action">Aksi</string>
+    <string name="title_file">File</string>
+    <string name="title_executor">Eksekutor</string>
+    <string name="title_change">Ubah</string>
+    <string name="title_update">Perbarui</string>
+    <string name="title_label">Label</string>
+    <string name="title_replaced">Diganti</string>
+    <string name="title_success">Sukses</string>
+    <string name="title_to">Ke</string>
+    <string name="title_role">Peran</string>
+    <string name="title_contribution">Kontribusi</string>
+    <string name="title_request">Permintaan</string>
+    <string name="title_grant">Berikan</string>
+    <string name="title_command_service">Layanan Perintah</string>
+    <string name="title_about_developer">Tentang Pengembang</string>
+    <string name="title_github">Github</string>
+    <string name="title_linkedin">Linkedin</string>
+    <string name="title_instagram">Instagram</string>
+    <string name="title_support">Dukungan</string>
+
+    <string name="title_authorized">Diizinkan</string>
+    <string name="title_unauthorized">Tidak Diizinkan</string>
+    <string name="title_granted">Diberikan</string>
+    <string name="title_denied">Ditolak</string>
+
+    <string name="title_description">Deskripsi</string>
+    <string name="title_replace">Ganti</string>
+
+    <string name="title_developer">Pengembang</string>
+    <string name="title_contributor">Kontributor</string>
+
+    <string name="title_email">Email</string>
+    <string name="title_password">Kata Sandi</string>
+    <string name="title_repeat_password">Ulangi Kata Sandi</string>
+
+    <string name="title_show_password">Tampilkan Kata Sandi</string>
+    <string name="title_same">Sama</string>
+    <string name="title_8_character">8 Karakter</string>
+    <string name="title_uppercase">Huruf Kapital</string>
+    <string name="title_number">Angka</string>
+
+    <string name="title_unknown">Tidak Diketahui</string>
+    <string name="title_empty">Kosong</string>
+</resources>

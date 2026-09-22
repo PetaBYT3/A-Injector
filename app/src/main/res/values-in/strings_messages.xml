@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="message_maintenance">
+        Aplikasi ini sedang dalam masa pemeliharaan terjadwal untuk meningkatkan layanan kami. Selama periode ini, Anda mungkin mengalami ketidakstabilan sistem sementara, bug kecil, atau aplikasi tertutup tiba-tiba. Kami memohon maaf atas ketidaknyamanan yang terjadi dan sedang berupaya untuk menyelesaikan pemeliharaan ini secepat mungkin.
+    </string>
+
+    <string name="message_update">
+        Versi baru siap diunduh. Kami sangat menyarankan untuk memperbarui aplikasi Anda guna memastikan performa yang optimal. Terus menggunakan versi lama ini dapat mengakibatkan bug yang tidak terduga, fitur yang tidak stabil, atau aplikasi tertutup tiba-tiba.
+    </string>
+
+    <string name="message_no_browser_installed">Tidak ada browser yang terinstal di perangkat Anda</string>
+
+    <string name="message_sign_in">
+        Silakan masukkan alamat email dan kata sandi Anda untuk mengakses akun Anda.
+    </string>
+
+    <string name="message_sign_up">
+        Silakan isi detail Anda untuk mendaftar akun baru.
+    </string>
+
+    <string name="message_reset_password">
+        Masukkan alamat email Anda yang terdaftar. Kami akan mengirimkan tautan untuk mengatur ulang kata sandi Anda.
+    </string>
+
+    <string name="message_delete_hero">
+        Tindakan ini akan menghapus secara permanen hero beserta semua data skin, data replace, dan filenya
+    </string>
+
+    <string name="message_delete_skin">
+        Tindakan ini akan menghapus secara permanen skin beserta semua data replace dan filenya
+    </string>
+
+    <string name="message_delete_replace">
+        Tindakan ini akan menghapus secara permanen data replace dan file ini
+    </string>
+
+    <string name="message_clean">
+        Tindakan ini akan melakukan penghapusan untuk semua file sisa di penyimpanan awan
+    </string>
+
+    <string name="message_change_password">
+        Kami akan mengirimkan formulir untuk mengubah kata sandi ke email Anda
+    </string>
+
+    <string name="message_sign_out">
+        Apakah Anda yakin ingin keluar?
+    </string>
+
+    <string name="message_no_file">Tidak ada file yang dipilih</string>
+</resources>

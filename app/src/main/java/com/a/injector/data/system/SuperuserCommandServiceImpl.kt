@@ -1,7 +1,6 @@
 package com.a.injector.data.system
 
 import android.content.Context
-import com.a.injector.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,7 +40,7 @@ class SuperuserCommandServiceImpl(
 
     override suspend fun copy(sourcePath: String, targetPath: String) {
         withContext(Dispatchers.IO) {
-            if (!_isGranted.value) throw Exception(context.getString(R.string.message_superuser_denied))
+            if (!_isGranted.value) throw Exception("")
 
             process = Runtime.getRuntime().exec("su")
             val os = DataOutputStream(process?.outputStream)
