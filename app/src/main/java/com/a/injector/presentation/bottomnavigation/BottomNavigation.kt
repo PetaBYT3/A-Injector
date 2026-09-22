@@ -14,9 +14,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.InsertDriveFile
 import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -26,10 +28,10 @@ import androidx.compose.ui.util.fastForEachIndexed
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
-import com.a.injector.R
 import com.a.injector.presentation.account.AccountScreen
 import com.a.injector.presentation.home.HomeScreen
 import com.a.injector.presentation.script.ScriptScreen
+import com.a.injector.presentation.settings.SettingsScreen
 import kotlinx.coroutines.launch
 
 @Composable
@@ -38,21 +40,6 @@ fun BottomNavigation(
 ) {
     val scope = rememberCoroutineScope()
     val isKeyboardVisible = WindowInsets.isImeVisible
-
-    val bottomNavigationItems = listOf(
-        Pair(
-            first = Icons.Rounded.Home,
-            second = R.string.title_home
-        ),
-        Pair(
-            first = Icons.Rounded.InsertDriveFile,
-            second = R.string.title_script
-        ),
-        Pair(
-            first = Icons.Rounded.Person,
-            second = stringResource(R.string.title_profile)
-        )
-    )
 
     val pagerState = rememberPagerState(
         pageCount = { bottomNavigationItems.size }
@@ -82,6 +69,11 @@ fun BottomNavigation(
                         navBackStack = navBackStack
                     )
                 }
+                3 -> {
+                    SettingsScreen(
+                        navBackStack = navBackStack
+                    )
+                }
             }
         }
         AnimatedVisibility(
@@ -89,7 +81,7 @@ fun BottomNavigation(
         ) {
             NavigationBar(
                 content = {
-                    bottomNavigationItems.fastForEachIndexed { index, pair ->
+                    bottomNavigationItems.fastForEachIndexed { index, staticModel ->
                         NavigationBarItem(
                             selected = pagerState.currentPage == index,
                             onClick = {
@@ -98,11 +90,15 @@ fun BottomNavigation(
                                 }
                             },
                             icon = {
-                                Icon(
-                                    imageVector = pair.first,
-                                    contentDescription = null
-                                )
-                            }
+                                val imageVector = when (staticModel.id) {
+                                    BottomNavigationId.Home -> Icons.Rounded.Home
+                                    BottomNavigationId.Script -> Icons.Rounded.InsertDriveFile
+                                    BottomNavigationId.Account -> Icons.Rounded.Person
+                                    BottomNavigationId.Settings -> Icons.Rounded.Settings
+                                }
+                                Icon(imageVector, null)
+                            },
+                            label = { Text(text = stringResource(staticModel.contentTextResId)) }
                         )
                     }
                 }

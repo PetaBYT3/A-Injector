@@ -53,5 +53,7 @@
 
     <string name="item_no_file">No File</string>
 
+    <string name="item_language">Language</string>
+
     <string name="item_empty">Empty</string>
 </resources>
