@@ -1,5 +1,6 @@
 package com.a.injector.presentation.hero
 
+import com.a.injector.data.util.TextResource
 import com.a.injector.domain.model.HeroDetailModel
 import com.a.injector.domain.model.SkinDetailModel
 
@@ -8,7 +9,7 @@ data class HeroState(
     val isModifyEnabled: Boolean = false,
 
     val isHeroDetailLoading: Boolean = true,
-    val isHeroDetailError: String? = null,
+    val isHeroDetailError: TextResource? = null,
     val heroDetail: HeroDetailModel = HeroDetailModel.EMPTY,
 
     val isActionSkinBottomSheetVisible: Boolean = false,

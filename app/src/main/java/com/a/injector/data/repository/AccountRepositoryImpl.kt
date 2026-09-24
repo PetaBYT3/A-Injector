@@ -2,7 +2,6 @@
 
 package com.a.injector.data.repository
 
-import android.content.Context
 import arrow.core.Either
 import com.a.injector.R
 import com.a.injector.data.dto.ProfileDto
@@ -14,6 +13,7 @@ import com.a.injector.data.mapper.toRequestDto
 import com.a.injector.data.remote.AuthApi
 import com.a.injector.data.remote.ProfileApi
 import com.a.injector.data.remote.RequestApi
+import com.a.injector.data.util.TextResource
 import com.a.injector.data.util.toMessage
 import com.a.injector.domain.model.ProfileModel
 import com.a.injector.domain.model.RequestDetailModel
@@ -44,7 +44,6 @@ import kotlin.uuid.Uuid
 
 @Single
 class AccountRepositoryImpl(
-    private val context: Context,
     private val authApi: AuthApi,
     private val profileApi: ProfileApi,
     private val requestApi: RequestApi
@@ -81,20 +80,20 @@ class AccountRepositoryImpl(
         initialValue = ProfileModel.EMPTY
     )
 
-    override fun signIn(email: String, password: String): Flow<Either<String, Unit>> {
-        return flow<Either<String, Unit>> {
+    override fun signIn(email: String, password: String): Flow<Either<TextResource, Unit>> {
+        return flow<Either<TextResource, Unit>> {
             authApi.signIn(
                 email = email,
                 password = password
             )
             emit(Either.Right(Unit))
         }.catch { throwable ->
-            emit(Either.Left(throwable.toMessage(context)))
+            emit(Either.Left(throwable.toMessage()))
         }.flowOn(Dispatchers.IO)
     }
 
-    override fun signUp(email: String, password: String): Flow<Either<String, Unit>> {
-        return flow<Either<String, Unit>> {
+    override fun signUp(email: String, password: String): Flow<Either<TextResource, Unit>> {
+        return flow<Either<TextResource, Unit>> {
             authApi.signUp(
                 email = email,
                 password = password
@@ -110,56 +109,56 @@ class AccountRepositoryImpl(
             )
             emit(Either.Right(Unit))
         }.catch { throwable ->
-            emit(Either.Left(throwable.toMessage(context)))
+            emit(Either.Left(throwable.toMessage()))
         }.flowOn(Dispatchers.IO)
     }
 
-    override fun signGuest(): Flow<Either<String, Unit>> {
-        return flow<Either<String, Unit>> {
+    override fun signGuest(): Flow<Either<TextResource, Unit>> {
+        return flow<Either<TextResource, Unit>> {
             authApi.signGuest()
             emit(Either.Right(Unit))
         }.catch { throwable ->
-            emit(Either.Left(throwable.toMessage(context)))
+            emit(Either.Left(throwable.toMessage()))
         }.flowOn(Dispatchers.IO)
     }
 
-    override fun signOut(): Flow<Either<String, Unit>> {
-        return flow<Either<String, Unit>> {
+    override fun signOut(): Flow<Either<TextResource, Unit>> {
+        return flow<Either<TextResource, Unit>> {
             authApi.signOut()
             emit(Either.Right(Unit))
         }.catch { throwable ->
-            emit(Either.Left(throwable.toMessage(context)))
+            emit(Either.Left(throwable.toMessage()))
         }.flowOn(Dispatchers.IO)
     }
 
-    override fun sendResetPassword(email: String): Flow<Either<String, String>> {
-        return flow<Either<String, String>> {
+    override fun sendResetPassword(email: String): Flow<Either<TextResource, TextResource>> {
+        return flow<Either<TextResource, TextResource>> {
             authApi.sendResetPassword(
                 email = email
             )
-            emit(Either.Right(context.getString(R.string.success_password_reset)))
+            emit(Either.Right(TextResource.StringResource(R.string.success_password_reset)))
         }.catch { throwable ->
-            emit(Either.Left(throwable.toMessage(context)))
+            emit(Either.Left(throwable.toMessage()))
         }.flowOn(Dispatchers.IO)
     }
 
-    override fun getProfileByHighestContribution(): Flow<Either<String, List<ProfileModel>>> {
+    override fun getProfileByHighestContribution(): Flow<Either<TextResource, List<ProfileModel>>> {
         return profileApi.getProfileByHighestContribution().map { profileDtos ->
             val profileModels = profileDtos.map { it.toProfileModel() }
-            Either.Right(profileModels) as Either<String, List<ProfileModel>>
+            Either.Right(profileModels) as Either<TextResource, List<ProfileModel>>
         }.catch { throwable ->
-            emit(Either.Left(throwable.toMessage(context)))
+            emit(Either.Left(throwable.toMessage()))
         }.flowOn(Dispatchers.IO)
     }
 
-    override fun upsertProfile(profileModel: ProfileModel): Flow<Either<String, String>> {
-        return flow<Either<String, String>> {
+    override fun upsertProfile(profileModel: ProfileModel): Flow<Either<TextResource, TextResource>> {
+        return flow<Either<TextResource, TextResource>> {
             profileApi.upsertProfile(
                 profileDto = profileModel.toProfileDto()
             )
-            emit(Either.Right(context.getString(R.string.success_update_profile)))
+            emit(Either.Right(TextResource.StringResource(R.string.success_update_profile)))
         }.catch { throwable ->
-            emit(Either.Left(throwable.toMessage(context)))
+            emit(Either.Left(throwable.toMessage()))
         }.flowOn(Dispatchers.IO)
     }
 
@@ -175,37 +174,37 @@ class AccountRepositoryImpl(
         }.flowOn(Dispatchers.IO)
     }
 
-    override fun getRequestDetails(): Flow<Either<String, List<RequestDetailModel>>> {
+    override fun getRequestDetails(): Flow<Either<TextResource, List<RequestDetailModel>>> {
         return requestApi.getRequestDetails().map { requestDetailDtos ->
             val requestDetailModelDto = requestDetailDtos.map { it.toRequestDetailModel() }
-            Either.Right(requestDetailModelDto) as Either<String, List<RequestDetailModel>>
+            Either.Right(requestDetailModelDto) as Either<TextResource, List<RequestDetailModel>>
         }.catch { throwable ->
-            emit(Either.Left(throwable.toMessage(context)))
+            emit(Either.Left(throwable.toMessage()))
         }.flowOn(Dispatchers.IO)
     }
 
-    override fun getGrantedByRole(role: Role): Flow<Either<String, List<ProfileModel>>> {
+    override fun getGrantedByRole(role: Role): Flow<Either<TextResource, List<ProfileModel>>> {
         return profileApi.getProfilesByRole(role).map { profileDtos ->
             val profileModels = profileDtos.map { it.toProfileModel() }
-            Either.Right(profileModels) as Either<String, List<ProfileModel>>
+            Either.Right(profileModels) as Either<TextResource, List<ProfileModel>>
         }.catch { throwable ->
-            emit(Either.Left(throwable.toMessage(context)))
+            emit(Either.Left(throwable.toMessage()))
         }.flowOn(Dispatchers.IO)
     }
 
-    override fun upsertRequest(requestModel: RequestModel): Flow<Either<String, String>> {
-        return flow<Either<String, String>> {
+    override fun upsertRequest(requestModel: RequestModel): Flow<Either<TextResource, TextResource>> {
+        return flow<Either<TextResource, TextResource>> {
             requestApi.upsertRequest(
                 requestDto = requestModel.toRequestDto()
             )
-            emit(Either.Right(context.getString(R.string.success_request_role)))
+            emit(Either.Right(TextResource.StringResource(R.string.success_request_role)))
         }.catch { throwable ->
-            emit(Either.Left(throwable.toMessage(context)))
+            emit(Either.Left(throwable.toMessage()))
         }.flowOn(Dispatchers.IO)
     }
 
-    override fun grantRequest(requestModel: RequestModel): Flow<Either<String, String>> {
-        return flow<Either<String, String>> {
+    override fun grantRequest(requestModel: RequestModel): Flow<Either<TextResource, TextResource>> {
+        return flow<Either<TextResource, TextResource>> {
             profileApi.upsertRole(
                 id = requestModel.id,
                 role = requestModel.role
@@ -213,9 +212,9 @@ class AccountRepositoryImpl(
             requestApi.deleteRequest(
                 requestDto = requestModel.toRequestDto()
             )
-            emit(Either.Left(context.getString(R.string.success_grant_role)))
+            emit(Either.Left(TextResource.StringResource(R.string.success_grant_role)))
         }.catch { throwable ->
-            emit(Either.Left(throwable.toMessage(context)))
+            emit(Either.Left(throwable.toMessage()))
         }.flowOn(Dispatchers.IO)
     }
 }

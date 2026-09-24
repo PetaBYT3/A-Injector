@@ -28,10 +28,13 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
+import com.a.injector.data.util.toMegaBytes
 import com.a.injector.presentation.component.CustomBottomSheet
+import com.a.injector.presentation.component.CustomButton
+import com.a.injector.presentation.component.CustomSurfaceText
 import com.a.injector.presentation.component.CustomTopAppBar
 import com.a.injector.presentation.component.DefaultClickableListItem
-import com.a.injector.presentation.component.ScreenEffectLauncher
+import com.a.injector.presentation.util.ScreenEffectLauncher
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -125,6 +128,26 @@ private fun Screen(
             }
         }
     )
+
+    CustomBottomSheet(
+        visible = state.isClearCacheBottomSheetVisible,
+        onDismiss = { onAction(SettingsAction.CleanCacheBottomSheet) },
+        title = stringResource(R.string.action_clear),
+        content = {
+            item {
+                CustomSurfaceText(text = stringResource(R.string.lorem_ipsum))
+            }
+        },
+        bottomBar = {
+            CustomButton(
+                onClick = {
+                    onAction(SettingsAction.CleanCacheBottomSheet)
+                    onAction(SettingsAction.CleanCacheButton)
+                },
+                text = stringResource(R.string.action_clean)
+            )
+        }
+    )
 }
 
 @Composable
@@ -154,7 +177,7 @@ private fun Content(
                             onAction(SettingsAction.LanguageBottomSheet)
                         }
                         SettingsMenuId.CleanCache -> {
-
+                            onAction(SettingsAction.CleanCacheBottomSheet)
                         }
                     }
                 },
@@ -173,7 +196,9 @@ private fun Content(
                             val displayCountry = state.currentLanguage.displayCountry
                             "$displayLanguage ($displayCountry)"
                         }
-                        SettingsMenuId.CleanCache -> stringResource(staticModel.supportingTextResId!!)
+                        SettingsMenuId.CleanCache -> {
+                            state.cacheSize.toMegaBytes()
+                        }
                     }
                     Text(text = text)
                 }

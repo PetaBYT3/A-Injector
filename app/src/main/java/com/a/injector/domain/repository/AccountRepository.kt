@@ -2,6 +2,7 @@ package com.a.injector.domain.repository
 
 import arrow.core.Either
 import com.a.injector.data.dto.Role
+import com.a.injector.data.util.TextResource
 import com.a.injector.domain.model.ProfileModel
 import com.a.injector.domain.model.RequestDetailModel
 import com.a.injector.domain.model.RequestModel
@@ -16,18 +17,18 @@ interface AccountRepository {
     val currentUserInfo: StateFlow<UserInfo?>
     val currentProfile: StateFlow<ProfileModel>
 
-    fun signIn(email: String, password: String): Flow<Either<String, Unit>>
-    fun signUp(email: String, password: String): Flow<Either<String, Unit>>
-    fun signGuest(): Flow<Either<String, Unit>>
-    fun signOut(): Flow<Either<String, Unit>>
-    fun sendResetPassword(email: String): Flow<Either<String, String>>
+    fun signIn(email: String, password: String): Flow<Either<TextResource, Unit>>
+    fun signUp(email: String, password: String): Flow<Either<TextResource, Unit>>
+    fun signGuest(): Flow<Either<TextResource, Unit>>
+    fun signOut(): Flow<Either<TextResource, Unit>>
+    fun sendResetPassword(email: String): Flow<Either<TextResource, TextResource>>
 
-    fun getProfileByHighestContribution(): Flow<Either<String, List<ProfileModel>>>
-    fun upsertProfile(profileModel: ProfileModel): Flow<Either<String, String>>
+    fun getProfileByHighestContribution(): Flow<Either<TextResource, List<ProfileModel>>>
+    fun upsertProfile(profileModel: ProfileModel): Flow<Either<TextResource, TextResource>>
 
     fun getRequestStatus(): Flow<RequestState>
-    fun getRequestDetails(): Flow<Either<String, List<RequestDetailModel>>>
-    fun getGrantedByRole(role: Role): Flow<Either<String, List<ProfileModel>>>
-    fun upsertRequest(requestModel: RequestModel): Flow<Either<String, String>>
-    fun grantRequest(requestModel: RequestModel): Flow<Either<String, String>>
+    fun getRequestDetails(): Flow<Either<TextResource, List<RequestDetailModel>>>
+    fun getGrantedByRole(role: Role): Flow<Either<TextResource, List<ProfileModel>>>
+    fun upsertRequest(requestModel: RequestModel): Flow<Either<TextResource, TextResource>>
+    fun grantRequest(requestModel: RequestModel): Flow<Either<TextResource, TextResource>>
 }

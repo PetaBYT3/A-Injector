@@ -39,10 +39,10 @@ import com.a.injector.presentation.account.AccountScreen
 import com.a.injector.presentation.component.CustomBottomSheet
 import com.a.injector.presentation.component.CustomButton
 import com.a.injector.presentation.component.CustomSurfaceText
-import com.a.injector.presentation.component.ScreenEffectLauncher
 import com.a.injector.presentation.home.HomeScreen
 import com.a.injector.presentation.script.ScriptScreen
 import com.a.injector.presentation.settings.SettingsScreen
+import com.a.injector.presentation.util.ScreenEffectLauncher
 import com.a.injector.presentation.util.openInBrowser
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel

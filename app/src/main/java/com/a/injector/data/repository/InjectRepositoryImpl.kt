@@ -11,6 +11,7 @@ import com.a.injector.data.local.UserDataStoreApi
 import com.a.injector.data.remote.StorageApi
 import com.a.injector.data.system.ShizukuCommandService
 import com.a.injector.data.system.SuperuserCommandService
+import com.a.injector.data.util.TextResource
 import com.a.injector.data.util.toMessage
 import com.a.injector.domain.model.CommandServiceModel
 import com.a.injector.domain.model.ReplaceModel
@@ -69,19 +70,19 @@ class InjectRepositoryImpl(
         }
     }
 
-    override fun setCommandService(commandService: CommandService): Flow<Either<String, String>> {
-        return flow<Either<String, String>> {
+    override fun setCommandService(commandService: CommandService): Flow<Either<TextResource, TextResource>> {
+        return flow<Either<TextResource, TextResource>> {
             userDataStoreApi.setCommandService(
                 commandService = commandService
             )
-            emit(Either.Right(context.getString(R.string.title_success)))
+            emit(Either.Right(TextResource.StringResource(R.string.success_install_script)))
         }.catch { throwable ->
-            emit(Either.Left(throwable.toMessage(context)))
+            emit(Either.Left(throwable.toMessage()))
         }.flowOn(Dispatchers.IO)
     }
 
-    override fun start(replaceModel: ReplaceModel): Flow<Either<String, String>> {
-        return flow<Either<String, String>> {
+    override fun start(replaceModel: ReplaceModel): Flow<Either<TextResource, TextResource>> {
+        return flow<Either<TextResource, TextResource>> {
             val fileName = "${replaceModel.id}.zip"
 
             validateReplace(fileName, replaceModel.fileSize)
@@ -105,23 +106,23 @@ class InjectRepositoryImpl(
             }
 
             extractedDir.deleteRecursively()
-            emit(Either.Right(context.getString(R.string.success_install_script)))
+            emit(Either.Right(TextResource.StringResource(R.string.success_install_script)))
         }.catch { throwable ->
-            emit(Either.Left(throwable.toMessage(context)))
+            emit(Either.Left(throwable.toMessage()))
         }.flowOn(Dispatchers.IO)
     }
 
-    override fun execute(replaceModel: ReplaceModel): Flow<Either<String, String>> {
-        return flow<Either<String, String>> {
+    override fun execute(replaceModel: ReplaceModel): Flow<Either<TextResource, TextResource>> {
+        return flow<Either<TextResource, TextResource>> {
             val fileName = "${replaceModel.id}.zip"
 
             val replaceFile = validateReplace(fileName, replaceModel.fileSize)
             val extractedReplace = extractAssets(replaceFile)
             copyAssets(extractedReplace)
 
-            emit(Either.Right(context.getString(R.string.success_install_script)))
+            emit(Either.Right(TextResource.StringResource(R.string.success_install_script)))
         }.catch { throwable ->
-            emit(Either.Left(throwable.toMessage(context)))
+            emit(Either.Left(throwable.toMessage()))
         }.flowOn(Dispatchers.IO)
     }
 

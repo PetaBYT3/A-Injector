@@ -5,28 +5,22 @@ import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 
-sealed class TextRes {
-    data class DynamicString(
-        val value: String
-    ): TextRes()
-
-    class StringResource(
-        @StringRes val resId: Int,
-        vararg val args: Any
-    ): TextRes()
+sealed interface TextResource {
+    data class DynamicString(val value: String): TextResource
+    class StringResource(@StringRes val resId: Int): TextResource
 
     @Composable
     fun asString(): String {
         return when (this) {
             is DynamicString -> value
-            is StringResource -> stringResource(resId, args)
+            is StringResource -> stringResource(resId)
         }
     }
 
     fun asString(context: Context): String {
         return when (this) {
             is DynamicString -> value
-            is StringResource -> context.getString(resId, args)
+            is StringResource -> context.getString(resId)
         }
     }
 }

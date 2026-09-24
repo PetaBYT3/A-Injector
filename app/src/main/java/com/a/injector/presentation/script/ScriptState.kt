@@ -1,5 +1,6 @@
 package com.a.injector.presentation.script
 
+import com.a.injector.data.util.TextResource
 import com.a.injector.domain.model.HeroModel
 
 data class ScriptState(
@@ -7,7 +8,7 @@ data class ScriptState(
     val isModifyEnabled: Boolean = false,
 
     val isHeroesLoading: Boolean = true,
-    val isHeroesError: String? = null,
+    val isHeroesError: TextResource? = null,
     val heroes: List<HeroModel> = emptyList(),
     val filteredHeroes: List<HeroModel> = emptyList(),
 

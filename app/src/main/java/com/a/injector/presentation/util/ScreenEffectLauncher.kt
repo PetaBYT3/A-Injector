@@ -1,4 +1,4 @@
-package com.a.injector.presentation.component
+package com.a.injector.presentation.util
 
 import android.widget.Toast
 import androidx.compose.material3.SnackbarHostState
@@ -8,7 +8,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
-import com.a.injector.presentation.util.ScreenEffect
 import kotlinx.coroutines.flow.Flow
 
 @Composable
@@ -25,12 +24,12 @@ fun ScreenEffectLauncher(
                 when (effect) {
                     is ScreenEffect.ShowSnackBar -> {
                         snackBarHostState.showSnackbar(
-                            message = effect.message,
+                            message = effect.message.asString(context),
                             withDismissAction = true
                         )
                     }
                     is ScreenEffect.ShowToast -> {
-                        Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, effect.message.asString(context), Toast.LENGTH_SHORT).show()
                     }
                 }
             }

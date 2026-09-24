@@ -36,6 +36,14 @@ class SettingsViewModel(
                 }
             }
         }
+
+        viewModelScope.launch {
+            settingsRepository.cacheSize.collect { size ->
+                _state.update { currentState ->
+                    currentState.copy(cacheSize = size)
+                }
+            }
+        }
     }
 
     fun onAction(action: SettingsAction) {
@@ -82,9 +90,9 @@ class SettingsViewModel(
                 _state.update { it.copy(isClearCacheButtonLoading = false) }
             }.collect { either ->
                 either.onRight { textRes ->
-
+                    _effect.send(ScreenEffect.ShowSnackBar(textRes))
                 }.onLeft { textRes ->
-                    _effect.send(ScreenEffect.ShowSnackBar(textRes.asString(context = )))
+                    _effect.send(ScreenEffect.ShowSnackBar(textRes))
                 }
             }
         }

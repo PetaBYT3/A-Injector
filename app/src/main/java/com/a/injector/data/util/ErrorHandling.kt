@@ -1,6 +1,5 @@
 package com.a.injector.data.util
 
-import android.content.Context
 import com.a.injector.R
 import io.github.jan.supabase.exceptions.RestException
 import io.github.jan.supabase.postgrest.exception.PostgrestRestException
@@ -8,21 +7,25 @@ import io.ktor.client.network.sockets.ConnectTimeoutException
 import java.net.ConnectException
 import java.net.UnknownHostException
 
-fun Throwable.toMessage(context: Context): String {
+fun Throwable.toMessage(): TextResource {
     return when (this) {
         is PostgrestRestException -> {
             when (this.code) {
                 "23505" -> {
-                    context.getString(R.string.exception_data_already_exist)
+                    TextResource.StringResource(R.string.exception_data_already_exist)
                 }
                 "23503" -> {
-                    context.getString(R.string.exception_no_data)
+                    TextResource.StringResource(R.string.exception_no_data)
                 }
                 "PGRST116" -> {
-                    context.getString(R.string.exception_no_data)
+                    TextResource.StringResource(R.string.exception_no_data)
                 }
                 else -> {
-                    this.message ?: context.getString(R.string.exception_server_error)
+                    if (this.message != null) {
+                        TextResource.DynamicString(this.message!!)
+                    } else {
+                        TextResource.StringResource(R.string.exception_server_error)
+                    }
                 }
             }
         }
@@ -31,39 +34,43 @@ fun Throwable.toMessage(context: Context): String {
             val description = this.description?.lowercase() ?: ""
             when {
                 errorCode == "invalid_grant" || "invalid login credentials" in description -> {
-                    context.getString(R.string.exception_credential_invalid)
+                    TextResource.StringResource(R.string.exception_credential_invalid)
                 }
                 errorCode == "user_already_exists" || "already registered" in description -> {
-                    context.getString(R.string.exception_email_used)
+                    TextResource.StringResource(R.string.exception_email_used)
                 }
                 errorCode == "over_email_send_rate_limit" || errorCode == "too_many_requests" || "rate limit" in description -> {
-                    context.getString(R.string.exception_too_many_attempts)
+                    TextResource.StringResource(R.string.exception_too_many_attempts)
                 }
                 errorCode == "weak_password" || "password should be at least" in description -> {
-                    context.getString(R.string.exception_password_weak)
+                    TextResource.StringResource(R.string.exception_password_weak)
                 }
                 errorCode == "validation_failed" || "invalid email" in description -> {
-                    context.getString(R.string.exception_email_invalid)
+                    TextResource.StringResource(R.string.exception_email_invalid)
                 }
                 errorCode == "email_not_confirmed" || "email not confirmed" in description -> {
-                    context.getString(R.string.exception_email_unverified)
+                    TextResource.StringResource(R.string.exception_email_unverified)
                 }
                 errorCode == "user_not_found" -> {
-                    context.getString(R.string.exception_user_not_found)
+                    TextResource.StringResource(R.string.exception_user_not_found)
                 }
                 else -> {
-                    this.description ?: context.getString(R.string.exception_server_error)
+                    if (this.message != null) {
+                        TextResource.DynamicString(this.message!!)
+                    } else {
+                        TextResource.StringResource(R.string.exception_server_error)
+                    }
                 }
             }
         }
         is ConnectTimeoutException -> {
-            context.getString(R.string.exception_connection_timeout)
+            TextResource.StringResource(R.string.exception_connection_timeout)
         }
         is ConnectException, is UnknownHostException -> {
-            context.getString(R.string.exception_no_connection)
+            TextResource.StringResource(R.string.exception_no_connection)
         }
         else -> {
-            this.message ?: context.getString(R.string.exception_unknown_error)
+            TextResource.StringResource(R.string.exception_unknown_error)
         }
     }
 }

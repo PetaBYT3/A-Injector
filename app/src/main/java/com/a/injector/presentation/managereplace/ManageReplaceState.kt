@@ -1,5 +1,6 @@
 package com.a.injector.presentation.managereplace
 
+import com.a.injector.data.util.TextResource
 import com.a.injector.domain.model.HeroModel
 import com.a.injector.domain.model.ReplaceModel
 import com.a.injector.domain.model.SkinModel
@@ -9,15 +10,15 @@ data class ManageReplaceState(
     val isOnEdit: Boolean = false,
 
     val isHeroLoading: Boolean = true,
-    val isHeroError: String? = null,
+    val isHeroError: TextResource? = null,
     val hero: HeroModel = HeroModel.EMPTY,
 
     val isSkinLoading: Boolean = true,
-    val isSkinError: String? = null,
+    val isSkinError: TextResource? = null,
     val skin: SkinModel = SkinModel.EMPTY,
 
     val isReplaceLoading: Boolean = true,
-    val isReplaceError: String? = null,
+    val isReplaceError: TextResource? = null,
     val replace: ReplaceModel = ReplaceModel.EMPTY,
     val replaceFile: PlatformFile? = null,
 

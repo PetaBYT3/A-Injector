@@ -46,11 +46,11 @@ import com.a.injector.presentation.component.DefaultClickableListItem
 import com.a.injector.presentation.component.DefaultListItem
 import com.a.injector.presentation.component.MessageListItem
 import com.a.injector.presentation.component.PrimaryListItem
-import com.a.injector.presentation.component.ScreenEffectLauncher
 import com.a.injector.presentation.component.SkinDetailListItem
 import com.a.injector.presentation.component.spacer
 import com.a.injector.presentation.navigation.NavigationRoute
 import com.a.injector.presentation.navigation.popBackStack
+import com.a.injector.presentation.util.ScreenEffectLauncher
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -219,7 +219,7 @@ private fun Content(
                 MessageListItem(
                     modifier = Modifier
                         .animateItem(),
-                    text = state.isHeroDetailError,
+                    text = state.isHeroDetailError.asString(),
                     isError = true
                 )
             }

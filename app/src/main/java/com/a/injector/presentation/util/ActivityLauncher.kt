@@ -12,6 +12,7 @@ import com.a.injector.R
 fun openStoragePermissionSettings(context: Context) {
     val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION).apply {
         data = "package:${BuildConfig.APPLICATION_ID}".toUri()
+        flags = Intent.FLAG_ACTIVITY_NEW_TASK
     }
     context.startActivity(intent)
 }

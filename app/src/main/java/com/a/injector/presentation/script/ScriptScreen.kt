@@ -189,7 +189,7 @@ private fun Content(
                     MessageListItem(
                         modifier = Modifier
                             .animateItem(),
-                        text = state.isHeroesError,
+                        text = state.isHeroesError.asString(),
                         isError = true
                     )
                 }

@@ -23,6 +23,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -41,6 +42,7 @@ import com.a.injector.presentation.component.DefaultListItem
 import com.a.injector.presentation.component.MessageListItem
 import com.a.injector.presentation.component.PrimaryListItem
 import com.a.injector.presentation.component.spacer
+import com.a.injector.presentation.util.openInBrowser
 import com.a.injector.presentation.util.openStoragePermissionSettings
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -102,6 +104,7 @@ private fun Content(
     onAction: (HomeAction) -> Unit
 ) {
     val context = LocalContext.current
+    val uriHandler = LocalUriHandler.current
 
     LazyColumn(
         modifier = modifier,
@@ -151,10 +154,15 @@ private fun Content(
                 index = index,
                 count = homeAboutDeveloperItems.size,
                 onClick = {
-                    when (staticModel.id) {
-                        HomeAboutDeveloperId.Github -> {}
-                        HomeAboutDeveloperId.Support -> {}
+                    val url = when (staticModel.id) {
+                        HomeAboutDeveloperId.Github -> "https://github.com/PetaBYT3"
+                        HomeAboutDeveloperId.Support -> ""
                     }
+                    openInBrowser(
+                        context = context,
+                        uriHandler = uriHandler,
+                        url = url
+                    )
                 },
                 leadingContent = {
                     val imageVector = when (staticModel.id) {
@@ -189,7 +197,7 @@ private fun Content(
                     MessageListItem(
                         modifier = Modifier
                             .animateItem(),
-                        text = state.isHighestContributionProfileError,
+                        text = state.isHighestContributionProfileError.asString(),
                         isError = true
                     )
                 }

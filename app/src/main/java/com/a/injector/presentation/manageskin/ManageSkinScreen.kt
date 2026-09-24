@@ -39,9 +39,9 @@ import com.a.injector.presentation.component.CustomTextField
 import com.a.injector.presentation.component.CustomTextListTitle
 import com.a.injector.presentation.component.CustomTopAppBar
 import com.a.injector.presentation.component.DefaultListItem
-import com.a.injector.presentation.component.ScreenEffectLauncher
 import com.a.injector.presentation.component.spacer
 import com.a.injector.presentation.navigation.popBackStack
+import com.a.injector.presentation.util.ScreenEffectLauncher
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 

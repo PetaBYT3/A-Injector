@@ -39,8 +39,8 @@ import com.a.injector.presentation.component.CustomCenterTextMessage
 import com.a.injector.presentation.component.CustomTonalButton
 import com.a.injector.presentation.component.CustomTopAppBar
 import com.a.injector.presentation.component.DefaultListItem
-import com.a.injector.presentation.component.ScreenEffectLauncher
 import com.a.injector.presentation.navigation.popBackStack
+import com.a.injector.presentation.util.ScreenEffectLauncher
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 

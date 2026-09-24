@@ -1,6 +1,7 @@
 package com.a.injector.domain.repository
 
 import arrow.core.Either
+import com.a.injector.data.util.TextResource
 import com.a.injector.domain.model.HeroDetailModel
 import com.a.injector.domain.model.HeroModel
 import com.a.injector.domain.model.ReplaceModel
@@ -10,22 +11,25 @@ import io.github.vinceglb.filekit.PlatformFile
 import kotlinx.coroutines.flow.Flow
 
 interface DatabaseRepository {
-    fun getVersion(): Flow<Either<String, VersionModel>>
+    fun getVersion(): Flow<Either<TextResource, VersionModel>>
 
-    fun getHeroDetails(): Flow<Either<String, List<HeroDetailModel>>>
-    fun getHeroDetail(id: String): Flow<Either<String, HeroDetailModel>>
-    fun getHeroes(): Flow<Either<String, List<HeroModel>>>
-    fun getHero(heroId: String): Flow<Either<String, HeroModel>>
-    fun upsertHero(heroModel: HeroModel): Flow<Either<String, String>>
-    fun deleteHero(heroModel: HeroModel): Flow<Either<String, String>>
+    fun getHeroDetails(): Flow<Either<TextResource, List<HeroDetailModel>>>
+    fun getHeroDetail(id: String): Flow<Either<TextResource, HeroDetailModel>>
+    fun getHeroes(): Flow<Either<TextResource, List<HeroModel>>>
+    fun getHero(heroId: String): Flow<Either<TextResource, HeroModel>>
+    fun upsertHero(heroModel: HeroModel): Flow<Either<TextResource, TextResource>>
+    fun deleteHero(heroModel: HeroModel): Flow<Either<TextResource, TextResource>>
 
-    fun getSkin(skinId: String): Flow<Either<String, SkinModel>>
-    fun upsertSkin(skinModel: SkinModel): Flow<Either<String, String>>
-    fun deleteSkin(skinModel: SkinModel): Flow<Either<String, String>>
+    fun getSkin(skinId: String): Flow<Either<TextResource, SkinModel>>
+    fun upsertSkin(skinModel: SkinModel): Flow<Either<TextResource, TextResource>>
+    fun deleteSkin(skinModel: SkinModel): Flow<Either<TextResource, TextResource>>
 
-    fun getReplace(replaceId: String): Flow<Either<String, ReplaceModel>>
-    fun upsertReplace(replaceModel: ReplaceModel, platformFile: PlatformFile?): Flow<Either<String, String>>
-    fun deleteReplace(replaceModel: ReplaceModel): Flow<Either<String, String>>
+    fun getReplace(replaceId: String): Flow<Either<TextResource, ReplaceModel>>
+    fun upsertReplace(
+        replaceModel: ReplaceModel,
+        platformFile: PlatformFile?
+    ): Flow<Either<TextResource, TextResource>>
+    fun deleteReplace(replaceModel: ReplaceModel): Flow<Either<TextResource, TextResource>>
 
-    fun cleanStorage(): Flow<Either<String, String>>
+    fun cleanStorage(): Flow<Either<TextResource, TextResource>>
 }
