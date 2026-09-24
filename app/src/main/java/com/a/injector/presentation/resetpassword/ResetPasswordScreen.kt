@@ -136,7 +136,7 @@ private fun Content(
                 CustomButton(
                     modifier = Modifier
                         .height(ButtonDefaults.MediumContainerHeight),
-                    onClick = {},
+                    onClick = { onAction(ResetPasswordAction.SendResetButton) },
                     text = stringResource(R.string.action_send),
                     isLoading = state.isSendResetButtonLoading
                 )

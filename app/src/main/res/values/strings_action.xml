@@ -32,4 +32,6 @@
     <string name="action_requested">Requested</string>
 
     <string name="action_send">Send</string>
+
+    <string name="action_cleared">Cleared</string>
 </resources>

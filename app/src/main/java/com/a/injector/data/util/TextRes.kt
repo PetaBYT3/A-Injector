@@ -5,15 +5,15 @@ import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 
-sealed class Text {
+sealed class TextRes {
     data class DynamicString(
         val value: String
-    ): Text()
+    ): TextRes()
 
     class StringResource(
         @StringRes val resId: Int,
         vararg val args: Any
-    ): Text()
+    ): TextRes()
 
     @Composable
     fun asString(): String {

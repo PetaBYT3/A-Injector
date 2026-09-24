@@ -4,5 +4,8 @@ import java.util.Locale
 
 data class SettingsState(
     val currentLanguage: Locale = Locale.US,
-    val isLanguageBottomSheetVisible: Boolean = false
+    val isLanguageBottomSheetVisible: Boolean = false,
+
+    val isClearCacheBottomSheetVisible: Boolean = false,
+    val isClearCacheButtonLoading: Boolean = false
 )

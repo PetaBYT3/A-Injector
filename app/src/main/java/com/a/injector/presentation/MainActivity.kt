@@ -26,11 +26,15 @@ import com.a.injector.domain.repository.DirectoryRepository
 import com.a.injector.domain.repository.PermissionRepository
 import com.a.injector.presentation.navigation.NavigationScreen
 import com.a.injector.presentation.theme.ui.AInjectorTheme
+import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.realtime.realtime
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import java.util.Locale
 
 class MainActivity : ComponentActivity() {
+    private val supabaseClient: SupabaseClient by inject()
+
     private val viewModel: MainViewModel by inject()
 
     private val directoryRepository: DirectoryRepository by inject()
@@ -43,6 +47,7 @@ class MainActivity : ComponentActivity() {
         directoryRepository.initialize()
 
         lifecycleScope.launch {
+            supabaseClient.realtime.connect()
             permissionRepository.checkPermission()
             shizukuCommandService.check()
             superuserCommandService.check()
@@ -93,6 +98,7 @@ class MainActivity : ComponentActivity() {
         super.onDestroy()
 
         lifecycleScope.launch {
+            supabaseClient.realtime.disconnect()
             shizukuCommandService.destroy()
         }
     }

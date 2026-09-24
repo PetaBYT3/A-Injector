@@ -32,4 +32,6 @@
     <string name="action_requested">Diminta</string>
 
     <string name="action_send">Kirim</string>
+
+    <string name="action_cleared">Dibersihkan</string>
 </resources>

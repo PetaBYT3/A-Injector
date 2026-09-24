@@ -62,9 +62,7 @@ fun CustomButton(
                 CircularWavyProgressIndicator(
                     modifier = Modifier
                         .size(ButtonDefaults.IconSize)
-                        .graphicsLayer(alpha = if (isLoading) 1f else 0f),
-                    stroke = buttonCircularStore(density),
-                    trackStroke = buttonCircularStore(density)
+                        .graphicsLayer(alpha = if (isLoading) 1f else 0f)
                 )
             }
         },
@@ -99,9 +97,7 @@ fun CustomTonalButton(
                 CircularWavyProgressIndicator(
                     modifier = Modifier
                         .size(ButtonDefaults.IconSize)
-                        .graphicsLayer(alpha = if (isLoading) 1f else 0f),
-                    stroke = buttonCircularStore(density),
-                    trackStroke = buttonCircularStore(density)
+                        .graphicsLayer(alpha = if (isLoading) 1f else 0f)
                 )
             }
         },
