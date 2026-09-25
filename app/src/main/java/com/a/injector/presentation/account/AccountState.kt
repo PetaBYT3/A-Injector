@@ -20,6 +20,7 @@ data class AccountState(
     val isCleanStorageButtonLoading: Boolean = false,
 
     val isChangePasswordBottomSheetVisible: Boolean = false,
+    val newPasswordTextField: String = "",
     val isChangePasswordButtonLoading: Boolean = false,
 
     val isSignOutBottomSheetVisible: Boolean = false,
@@ -28,4 +29,13 @@ data class AccountState(
     val isContentLoading: Boolean get() =
         isUserInfoLoading &&
         isProfileLoading
+
+    val isPasswordMoreThan8Character: Boolean get() = newPasswordTextField.length >= 8
+    val isPasswordContainUppercase: Boolean get() = newPasswordTextField.any { it.isUpperCase() }
+    val isPasswordContainNumber: Boolean get() = newPasswordTextField.any { it.isDigit() }
+
+    val isPasswordValid: Boolean get() =
+        isPasswordMoreThan8Character &&
+        isPasswordContainUppercase &&
+        isPasswordContainNumber
 }

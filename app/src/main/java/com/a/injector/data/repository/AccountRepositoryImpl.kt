@@ -113,6 +113,32 @@ class AccountRepositoryImpl(
         }.flowOn(Dispatchers.IO)
     }
 
+    override fun signOtp(email: String): Flow<Either<TextResource, TextResource>> {
+        return flow<Either<TextResource, TextResource>> {
+            authApi.signOtp(
+                email = email
+            )
+            emit(Either.Right(TextResource.DynamicString("")))
+        }.catch { throwable ->
+            emit(Either.Left(throwable.toMessage()))
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override fun verifyOtp(
+        email: String,
+        otp: String
+    ): Flow<Either<TextResource, TextResource>> {
+        return flow<Either<TextResource, TextResource>> {
+            authApi.verifyOtp(
+                email = email,
+                otp = otp
+            )
+            emit(Either.Right(TextResource.DynamicString("")))
+        }.catch { throwable ->
+            emit(Either.Left(throwable.toMessage()))
+        }.flowOn(Dispatchers.IO)
+    }
+
     override fun signGuest(): Flow<Either<TextResource, Unit>> {
         return flow<Either<TextResource, Unit>> {
             authApi.signGuest()
@@ -126,6 +152,17 @@ class AccountRepositoryImpl(
         return flow<Either<TextResource, Unit>> {
             authApi.signOut()
             emit(Either.Right(Unit))
+        }.catch { throwable ->
+            emit(Either.Left(throwable.toMessage()))
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override fun changePassword(password: String): Flow<Either<TextResource, TextResource>> {
+        return flow<Either<TextResource, TextResource>> {
+            authApi.changePassword(
+                password = password
+            )
+            emit(Either.Right(TextResource.DynamicString("")))
         }.catch { throwable ->
             emit(Either.Left(throwable.toMessage()))
         }.flowOn(Dispatchers.IO)

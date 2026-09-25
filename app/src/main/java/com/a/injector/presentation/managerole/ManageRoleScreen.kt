@@ -45,18 +45,17 @@ import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun ManageRoleScreen(
+fun ManageRoleScreenRoot(
     navBackStack: NavBackStack<NavKey>,
     viewModel: ManageRoleViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val onAction = viewModel::onAction
     val snackBarHostState = remember { SnackbarHostState() }
 
     Screen(
         navBackStack = navBackStack,
         state = state,
-        onAction = onAction,
+        onAction = viewModel::onAction,
         snackBarHostState = snackBarHostState
     )
 

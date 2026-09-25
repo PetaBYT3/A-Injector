@@ -21,13 +21,13 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.a.injector.domain.model.state.NavigationState
 import com.a.injector.domain.repository.NavigationRepository
-import com.a.injector.presentation.bottomnavigation.BottomNavigationScreen
-import com.a.injector.presentation.hero.HeroScreen
-import com.a.injector.presentation.landing.LandingScreen
-import com.a.injector.presentation.loading.LoadingScreen
-import com.a.injector.presentation.managehero.ManageHeroScreen
-import com.a.injector.presentation.managereplace.ManageReplaceScreen
-import com.a.injector.presentation.managerole.ManageRoleScreen
+import com.a.injector.presentation.bottomnavigation.BottomNavigationScreenRoot
+import com.a.injector.presentation.hero.HeroScreenRoot
+import com.a.injector.presentation.landing.LandingScreenRoot
+import com.a.injector.presentation.loading.LoadingScreenRoot
+import com.a.injector.presentation.managehero.ManageHeroScreenRoot
+import com.a.injector.presentation.managereplace.ManageReplaceScreenRoot
+import com.a.injector.presentation.managerole.ManageRoleScreenRoot
 import com.a.injector.presentation.manageskin.ManageSkinScreen
 import com.a.injector.presentation.resetpassword.ResetPasswordScreen
 import com.a.injector.presentation.signin.SignInScreen
@@ -73,14 +73,14 @@ fun NavigationScreen(
             when (navKey) {
                 is NavigationRoute.LoadingScreen -> {
                     NavEntry(navKey) {
-                        LoadingScreen(
+                        LoadingScreenRoot(
                             navBackStack = navBackStack
                         )
                     }
                 }
                 is NavigationRoute.LandingScreen -> {
                     NavEntry(navKey) {
-                        LandingScreen(
+                        LandingScreenRoot(
                             navBackStack = navBackStack
                         )
                     }
@@ -108,14 +108,14 @@ fun NavigationScreen(
                 }
                 is NavigationRoute.BottomNavigation -> {
                     NavEntry(navKey) {
-                        BottomNavigationScreen(
+                        BottomNavigationScreenRoot(
                             navBackStack = navBackStack
                         )
                     }
                 }
                 is NavigationRoute.HeroScreen -> {
                     NavEntry(navKey) {
-                        HeroScreen(
+                        HeroScreenRoot(
                             navBackStack = navBackStack,
                             heroId = navKey.heroId,
                         )
@@ -123,7 +123,7 @@ fun NavigationScreen(
                 }
                 is NavigationRoute.ManageHeroScreen -> {
                     NavEntry(navKey) {
-                        ManageHeroScreen(
+                        ManageHeroScreenRoot(
                             navBackStack = navBackStack,
                             heroId = navKey.heroId
                         )
@@ -140,7 +140,7 @@ fun NavigationScreen(
                 }
                 is NavigationRoute.ManageReplaceScreen -> {
                     NavEntry(navKey) {
-                        ManageReplaceScreen(
+                        ManageReplaceScreenRoot(
                             navBackStack = navBackStack,
                             heroId = navKey.heroId,
                             skinId = navKey.skinId,
@@ -150,7 +150,7 @@ fun NavigationScreen(
                 }
                 is NavigationRoute.ManageRoleScreen -> {
                     NavEntry(navKey) {
-                        ManageRoleScreen(
+                        ManageRoleScreenRoot(
                             navBackStack = navBackStack
                         )
                     }

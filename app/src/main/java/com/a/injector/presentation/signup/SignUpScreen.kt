@@ -198,28 +198,28 @@ private fun Content(
                     modifier = Modifier
                         .align(Alignment.TopStart)
                 ) {
-                    signUpPasswordRequirementItem.fastForEach { staticModel ->
+                    passwordRequirements.fastForEach { staticModel ->
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(5.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
                                 tint = when (staticModel.id) {
-                                    SignUpPasswordRequirementId.MoreThanEightCharacter -> {
+                                    PasswordRequirement.MoreThanEightCharacter -> {
                                         if (state.isPasswordMoreThan8Character) {
                                             MaterialTheme.colorScheme.primary
                                         } else {
                                             MaterialTheme.colorScheme.onSurfaceVariant
                                         }
                                     }
-                                    SignUpPasswordRequirementId.ContainUppercase -> {
+                                    PasswordRequirement.ContainUppercase -> {
                                         if (state.isPasswordContainUppercase) {
                                             MaterialTheme.colorScheme.primary
                                         } else {
                                             MaterialTheme.colorScheme.onSurfaceVariant
                                         }
                                     }
-                                    SignUpPasswordRequirementId.ContainNumber -> {
+                                    PasswordRequirement.ContainNumber -> {
                                         if (state.isPasswordContainNumber) {
                                             MaterialTheme.colorScheme.primary
                                         } else {
@@ -228,21 +228,21 @@ private fun Content(
                                     }
                                 },
                                 imageVector = when (staticModel.id) {
-                                    SignUpPasswordRequirementId.MoreThanEightCharacter -> {
+                                    PasswordRequirement.MoreThanEightCharacter -> {
                                         if (state.isPasswordMoreThan8Character) {
                                             Icons.Rounded.Check
                                         } else {
                                             Icons.Rounded.Close
                                         }
                                     }
-                                    SignUpPasswordRequirementId.ContainUppercase -> {
+                                    PasswordRequirement.ContainUppercase -> {
                                         if (state.isPasswordContainUppercase) {
                                             Icons.Rounded.Check
                                         } else {
                                             Icons.Rounded.Close
                                         }
                                     }
-                                    SignUpPasswordRequirementId.ContainNumber -> {
+                                    PasswordRequirement.ContainNumber -> {
                                         if (state.isPasswordContainNumber) {
                                             Icons.Rounded.Check
                                         } else {

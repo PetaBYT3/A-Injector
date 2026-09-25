@@ -39,23 +39,23 @@ import com.a.injector.presentation.account.AccountScreen
 import com.a.injector.presentation.component.CustomBottomSheet
 import com.a.injector.presentation.component.CustomButton
 import com.a.injector.presentation.component.CustomSurfaceText
-import com.a.injector.presentation.home.HomeScreen
+import com.a.injector.presentation.home.HomeScreenRoot
 import com.a.injector.presentation.script.ScriptScreen
-import com.a.injector.presentation.settings.SettingsScreen
+import com.a.injector.presentation.settings.SettingsScreenRoot
 import com.a.injector.presentation.util.ScreenEffectLauncher
 import com.a.injector.presentation.util.openInBrowser
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun BottomNavigationScreen(
+fun BottomNavigationScreenRoot(
     navBackStack: NavBackStack<NavKey>,
     viewModel: BottomNavigationViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackBarHostState = remember { SnackbarHostState() }
 
-    Screen(
+    BottomNavigationScreen(
         navBackStack = navBackStack,
         state = state,
         onAction = viewModel::onAction
@@ -70,7 +70,7 @@ fun BottomNavigationScreen(
 @Composable
 @Preview
 private fun Preview() {
-    Screen(
+    BottomNavigationScreen(
         navBackStack = rememberNavBackStack(),
         state = BottomNavigationState(),
         onAction = {}
@@ -78,7 +78,7 @@ private fun Preview() {
 }
 
 @Composable
-private fun Screen(
+private fun BottomNavigationScreen(
     navBackStack: NavBackStack<NavKey>,
     state: BottomNavigationState,
     onAction: (BottomNavigationAction) -> Unit
@@ -101,10 +101,10 @@ private fun Screen(
             state = pagerState,
         ) { pageContent ->
             when (pageContent) {
-                0 -> HomeScreen(navBackStack = navBackStack)
+                0 -> HomeScreenRoot(navBackStack = navBackStack)
                 1 -> ScriptScreen(navBackStack = navBackStack)
                 2 -> AccountScreen(navBackStack = navBackStack)
-                3 -> SettingsScreen(navBackStack = navBackStack)
+                3 -> SettingsScreenRoot(navBackStack = navBackStack)
             }
         }
         AnimatedVisibility(

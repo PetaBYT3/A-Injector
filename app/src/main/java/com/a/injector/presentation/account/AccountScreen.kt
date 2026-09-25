@@ -2,6 +2,7 @@ package com.a.injector.presentation.account
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -10,26 +11,30 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AdminPanelSettings
-import androidx.compose.material.icons.rounded.CleaningServices
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.Email
-import androidx.compose.material.icons.rounded.Password
-import androidx.compose.material.icons.rounded.PermIdentity
-import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material.icons.rounded.Upload
+import androidx.compose.material.icons.rounded.Visibility
+import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconToggleButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -53,6 +58,8 @@ import com.a.injector.presentation.component.DefaultClickableListItem
 import com.a.injector.presentation.component.DefaultListItem
 import com.a.injector.presentation.component.spacer
 import com.a.injector.presentation.navigation.NavigationRoute
+import com.a.injector.presentation.signup.PasswordRequirement
+import com.a.injector.presentation.signup.passwordRequirements
 import com.a.injector.presentation.util.ScreenEffectLauncher
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -192,13 +199,75 @@ private fun Screen(
         title = stringResource(R.string.item_manage),
         content = {
             item {
-                CustomSurfaceText(text = stringResource(R.string.message_reset_password))
+                var isPasswordVisible by remember {
+                    mutableStateOf(false)
+                }
+                CustomTextField(
+                    label = "New Password",
+                    value = state.newPasswordTextField,
+                    onValueChange = { onAction(AccountAction.NewPasswordTextField(it)) },
+                    trailingIcon = {
+                        IconToggleButton(
+                            checked = isPasswordVisible,
+                            onCheckedChange = { isPasswordVisible = it },
+                            content = {
+                                val imageVector = when (isPasswordVisible) {
+                                    true -> Icons.Rounded.VisibilityOff
+                                    false -> Icons.Rounded.Visibility
+                                }
+                                Icon(imageVector, null)
+                            }
+                        )
+                    },
+                    visualTransformation = when (isPasswordVisible) {
+                        true -> VisualTransformation.None
+                        false -> PasswordVisualTransformation()
+                    }
+                )
+            }
+            spacer(5.dp)
+            itemsIndexed(
+                items = passwordRequirements
+            ) { _, staticModel ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(5.dp)
+                ) {
+                    val isRequirementMet = when (staticModel.id) {
+                        PasswordRequirement.MoreThanEightCharacter -> state.isPasswordMoreThan8Character
+                        PasswordRequirement.ContainUppercase -> state.isPasswordContainUppercase
+                        PasswordRequirement.ContainNumber -> state.isPasswordContainNumber
+                    }
+                    val tint = when (isRequirementMet) {
+                        true -> MaterialTheme.colorScheme.primary
+                        false -> MaterialTheme.colorScheme.onSurfaceVariant
+                    }
+                    val imageVector = when (isRequirementMet) {
+                        true -> Icons.Rounded.Check
+                        false -> Icons.Rounded.Close
+                    }
+                    Icon(
+                        modifier = Modifier
+                            .size(20.dp),
+                        tint = tint,
+                        imageVector = imageVector,
+                        contentDescription = null
+                    )
+                    Text(
+                        text = stringResource(staticModel.contentTextResId),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
             }
         },
         bottomBar = {
             CustomButton(
-                onClick = { onAction(AccountAction.SendChangePasswordEmailButton) },
-                text = stringResource(R.string.action_send)
+                onClick = {
+                    onAction(AccountAction.ChangePasswordBottomSheet)
+                    onAction(AccountAction.ChangePasswordButton)
+                },
+                text = stringResource(R.string.action_confirm),
+                enabled = state.isPasswordValid
             )
         }
     )
@@ -225,7 +294,6 @@ private fun Content(
             }
             return@LazyColumn
         }
-
         if (state.profile == ProfileModel.GUEST) {
             item("guestAccount") {
                 DefaultListItem(
@@ -234,116 +302,122 @@ private fun Content(
                     content = { Text(text = "Guest Account") }
                 )
             }
-        } else {
+            spacer()
+            item("signOutButton") {
+                CustomButton(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    onClick = { onAction(AccountAction.SignOutBottomSheet) },
+                    text = "Sign Out",
+                    isError = true
+                )
+            }
+            return@LazyColumn
+        }
+        itemsIndexed(
+            items = profiles,
+            key = { _, staticModel -> staticModel.id.name }
+        ) { index, staticModel ->
+            DefaultListItem(
+                modifier = Modifier
+                    .animateItem(),
+                index = index,
+                count = profiles.size,
+                leadingContent = staticModel.leadingContent,
+                content = { Text(text = stringResource(staticModel.contentTextResId)) },
+                supportingContent = {
+                    val supportingText = when (staticModel.id) {
+                        Profile.Email -> {
+                            state.userInfo?.email ?: stringResource(R.string.title_unknown)
+                        }
+                        Profile.Username -> {
+                            state.profile.username
+                        }
+                        Profile.Contribution -> {
+                            "${state.profile.contribution} ${stringResource(R.string.item_files_uploaded)}"
+                        }
+                        Profile.Role -> {
+                            state.profile.role.name
+                        }
+                    }
+                    Text(
+                        text = supportingText,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
+                trailingContent = {
+                    when (staticModel.id) {
+                        Profile.Username -> {
+                            CustomIconButton(
+                                onClick = {
+                                    onAction(AccountAction.ShowUpsertProfileBottomSheet(state.profile))
+                                },
+                                content = { Icon(Icons.Rounded.Edit, null) },
+                                isLoading = state.isUpsertProfileButtonLoading
+                            )
+                        }
+                        Profile.Role -> {
+                            if (state.profile.role == Role.User) {
+                                FilledTonalButton(
+                                    onClick = { onAction(AccountAction.RequestContributorButton) },
+                                    enabled = state.requestState == RequestState.NotApplied,
+                                    content = {
+                                        val text = when (state.requestState) {
+                                            RequestState.Applied -> {
+                                                stringResource(R.string.action_requested)
+                                            }
+                                            RequestState.NotApplied -> {
+                                                stringResource(R.string.action_apply_contributor)
+                                            }
+                                        }
+                                        Text(text = text)
+                                    }
+                                )
+                            }
+                        }
+                        else -> {}
+                    }
+                }
+            )
+        }
+        spacer()
+        if (state.profile.role == Role.Administrator) {
+            item("administratorTitle") {
+                CustomTextListTitle(
+                    modifier = Modifier
+                        .animateItem(),
+                    text = stringResource(R.string.item_admin_menu)
+                )
+            }
             itemsIndexed(
-                items = profileAccountItems,
+                items = administratorMenus,
                 key = { _, staticModel -> staticModel.id.name }
             ) { index, staticModel ->
-                DefaultListItem(
+                DefaultClickableListItem(
                     modifier = Modifier
                         .animateItem(),
                     index = index,
-                    count = profileAccountItems.size,
-                    leadingContent = {
-                        val imageVector = when (staticModel.id) {
-                            ProfileAccountId.Email -> Icons.Rounded.Email
-                            ProfileAccountId.Username -> Icons.Rounded.Person
-                            ProfileAccountId.Contribution -> Icons.Rounded.Upload
-                            ProfileAccountId.Role -> Icons.Rounded.PermIdentity
+                    count = administratorMenus.size,
+                    onClick = {
+                        when (staticModel.id) {
+                            AdministratorMenu.RoleManager -> {
+                                navBackStack.add(NavigationRoute.ManageRoleScreen)
+                            }
+                            AdministratorMenu.CleanStorage -> {
+                                onAction(AccountAction.CleanStorageBottomSheet)
+                            }
                         }
-                        Icon(
-                            imageVector = imageVector,
-                            contentDescription = null
-                        )
                     },
+                    leadingContent = staticModel.leadingContent,
                     content = { Text(text = stringResource(staticModel.contentTextResId)) },
-                    supportingContent = {
-                        val supportingText = when (staticModel.id) {
-                            ProfileAccountId.Email -> state.userInfo?.email ?: ""
-                            ProfileAccountId.Username -> state.profile.username
-                            ProfileAccountId.Contribution -> "${state.profile.contribution} ${stringResource(R.string.item_files_uploaded)}"
-                            ProfileAccountId.Role -> state.profile.role.name
-                        }
-                        Text(
-                            text = supportingText,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    },
+                    supportingContent = { Text(text = stringResource(staticModel.supportingTextResId!!)) },
                     trailingContent = {
                         when (staticModel.id) {
-                            ProfileAccountId.Username -> {
-                                CustomIconButton(
-                                    onClick = {
-                                        onAction(AccountAction.ShowUpsertProfileBottomSheet(state.profile))
-                                    },
-                                    content = { Icon(Icons.Rounded.Edit, null) },
-                                    isLoading = state.isUpsertProfileButtonLoading
-                                )
+                            AdministratorMenu.RoleManager -> {
+
                             }
-                            ProfileAccountId.Role -> {
-                                if (state.profile.role == Role.User) {
-                                    FilledTonalButton(
-                                        onClick = { onAction(AccountAction.RequestContributorButton) },
-                                        enabled = state.requestState == RequestState.NotApplied,
-                                        content = {
-                                            val text = when (state.requestState) {
-                                                RequestState.Applied -> {
-                                                    stringResource(R.string.action_requested)
-                                                }
-                                                RequestState.NotApplied -> {
-                                                    stringResource(R.string.action_apply_contributor)
-                                                }
-                                            }
-                                            Text(text = text)
-                                        }
-                                    )
-                                }
-                            }
-                            else -> {}
-                        }
-                    }
-                )
-            }
-            spacer()
-            if (state.profile.role == Role.Administrator) {
-                item("administratorTitle") {
-                    CustomTextListTitle(
-                        modifier = Modifier
-                            .animateItem(),
-                        text = stringResource(R.string.item_admin_menu)
-                    )
-                }
-                itemsIndexed(
-                    items = profileAdministratorMenuItems,
-                    key = { _, staticModel -> staticModel.id.name }
-                ) { index, staticModel ->
-                    DefaultClickableListItem(
-                        modifier = Modifier
-                            .animateItem(),
-                        index = index,
-                        count = profileAdministratorMenuItems.size,
-                        onClick = {
-                            when (staticModel.id) {
-                                AdministratorMenuId.RoleManager -> {
-                                    navBackStack.add(NavigationRoute.ManageRoleScreen)
-                                }
-                                AdministratorMenuId.CleanStorage -> {
-                                    onAction(AccountAction.CleanStorageBottomSheet)
-                                }
-                            }
-                        },
-                        leadingContent = {
-                            val imageVector = when (staticModel.id) {
-                                AdministratorMenuId.RoleManager -> Icons.Rounded.AdminPanelSettings
-                                AdministratorMenuId.CleanStorage -> Icons.Rounded.CleaningServices
-                            }
-                            Icon(imageVector, null)
-                        },
-                        content = { Text(text = stringResource(staticModel.contentTextResId)) },
-                        supportingContent = { Text(text = stringResource(staticModel.supportingTextResId!!)) },
-                        trailingContent = {
-                            if (staticModel.id == AdministratorMenuId.CleanStorage) {
+                            AdministratorMenu.CleanStorage -> {
                                 if (state.isCleanStorageButtonLoading) {
                                     CircularWavyProgressIndicator(
                                         modifier = Modifier
@@ -352,57 +426,50 @@ private fun Content(
                                 }
                             }
                         }
-                    )
-                }
-                spacer()
-            }
-            item("manageTitle") {
-                CustomTextListTitle(
-                    modifier = Modifier
-                        .animateItem(),
-                    text = stringResource(R.string.item_manage)
-                )
-            }
-            itemsIndexed(
-                items = profileManageAccountItems,
-                key = { _, staticModel -> staticModel.id.name }
-            ) { index, staticModel ->
-                DefaultClickableListItem(
-                    modifier = Modifier
-                        .animateItem(),
-                    index = index,
-                    count = profileManageAccountItems.size,
-                    onClick = {
-                        when (staticModel.id) {
-                            ManageAccountId.ChangePassword -> {
-                                onAction(AccountAction.ChangePasswordBottomSheet)
-                            }
-                        }
-                    },
-                    leadingContent = {
-                        val imageVector = when (staticModel.id) {
-                            ManageAccountId.ChangePassword -> Icons.Rounded.Password
-                        }
-                        Icon(imageVector, null)
-                    },
-                    content = { Text(text = stringResource(staticModel.contentTextResId)) },
-                    supportingContent = if (staticModel.supportingTextResId != null) {
-                        { Text(text = stringResource(staticModel.supportingTextResId)) }
-                    } else null,
-                    trailingContent = {
-                        when (staticModel.id) {
-                            ManageAccountId.ChangePassword -> {
-                                if (state.isChangePasswordButtonLoading) {
-                                    CircularWavyProgressIndicator(
-                                        modifier = Modifier
-                                            .size(24.dp)
-                                    )
-                                }
-                            }
-                        }
                     }
                 )
             }
+            spacer()
+        }
+        item("manageTitle") {
+            CustomTextListTitle(
+                modifier = Modifier
+                    .animateItem(),
+                text = stringResource(R.string.item_manage)
+            )
+        }
+        itemsIndexed(
+            items = manageAccounts,
+            key = { _, staticModel -> staticModel.id.name }
+        ) { index, staticModel ->
+            DefaultClickableListItem(
+                modifier = Modifier
+                    .animateItem(),
+                index = index,
+                count = manageAccounts.size,
+                onClick = {
+                    when (staticModel.id) {
+                        ManageAccount.ChangePassword -> {
+                            onAction(AccountAction.ChangePasswordBottomSheet)
+                        }
+                    }
+                },
+                leadingContent = staticModel.leadingContent,
+                content = { Text(text = stringResource(staticModel.contentTextResId)) },
+                supportingContent = { Text(text = stringResource(staticModel.supportingTextResId!!)) },
+                trailingContent = {
+                    when (staticModel.id) {
+                        ManageAccount.ChangePassword -> {
+                            if (state.isChangePasswordButtonLoading) {
+                                CircularWavyProgressIndicator(
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            )
         }
         spacer()
         item("signOutButton") {

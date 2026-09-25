@@ -36,18 +36,17 @@ import com.a.injector.presentation.util.ScreenEffectLauncher
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun LandingScreen(
+fun LandingScreenRoot(
     navBackStack: NavBackStack<NavKey>,
     viewModel: LandingViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val onAction = viewModel::onAction
     val snackBarHostState = remember { SnackbarHostState() }
 
-    Screen(
+    LandingScreen(
         navBackStack = navBackStack,
         state = state,
-        onAction = onAction,
+        onAction = viewModel::onAction,
         snackBarHostState = snackBarHostState
     )
 
@@ -60,7 +59,7 @@ fun LandingScreen(
 @Composable
 @Preview
 private fun Preview() {
-    Screen(
+    LandingScreen(
         navBackStack = rememberNavBackStack(),
         state = LandingState(),
         onAction = {},
@@ -69,7 +68,7 @@ private fun Preview() {
 }
 
 @Composable
-private fun Screen(
+private fun LandingScreen(
     navBackStack: NavBackStack<NavKey>,
     state: LandingState,
     onAction: (LandingAction) -> Unit,
@@ -117,40 +116,43 @@ private fun Content(
                 .padding(start = 10.dp, end = 10.dp, bottom = 10.dp),
             verticalArrangement = Arrangement.spacedBy(2.5.dp)
         ) {
-            landingOptionItems.fastForEachIndexed { index, staticModel ->
+            signOptions.fastForEachIndexed { index, staticModel ->
                 DefaultClickableListItem(
                     index = index,
-                    count = landingOptionItems.size,
+                    count = signOptions.size,
                     onClick = {
                         when (staticModel.id) {
-                            LandingOptionId.SignIn -> navBackStack.add(NavigationRoute.SignInScreen)
-                            LandingOptionId.SignUp -> navBackStack.add(NavigationRoute.SignUpScreen)
-                            LandingOptionId.Guest -> onAction(LandingAction.ButtonSignGuest)
+                            SignOption.SignIn -> {
+                                navBackStack.add(NavigationRoute.SignInScreen)
+                            }
+                            SignOption.SignUp -> {
+                                navBackStack.add(NavigationRoute.SignUpScreen)
+                            }
+                            SignOption.Guest -> {
+                                onAction(LandingAction.ButtonSignGuest)
+                            }
                         }
                     },
                     content = {
-                        if (staticModel.id == LandingOptionId.Guest) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                if (state.isGuestButtonLoading) {
-                                    CircularWavyProgressIndicator(
-                                        modifier = Modifier
-                                            .size(24.dp)
-                                    )
-                                } else {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            when (staticModel.id) {
+                                SignOption.SignIn, SignOption.SignUp -> {
                                     Text(text = stringResource(staticModel.contentTextResId))
                                 }
-                            }
-                        } else {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(text = stringResource(staticModel.contentTextResId))
+                                SignOption.Guest -> {
+                                    if (!state.isGuestButtonLoading) {
+                                        Text(text = stringResource(staticModel.contentTextResId))
+                                    } else {
+                                        CircularWavyProgressIndicator(
+                                            modifier = Modifier
+                                                .size(24.dp)
+                                        )
+                                    }
+                                }
                             }
                         }
                     }

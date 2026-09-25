@@ -1,55 +1,71 @@
 package com.a.injector.presentation.account
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AdminPanelSettings
+import androidx.compose.material.icons.rounded.CleaningServices
+import androidx.compose.material.icons.rounded.Email
+import androidx.compose.material.icons.rounded.Password
+import androidx.compose.material.icons.rounded.PermIdentity
+import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.rounded.Upload
+import androidx.compose.material3.Icon
 import com.a.injector.R
 import com.a.injector.domain.model.StaticModel
 
-enum class ProfileAccountId {
+enum class Profile {
     Email, Username, Contribution, Role
 }
 
-val profileAccountItems = listOf(
+val profiles = listOf(
     StaticModel(
-        id = ProfileAccountId.Email,
+        id = Profile.Email,
+        leadingContent = { Icon(Icons.Rounded.Email, null) },
         contentTextResId = R.string.item_email
     ),
     StaticModel(
-        id = ProfileAccountId.Username,
+        id = Profile.Username,
+        leadingContent = { Icon(Icons.Rounded.Person, null) },
         contentTextResId = R.string.item_username
     ),
     StaticModel(
-        id = ProfileAccountId.Contribution,
+        id = Profile.Contribution,
+        leadingContent = { Icon(Icons.Rounded.Upload, null) },
         contentTextResId = R.string.item_contribution
     ),
     StaticModel(
-        id = ProfileAccountId.Role,
+        id = Profile.Role,
+        leadingContent = { Icon(Icons.Rounded.PermIdentity, null) },
         contentTextResId = R.string.item_role
     )
 )
 
-enum class AdministratorMenuId {
+enum class AdministratorMenu {
     RoleManager, CleanStorage
 }
 
-val profileAdministratorMenuItems = listOf(
+val administratorMenus = listOf(
     StaticModel(
-        id = AdministratorMenuId.RoleManager,
+        id = AdministratorMenu.RoleManager,
+        leadingContent = { Icon(Icons.Rounded.AdminPanelSettings, null) },
         contentTextResId = R.string.item_role_manager,
         supportingTextResId = R.string.item_role_manager_desc
     ),
     StaticModel(
-        id = AdministratorMenuId.CleanStorage,
+        id = AdministratorMenu.CleanStorage,
+        leadingContent = { Icon(Icons.Rounded.CleaningServices, null) },
         contentTextResId = R.string.item_clean_storage,
         supportingTextResId = R.string.item_clean_storage_desc
     ),
 )
 
-enum class ManageAccountId {
+enum class ManageAccount {
     ChangePassword
 }
 
-val profileManageAccountItems = listOf(
+val manageAccounts = listOf(
     StaticModel(
-        id = ManageAccountId.ChangePassword,
+        id = ManageAccount.ChangePassword,
+        leadingContent = { Icon(Icons.Rounded.Password, null) },
         contentTextResId = R.string.item_change_password,
         supportingTextResId = R.string.item_change_password_desc
     )

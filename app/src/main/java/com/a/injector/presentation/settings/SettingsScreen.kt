@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CleaningServices
@@ -38,18 +39,17 @@ import com.a.injector.presentation.util.ScreenEffectLauncher
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun SettingsScreen(
+fun SettingsScreenRoot(
     navBackStack: NavBackStack<NavKey>,
     viewModel: SettingsViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val onAction = viewModel::onAction
     val snackBarHostState = remember { SnackbarHostState() }
 
-    Screen(
+    SettingsScreen(
         navBackStack = navBackStack,
         state = state,
-        onAction = onAction,
+        onAction = viewModel::onAction,
         snackBarHostState = snackBarHostState
     )
 
@@ -62,7 +62,7 @@ fun SettingsScreen(
 @Composable
 @Preview
 private fun Preview() {
-    Screen(
+    SettingsScreen(
         navBackStack = rememberNavBackStack(),
         state = SettingsState(),
         onAction = {},
@@ -71,7 +71,7 @@ private fun Preview() {
 }
 
 @Composable
-private fun Screen(
+private fun SettingsScreen(
     navBackStack: NavBackStack<NavKey>,
     state: SettingsState,
     onAction: (SettingsAction) -> Unit,
@@ -85,13 +85,18 @@ private fun Screen(
             )
         },
         content = { innerPadding ->
-            Content(
+            LazyColumn(
                 modifier = Modifier
                     .padding(innerPadding),
-                navBackStack = navBackStack,
-                state = state,
-                onAction = onAction
-            )
+                contentPadding = PaddingValues(start = 10.dp, end = 10.dp, bottom = 100.dp),
+                verticalArrangement = Arrangement.spacedBy(2.5.dp)
+            ) {
+                content(
+                    navBackStack = navBackStack,
+                    state = state,
+                    onAction = onAction
+                )
+            }
         },
         snackbarHost = { SnackbarHost(hostState = snackBarHostState) }
     )
@@ -111,8 +116,8 @@ private fun Screen(
                     index = index,
                     count = settingsSupportedLanguage.size,
                     onClick = {
-                        onAction(SettingsAction.LanguageBottomSheet)
                         if (state.currentLanguage != locale) {
+                            onAction(SettingsAction.LanguageBottomSheet)
                             onAction(SettingsAction.SetLanguageButton(locale))
                         }
                     },
@@ -150,59 +155,54 @@ private fun Screen(
     )
 }
 
-@Composable
-private fun Content(
-    modifier: Modifier = Modifier,
+private fun LazyListScope.content(
     navBackStack: NavBackStack<NavKey>,
     state: SettingsState,
     onAction: (SettingsAction) -> Unit
 ) {
-    LazyColumn(
-        modifier = modifier,
-        contentPadding = PaddingValues(start = 10.dp, end = 10.dp, bottom = 100.dp),
-        verticalArrangement = Arrangement.spacedBy(2.5.dp)
-    ) {
-        itemsIndexed(
-            items = settingsMenuItem,
-            key = { _, staticModel -> staticModel.id.name }
-        ) { index, staticModel ->
-            DefaultClickableListItem(
-                modifier = Modifier
-                    .animateItem(),
-                index = index,
-                count = settingsMenuItem.size,
-                onClick = {
-                    when (staticModel.id) {
-                        SettingsMenuId.Language -> {
-                            onAction(SettingsAction.LanguageBottomSheet)
-                        }
-                        SettingsMenuId.CleanCache -> {
-                            onAction(SettingsAction.CleanCacheBottomSheet)
-                        }
+    itemsIndexed(
+        items = settingsMenuItem,
+        key = { _, staticModel -> staticModel.id.name }
+    ) { index, staticModel ->
+        DefaultClickableListItem(
+            modifier = Modifier
+                .animateItem(),
+            index = index,
+            count = settingsMenuItem.size,
+            onClick = {
+                when (staticModel.id) {
+                    SettingsMenuId.Language -> {
+                        onAction(SettingsAction.LanguageBottomSheet)
                     }
-                },
-                leadingContent = {
-                    val imageVector = when (staticModel.id) {
-                        SettingsMenuId.Language -> Icons.Rounded.Language
-                        SettingsMenuId.CleanCache -> Icons.Rounded.CleaningServices
+                    SettingsMenuId.CleanCache -> {
+                        onAction(SettingsAction.CleanCacheBottomSheet)
                     }
-                    Icon(imageVector, null)
-                },
-                content = { Text(text = stringResource(staticModel.contentTextResId)) },
-                supportingContent = {
-                    val text = when (staticModel.id) {
-                        SettingsMenuId.Language -> {
-                            val displayLanguage = state.currentLanguage.displayLanguage
-                            val displayCountry = state.currentLanguage.displayCountry
-                            "$displayLanguage ($displayCountry)"
-                        }
-                        SettingsMenuId.CleanCache -> {
-                            state.cacheSize.toMegaBytes()
-                        }
-                    }
-                    Text(text = text)
                 }
-            )
-        }
+            },
+            leadingContent = {
+                val imageVector = when (staticModel.id) {
+                    SettingsMenuId.Language -> {
+                        Icons.Rounded.Language
+                    }
+                    SettingsMenuId.CleanCache -> {
+                        Icons.Rounded.CleaningServices
+                    }
+                }
+                Icon(imageVector, null)
+            },
+            content = { Text(text = stringResource(staticModel.contentTextResId)) },
+            supportingContent = {
+                val currentLanguage = state.currentLanguage
+                val text = when (staticModel.id) {
+                    SettingsMenuId.Language -> {
+                        "${currentLanguage.displayLanguage} - ${currentLanguage.displayCountry}"
+                    }
+                    SettingsMenuId.CleanCache -> {
+                        state.cacheSize.toMegaBytes()
+                    }
+                }
+                Text(text = text)
+            }
+        )
     }
 }

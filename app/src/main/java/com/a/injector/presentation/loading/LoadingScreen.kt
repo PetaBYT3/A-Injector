@@ -21,19 +21,19 @@ import com.a.injector.presentation.component.CustomUndismissableBottomSheet
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun LoadingScreen(
+fun LoadingScreenRoot(
     navBackStack: NavBackStack<NavKey>,
     viewModel: LoadingViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    Screen(
+    LoadingScreen(
         state = state
     )
 }
 
 @Composable
-private fun Screen(
+private fun LoadingScreen(
     state: LoadingState
 ) {
     BackHandler(enabled = true) {}
@@ -75,7 +75,7 @@ private fun Screen(
 @Composable
 @Preview
 private fun Preview() {
-    Screen(
+    LoadingScreen(
         state = LoadingState()
     )
 }

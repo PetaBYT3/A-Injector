@@ -101,8 +101,13 @@ class AccountViewModel(
                     )
                 }
             }
-            AccountAction.SendChangePasswordEmailButton -> {
-                sendChangePasswordButton()
+            is AccountAction.NewPasswordTextField -> {
+                _state.update { currentState ->
+                    currentState.copy(newPasswordTextField = action.password)
+                }
+            }
+            AccountAction.ChangePasswordButton -> {
+                changePasswordButton()
             }
             AccountAction.SignOutBottomSheet -> {
                 _state.update { currentState ->
@@ -164,14 +169,21 @@ class AccountViewModel(
         }
     }
 
-    private fun sendChangePasswordButton() {
+    private fun changePasswordButton() {
         viewModelScope.launch {
-            accountRepository.sendResetPassword(
-                email = _state.value.userInfo?.email ?: return@launch
+            accountRepository.changePassword(
+                password = _state.value.newPasswordTextField
             ).onStart {
-                _state.update { it.copy(isChangePasswordButtonLoading = true) }
+                _state.update { currentState ->
+                    currentState.copy(isChangePasswordButtonLoading = true)
+                }
             }.onCompletion {
-                _state.update { it.copy(isChangePasswordButtonLoading = false) }
+                _state.update { currentState ->
+                    currentState.copy(
+                        isChangePasswordButtonLoading = false,
+                        newPasswordTextField = ""
+                    )
+                }
             }.collect { either ->
                 either.onRight { message ->
                     _effect.send(ScreenEffect.ShowSnackBar(message))

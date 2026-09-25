@@ -40,7 +40,7 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
-fun ManageHeroScreen(
+fun ManageHeroScreenRoot(
     navBackStack: NavBackStack<NavKey>,
     heroId: String,
     viewModel: ManageHeroViewModel = koinViewModel(
@@ -50,13 +50,12 @@ fun ManageHeroScreen(
     )
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val onAction = viewModel::onAction
     val snackBarHostState = remember { SnackbarHostState() }
 
-    Screen(
+    ManageHeroScreen(
         navBackStack = navBackStack,
         state = state,
-        onAction = onAction,
+        onAction = viewModel::onAction,
         snackBarHostState = snackBarHostState
     )
 
@@ -69,7 +68,7 @@ fun ManageHeroScreen(
 @Composable
 @Preview
 private fun Preview() {
-    Screen(
+    ManageHeroScreen(
         navBackStack = rememberNavBackStack(),
         state = ManageHeroState(
             isHeroLoading = false,
@@ -81,7 +80,7 @@ private fun Preview() {
 }
 
 @Composable
-private fun Screen(
+private fun ManageHeroScreen(
     navBackStack: NavBackStack<NavKey>,
     state: ManageHeroState,
     onAction: (ManageHeroAction) -> Unit,
@@ -89,13 +88,13 @@ private fun Screen(
 ) {
     Scaffold(
         topBar = {
+            val title = when (state.isOnEdit) {
+                true -> stringResource(R.string.action_edit)
+                false -> stringResource(R.string.action_add)
+            }
             CustomTopAppBar(
                 navigationClick = { navBackStack.popBackStack() },
-                title = if (state.isOnEdit) {
-                    stringResource(R.string.action_edit)
-                } else {
-                    stringResource(R.string.action_add)
-                }
+                title = title
             )
         },
         content = { innerPadding ->

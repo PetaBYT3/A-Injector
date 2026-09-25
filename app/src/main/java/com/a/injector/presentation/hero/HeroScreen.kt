@@ -3,7 +3,6 @@ package com.a.injector.presentation.hero
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -55,7 +54,7 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
-fun HeroScreen(
+fun HeroScreenRoot(
     navBackStack: NavBackStack<NavKey>,
     heroId: String,
     viewModel: HeroViewModel = koinViewModel(
@@ -65,13 +64,12 @@ fun HeroScreen(
     )
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val onAction = viewModel::onAction
     val snackBarHostState = remember { SnackbarHostState() }
 
-    Screen(
+    HeroScreen(
         navBackStack = navBackStack,
         state = state,
-        onAction = onAction,
+        onAction = viewModel::onAction,
         snackBarHostState = snackBarHostState
     )
 
@@ -84,7 +82,7 @@ fun HeroScreen(
 @Composable
 @Preview
 private fun Preview() {
-    Screen(
+    HeroScreen(
         navBackStack = rememberNavBackStack(),
         state = HeroState(
             heroDetail = HeroDetailModel.EMPTY
@@ -95,7 +93,7 @@ private fun Preview() {
 }
 
 @Composable
-private fun Screen(
+private fun HeroScreen(
     navBackStack: NavBackStack<NavKey>,
     state: HeroState,
     onAction: (HeroAction) -> Unit,
@@ -110,7 +108,8 @@ private fun Screen(
         },
         content = { innerPadding ->
             Content(
-                innerPadding = innerPadding,
+                modifier = Modifier
+                    .padding(innerPadding),
                 navBackStack = navBackStack,
                 state = state,
                 onAction = onAction
@@ -153,37 +152,37 @@ private fun Screen(
                 )
             }
             spacer()
-            item {
+            itemsIndexed(
+                items = skinActions,
+                key = { _, staticModel -> staticModel.id.name }
+            ) { index, staticModel ->
                 DefaultClickableListItem(
-                    index = 0,
-                    count = 2,
+                    modifier = Modifier
+                        .animateItem(),
+                    index = index,
+                    count = skinActions.size,
                     onClick = {
                         onAction(HeroAction.DismissSkinActionBottomSheet)
-                        val targetRoute = NavigationRoute.ManageSkinScreen(
-                            heroId = state.heroDetail.id,
-                            skinId = state.skinToAction.id
-                        )
-                        navBackStack.add(targetRoute)
+                        when (staticModel.id) {
+                            SkinAction.Edit -> {
+                                val targetRoute = NavigationRoute.ManageSkinScreen(
+                                    heroId = state.heroDetail.id,
+                                    skinId = state.skinToAction.id
+                                )
+                                navBackStack.add(targetRoute)
+                            }
+                            SkinAction.AddReplace -> {
+                                val targetRoute = NavigationRoute.ManageReplaceScreen(
+                                    heroId = state.heroDetail.id,
+                                    skinId = state.skinToAction.id,
+                                    replaceId = ""
+                                )
+                                navBackStack.add(targetRoute)
+                            }
+                        }
                     },
-                    leadingContent = { Icon(Icons.Rounded.Edit, null) },
-                    content = { Text(text = stringResource(R.string.title_update)) }
-                )
-            }
-            item {
-                DefaultClickableListItem(
-                    index = 1,
-                    count = 2,
-                    onClick = {
-                        onAction(HeroAction.DismissSkinActionBottomSheet)
-                        val targetRoute = NavigationRoute.ManageReplaceScreen(
-                            heroId = state.heroDetail.id,
-                            skinId = state.skinToAction.id,
-                            replaceId = ""
-                        )
-                        navBackStack.add(targetRoute)
-                    },
-                    leadingContent = { Icon(Icons.Rounded.Add, null) },
-                    content = { Text(text = "${stringResource(R.string.title_add)} ${stringResource(R.string.title_replace)}") }
+                    leadingContent = staticModel.leadingContent,
+                    content = { Text(text = stringResource(staticModel.contentTextResId)) }
                 )
             }
         }
@@ -192,15 +191,13 @@ private fun Screen(
 
 @Composable
 private fun Content(
-    innerPadding: PaddingValues,
+    modifier: Modifier = Modifier,
     navBackStack: NavBackStack<NavKey>,
     state: HeroState,
     onAction: (HeroAction) -> Unit
 ) {
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(innerPadding),
+        modifier = modifier,
         contentPadding = PaddingValues(start = 10.dp, end = 10.dp, bottom = 100.dp),
         verticalArrangement = Arrangement.spacedBy(2.5.dp)
     ) {
@@ -213,7 +210,6 @@ private fun Content(
             }
             return@LazyColumn
         }
-
         if (state.isHeroDetailError != null) {
             item("isHeroDetailError") {
                 MessageListItem(
@@ -225,7 +221,6 @@ private fun Content(
             }
             return@LazyColumn
         }
-
         item("heroItem") {
             PrimaryListItem(
                 modifier = Modifier

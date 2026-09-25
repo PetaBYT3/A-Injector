@@ -21,11 +21,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,14 +45,14 @@ import com.a.injector.presentation.util.openStoragePermissionSettings
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun HomeScreen(
+fun HomeScreenRoot(
     navBackStack: NavBackStack<NavKey>,
     viewModel: HomeViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val onAction = viewModel::onAction
 
-    Screen(
+    HomeScreen(
         navBackStack = navBackStack,
         state = state,
         onAction = onAction
@@ -64,7 +62,7 @@ fun HomeScreen(
 @Composable
 @Preview
 private fun Preview() {
-    Screen(
+    HomeScreen(
         navBackStack = rememberNavBackStack(),
         state = HomeState(
             isManageExternalStorageGranted = false
@@ -74,7 +72,7 @@ private fun Preview() {
 }
 
 @Composable
-private fun Screen(
+private fun HomeScreen(
     navBackStack: NavBackStack<NavKey>,
     state: HomeState,
     onAction: (HomeAction) -> Unit
@@ -118,15 +116,14 @@ private fun Content(
                 leadingContent = { Icon(Icons.Rounded.Storage, null) },
                 content = { Text(text = stringResource(R.string.item_storage_permission)) },
                 supportingContent = {
-                    Text(
-                        text = if (state.isManageExternalStorageGranted) {
-                            stringResource(R.string.title_granted)
-                        } else {
-                            stringResource(R.string.title_denied)
-                        }
-                    )
+                    val text = when (state.isManageExternalStorageGranted) {
+                        true -> stringResource(R.string.title_granted)
+                        false -> stringResource(R.string.title_denied)
+                    }
+                    Text(text = text)
                 },
                 trailingContent = {
+                    val context = LocalContext.current
                     if (!state.isManageExternalStorageGranted) {
                         Button(
                             onClick = { openStoragePermissionSettings(context) },
@@ -145,18 +142,18 @@ private fun Content(
             )
         }
         itemsIndexed(
-            items = homeAboutDeveloperItems,
+            items = AboutDevelopers,
             key = { _, staticModel -> staticModel.id.name }
         ) { index, staticModel ->
             DefaultClickableListItem(
                 modifier = Modifier
                     .animateItem(),
                 index = index,
-                count = homeAboutDeveloperItems.size,
+                count = AboutDevelopers.size,
                 onClick = {
                     val url = when (staticModel.id) {
-                        HomeAboutDeveloperId.Github -> "https://github.com/PetaBYT3"
-                        HomeAboutDeveloperId.Support -> ""
+                        AboutDeveloper.Github -> "https://github.com/PetaBYT3"
+                        AboutDeveloper.Support -> ""
                     }
                     openInBrowser(
                         context = context,
@@ -164,13 +161,7 @@ private fun Content(
                         url = url
                     )
                 },
-                leadingContent = {
-                    val imageVector = when (staticModel.id) {
-                        HomeAboutDeveloperId.Github -> ImageVector.vectorResource(R.drawable.github)
-                        HomeAboutDeveloperId.Support -> ImageVector.vectorResource(R.drawable.support)
-                    }
-                    Icon(imageVector, null)
-                },
+                leadingContent = staticModel.leadingContent,
                 content = { Text(text = stringResource(staticModel.contentTextResId)) },
                 trailingContent = { Icon(Icons.Rounded.OpenInNew, null) }
             )
@@ -183,60 +174,58 @@ private fun Content(
                 text = stringResource(R.string.item_top_contributor)
             )
         }
-        when {
-            state.isHighestContributionProfileLoading -> {
-                item("isHighestContributionProfileLoading") {
-                    CustomCenterCircularWavyProgressIndicator(
-                        modifier = Modifier
-                            .animateItem()
-                    )
-                }
+        if (state.isHighestContributionProfileLoading) {
+            item("isHighestContributionProfileLoading") {
+                CustomCenterCircularWavyProgressIndicator(
+                    modifier = Modifier
+                        .animateItem()
+                )
             }
-            state.isHighestContributionProfileError != null -> {
-                item("isHighestContributionProfileError") {
-                    MessageListItem(
-                        modifier = Modifier
-                            .animateItem(),
-                        text = state.isHighestContributionProfileError.asString(),
-                        isError = true
-                    )
-                }
+            return@LazyColumn
+        }
+        if (state.isHighestContributionProfileError != null) {
+            item("isHighestContributionProfileError") {
+                MessageListItem(
+                    modifier = Modifier
+                        .animateItem(),
+                    text = state.isHighestContributionProfileError.asString(),
+                    isError = true
+                )
             }
-            state.highestContributionProfile.isEmpty() -> {
-                item("isHighestContributionProfileEmpty") {
-                    MessageListItem(
-                        modifier = Modifier
-                            .animateItem(),
-                        text = stringResource(R.string.item_empty)
-                    )
-                }
+            return@LazyColumn
+        }
+        if (state.highestContributionProfile.isEmpty()) {
+            item("isHighestContributionProfileEmpty") {
+                MessageListItem(
+                    modifier = Modifier
+                        .animateItem(),
+                    text = stringResource(R.string.item_empty)
+                )
             }
-            else -> {
-                itemsIndexed(
-                    items = state.highestContributionProfile,
-                    key = { _, profileModel -> profileModel.id }
-                ) { index, profileModel ->
-                    DefaultListItem(
-                        modifier = Modifier
-                            .animateItem(),
-                        index = index,
-                        count = state.highestContributionProfile.size,
-                        leadingContent = { Icon(Icons.Rounded.Person, null) },
-                        content = {
-                            Text(
-                                text = profileModel.username,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        },
-                        trailingContent = {
-                            Text(
-                                text = "${profileModel.contribution} ${stringResource(R.string.item_files_uploaded)}"
-                            )
-                        }
+            return@LazyColumn
+        }
+        itemsIndexed(
+            items = state.highestContributionProfile,
+            key = { _, profileModel -> profileModel.id }
+        ) { index, profileModel ->
+            DefaultListItem(
+                modifier = Modifier
+                    .animateItem(),
+                index = index,
+                count = state.highestContributionProfile.size,
+                leadingContent = { Icon(Icons.Rounded.Person, null) },
+                content = {
+                    Text(
+                        text = profileModel.username,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
+                },
+                trailingContent = {
+                    val text = "${profileModel.contribution} ${stringResource(R.string.item_files_uploaded)}"
+                    Text(text = text)
                 }
-            }
+            )
         }
     }
 }

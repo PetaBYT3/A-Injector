@@ -49,13 +49,14 @@ import com.a.injector.presentation.component.spacer
 import com.a.injector.presentation.navigation.popBackStack
 import com.a.injector.presentation.util.ScreenEffectLauncher
 import io.github.vinceglb.filekit.dialogs.FileKitType
+import io.github.vinceglb.filekit.dialogs.compose.PickerResultLauncher
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.name
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
 @Composable
-fun ManageReplaceScreen(
+fun ManageReplaceScreenRoot(
     navBackStack: NavBackStack<NavKey>,
     heroId: String,
     skinId: String,
@@ -67,13 +68,12 @@ fun ManageReplaceScreen(
     )
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val onAction = viewModel::onAction
     val snackBarHostState = remember { SnackbarHostState() }
 
-    Screen(
+    ManageReplaceScreen(
         navBackStack = navBackStack,
         state = state,
-        onAction = onAction,
+        onAction = viewModel::onAction,
         snackBarHostState = snackBarHostState
     )
 
@@ -86,7 +86,7 @@ fun ManageReplaceScreen(
 @Composable
 @Preview
 private fun Preview() {
-    Screen(
+    ManageReplaceScreen(
         navBackStack = rememberNavBackStack(),
         state = ManageReplaceState(
             isHeroLoading = false,
@@ -99,21 +99,30 @@ private fun Preview() {
 }
 
 @Composable
-private fun Screen(
+private fun ManageReplaceScreen(
     navBackStack: NavBackStack<NavKey>,
     state: ManageReplaceState,
     onAction: (ManageReplaceAction) -> Unit,
     snackBarHostState: SnackbarHostState
 ) {
+    val filePicker = rememberFilePickerLauncher(
+        type = FileKitType.File(extension = "zip"),
+        onResult = { platformFile ->
+            if (platformFile != null) {
+                onAction(ManageReplaceAction.ReplaceFilePicker(platformFile))
+            }
+        }
+    )
+
     Scaffold(
         topBar = {
+            val title = when (state.isOnEdit) {
+                true -> stringResource(R.string.action_edit)
+                false -> stringResource(R.string.action_add)
+            }
             CustomTopAppBar(
                 navigationClick = { navBackStack.popBackStack() },
-                title = if (state.isOnEdit) {
-                    stringResource(R.string.action_edit)
-                } else {
-                    stringResource(R.string.action_add)
-                }
+                title = title
             )
         },
         content = { innerPadding ->
@@ -121,6 +130,7 @@ private fun Screen(
                 modifier = Modifier
                     .padding(innerPadding),
                 navBackStack = navBackStack,
+                filePicker = filePicker,
                 state = state,
                 onAction = onAction
             )
@@ -178,18 +188,10 @@ private fun Screen(
 private fun Content(
     modifier: Modifier = Modifier,
     navBackStack: NavBackStack<NavKey>,
+    filePicker: PickerResultLauncher,
     state: ManageReplaceState,
     onAction: (ManageReplaceAction) -> Unit
 ) {
-    val filePicker = rememberFilePickerLauncher(
-        type = FileKitType.File(extension = "zip"),
-        onResult = { platformFile ->
-            if (platformFile != null) {
-                onAction(ManageReplaceAction.ReplaceFilePicker(platformFile))
-            }
-        }
-    )
-
     LazyColumn(
         modifier = modifier,
         contentPadding = PaddingValues(start = 10.dp, end = 10.dp, bottom = 100.dp),
@@ -204,7 +206,6 @@ private fun Content(
             }
             return@LazyColumn
         }
-
         item("heroItem") {
             DefaultListItem(
                 modifier = Modifier
@@ -254,7 +255,8 @@ private fun Content(
                     onClick = { filePicker.launch() },
                     leadingContent = { Icon(Icons.Rounded.InsertDriveFile, null) },
                     content = {
-                        Text(text = state.replaceFile?.name ?: stringResource(R.string.message_no_file))
+                        val text = state.replaceFile?.name ?: stringResource(R.string.message_no_file)
+                        Text(text = text)
                     },
                     trailingContent = {
                         if (state.replaceFile != null) {

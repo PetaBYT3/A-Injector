@@ -1,9 +1,11 @@
 package com.a.injector.data.remote
 
 import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.auth.OtpType
 import io.github.jan.supabase.auth.SignOutScope
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.providers.builtin.Email
+import io.github.jan.supabase.auth.providers.builtin.OTP
 import io.github.jan.supabase.auth.status.SessionStatus
 import io.github.jan.supabase.auth.user.UserInfo
 import kotlinx.coroutines.flow.Flow
@@ -31,6 +33,23 @@ class AuthApiImpl(
         )
     }
 
+    override suspend fun signOtp(email: String) {
+        supabaseClient.auth.signInWith(
+            provider = OTP,
+            config = {
+                this.email = email
+            }
+        )
+    }
+
+    override suspend fun verifyOtp(email: String, otp: String) {
+        supabaseClient.auth.verifyEmailOtp(
+            type = OtpType.Email.MAGIC_LINK,
+            email = email,
+            token = otp
+        )
+    }
+
     override suspend fun signUp(email: String, password: String) {
         supabaseClient.auth.signUpWith(
             provider = Email,
@@ -47,6 +66,14 @@ class AuthApiImpl(
 
     override suspend fun signOut() {
         supabaseClient.auth.signOut(SignOutScope.GLOBAL)
+    }
+
+    override suspend fun changePassword(password: String) {
+        supabaseClient.auth.updateUser(
+            config = {
+                this.password = password
+            }
+        )
     }
 
     override suspend fun sendResetPassword(email: String) {

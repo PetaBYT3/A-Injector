@@ -19,8 +19,11 @@ interface AccountRepository {
 
     fun signIn(email: String, password: String): Flow<Either<TextResource, Unit>>
     fun signUp(email: String, password: String): Flow<Either<TextResource, Unit>>
+    fun signOtp(email: String): Flow<Either<TextResource, TextResource>>
+    fun verifyOtp(email: String, otp: String): Flow<Either<TextResource, TextResource>>
     fun signGuest(): Flow<Either<TextResource, Unit>>
     fun signOut(): Flow<Either<TextResource, Unit>>
+    fun changePassword(password: String): Flow<Either<TextResource, TextResource>>
     fun sendResetPassword(email: String): Flow<Either<TextResource, TextResource>>
 
     fun getProfileByHighestContribution(): Flow<Either<TextResource, List<ProfileModel>>>

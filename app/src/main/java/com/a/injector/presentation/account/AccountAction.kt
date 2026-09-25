@@ -14,7 +14,8 @@ sealed interface AccountAction {
     data object CleanStorageButton: AccountAction
 
     data object ChangePasswordBottomSheet: AccountAction
-    data object SendChangePasswordEmailButton: AccountAction
+    data class NewPasswordTextField(val password: String): AccountAction
+    data object ChangePasswordButton: AccountAction
 
     data object SignOutBottomSheet: AccountAction
     data object SignOutButton: AccountAction
