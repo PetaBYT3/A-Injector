@@ -50,25 +50,23 @@ class AccountRepositoryImpl(
 ): AccountRepository {
     private val repositoryScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    override val authState: StateFlow<AuthResult?> = authApi.currentAuth.flatMapLatest { userInfo ->
-        val authResult = when {
-            userInfo == null -> AuthResult.Unauthenticated
-            else -> AuthResult.Authenticated
-        }
-        flowOf(authResult)
-    }.flowOn(Dispatchers.IO).stateIn(
+    override fun getAuthState(): Flow<AuthResult> {
+        return authApi.getAuthState().flatMapLatest { userInfo ->
+            val authResult = when {
+                userInfo == null -> AuthResult.Unauthenticated
+                else -> AuthResult.Authenticated
+            }
+            flowOf(authResult)
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override val currentUserInfo: StateFlow<UserInfo?> = authApi.getAuthState().flowOn(Dispatchers.IO).stateIn(
         scope = repositoryScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = null
     )
 
-    override val currentUserInfo: StateFlow<UserInfo?> = authApi.currentAuth.flowOn(Dispatchers.IO).stateIn(
-        scope = repositoryScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = null
-    )
-
-    override val currentProfile: StateFlow<ProfileModel> = authApi.currentAuth.flatMapLatest { userInfo ->
+    override val currentProfile: StateFlow<ProfileModel> = authApi.getAuthState().flatMapLatest { userInfo ->
         when (userInfo?.isAnonymous) {
             false -> profileApi.getProfile(userInfo.id).map { it?.toProfileModel() ?: ProfileModel.EMPTY }
             true -> flowOf(ProfileModel.GUEST)
@@ -101,7 +99,7 @@ class AccountRepositoryImpl(
             delay(1.seconds)
             profileApi.upsertProfile(
                 profileDto = ProfileDto(
-                    id = authApi.currentAuth.first()!!.id,
+                    id = authApi.getAuthState().first()!!.id,
                     username = "user${Uuid.random()}",
                     role = Role.User,
                     contribution = 0
@@ -200,9 +198,9 @@ class AccountRepositoryImpl(
     }
 
     override fun getRequestStatus(): Flow<RequestState> {
-        return authApi.currentAuth.flatMapLatest { userInfo ->
+        return authApi.getAuthState().flatMapLatest { userInfo ->
             if (userInfo != null) {
-                requestApi.getRequestDetail(userInfo.id).map { requestDetailDto ->
+                requestApi.getRequest(userInfo.id).map { requestDetailDto ->
                     if (requestDetailDto != null) RequestState.Applied else RequestState.NotApplied
                 }
             } else {
@@ -212,7 +210,7 @@ class AccountRepositoryImpl(
     }
 
     override fun getRequestDetails(): Flow<Either<TextResource, List<RequestDetailModel>>> {
-        return requestApi.getRequestDetails().map { requestDetailDtos ->
+        return requestApi.getRequests().map { requestDetailDtos ->
             val requestDetailModelDto = requestDetailDtos.map { it.toRequestDetailModel() }
             Either.Right(requestDetailModelDto) as Either<TextResource, List<RequestDetailModel>>
         }.catch { throwable ->

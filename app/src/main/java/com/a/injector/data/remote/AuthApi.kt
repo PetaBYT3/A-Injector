@@ -4,7 +4,7 @@ import io.github.jan.supabase.auth.user.UserInfo
 import kotlinx.coroutines.flow.Flow
 
 interface AuthApi {
-    val currentAuth: Flow<UserInfo?>
+    fun getAuthState(): Flow<UserInfo?>
     suspend fun signIn(email: String, password: String)
     suspend fun signOtp(email: String)
     suspend fun verifyOtp(email: String, otp: String)

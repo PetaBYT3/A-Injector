@@ -16,6 +16,8 @@ data class AccountState(
     val profileToUpsert: ProfileModel = ProfileModel.EMPTY,
     val isUpsertProfileButtonLoading: Boolean = false,
 
+    val isRequestRoleBottomSheetVisible: Boolean = false,
+
     val isCleanStorageBottomSheetVisible: Boolean = false,
     val isCleanStorageButtonLoading: Boolean = false,
 
@@ -35,6 +37,7 @@ data class AccountState(
     val isPasswordContainNumber: Boolean get() = newPasswordTextField.any { it.isDigit() }
 
     val isPasswordValid: Boolean get() =
+        newPasswordTextField.isNotEmpty() &&
         isPasswordMoreThan8Character &&
         isPasswordContainUppercase &&
         isPasswordContainNumber

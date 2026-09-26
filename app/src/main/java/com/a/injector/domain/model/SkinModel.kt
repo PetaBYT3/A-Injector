@@ -4,7 +4,8 @@ data class SkinModel(
     val id: String,
     val heroId: String,
     val label: String,
-    val name: String
+    val name: String,
+    val replaces: List<ReplaceModel> = emptyList()
 ) {
     companion object {
         val EMPTY = SkinModel(

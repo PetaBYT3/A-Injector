@@ -1,12 +1,11 @@
 package com.a.injector.data.remote
 
-import com.a.injector.data.dto.RequestDetailDto
 import com.a.injector.data.dto.RequestDto
 import kotlinx.coroutines.flow.Flow
 
 interface RequestApi {
-    fun getRequestDetails(): Flow<List<RequestDetailDto>>
-    fun getRequestDetail(id: String): Flow<RequestDetailDto?>
+    fun getRequests(): Flow<List<RequestDto>>
+    fun getRequest(profileId: String): Flow<RequestDto?>
     suspend fun upsertRequest(requestDto: RequestDto)
     suspend fun deleteRequest(requestDto: RequestDto)
 }

@@ -112,12 +112,19 @@ class InjectRepositoryImpl(
         }.flowOn(Dispatchers.IO)
     }
 
-    override fun execute(replaceModel: ReplaceModel): Flow<Either<TextResource, TextResource>> {
+    override fun execute(
+        replaceModel: ReplaceModel
+    ): Flow<Either<TextResource, TextResource>> {
         return flow<Either<TextResource, TextResource>> {
             val fileName = "${replaceModel.id}.zip"
 
+            emit(Either.Right(TextResource.DynamicString("Downloading")))
             val replaceFile = validateReplace(fileName, replaceModel.fileSize)
+
+            emit(Either.Right(TextResource.DynamicString("Extracting")))
             val extractedReplace = extractAssets(replaceFile)
+
+            emit(Either.Right(TextResource.DynamicString("Copying")))
             copyAssets(extractedReplace)
 
             emit(Either.Right(TextResource.StringResource(R.string.success_install_script)))

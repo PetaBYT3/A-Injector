@@ -36,21 +36,36 @@ fun CustomUndismissableBottomSheet(
     title: String,
     content: (LazyListScope.() -> Unit)
 ) {
-    val scope = rememberCoroutineScope()
+    var isVisibleInternally by remember { mutableStateOf(visible) }
+    var allowHide by remember { mutableStateOf(false) }
+
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
         confirmValueChange = {
-            if (visible) it != SheetValue.Hidden else true
+            if (allowHide) true else it != SheetValue.Hidden
         }
     )
 
     LaunchedEffect(visible) {
-        scope.launch {
-            if (visible) sheetState.hide()
+        when (visible) {
+            true -> {
+                allowHide = false
+                isVisibleInternally = true
+            }
+            false -> {
+                if (isVisibleInternally) {
+                    allowHide = true
+                    try {
+                        sheetState.hide()
+                    } finally {
+                        isVisibleInternally = false
+                    }
+                }
+            }
         }
     }
 
-    if (visible) {
+    if (isVisibleInternally) {
         ModalBottomSheet(
             modifier = modifier
                 .statusBarsPadding(),

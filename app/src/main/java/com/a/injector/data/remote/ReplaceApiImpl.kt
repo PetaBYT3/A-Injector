@@ -22,10 +22,10 @@ class ReplaceApiImpl(
         )
     }
 
-    override fun getReplace(id: String): Flow<ReplaceDto?> {
+    override fun getReplace(replaceId: String): Flow<ReplaceDto?> {
         return supabaseClient.from(SupabaseConstanta.REPLACE_TABLE).selectSingleValueAsFlow(
             primaryKey = ReplaceDto::id,
-            filter = { eq("id", id) }
+            filter = { eq("id", replaceId) }
         )
     }
 

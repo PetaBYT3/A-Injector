@@ -2,6 +2,7 @@
 
 package com.a.injector.presentation
 
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -23,10 +24,14 @@ import androidx.lifecycle.lifecycleScope
 import com.a.injector.data.system.ShizukuCommandService
 import com.a.injector.data.system.SuperuserCommandService
 import com.a.injector.domain.repository.DirectoryRepository
+import com.a.injector.domain.repository.NavigationRepository
 import com.a.injector.domain.repository.PermissionRepository
-import com.a.injector.presentation.navigation.NavigationScreen
+import com.a.injector.presentation.loading.SignMethod
+import com.a.injector.presentation.mainnavigation.MainNavigationRoute
+import com.a.injector.presentation.mainnavigation.NavigationScreen
 import com.a.injector.presentation.theme.ui.AInjectorTheme
 import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.auth.handleDeeplinks
 import io.github.jan.supabase.realtime.realtime
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
@@ -41,6 +46,7 @@ class MainActivity : ComponentActivity() {
     private val permissionRepository: PermissionRepository by inject()
     private val shizukuCommandService: ShizukuCommandService by inject()
     private val superuserCommandService: SuperuserCommandService by inject()
+    private val navigationRepository: NavigationRepository by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,8 +90,18 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        supabaseClient.handleDeeplinks(intent)
+
+        lifecycleScope.launch {
+            navigationRepository.replaceTo(MainNavigationRoute.LoadingScreen(SignMethod.EmailLink))
+        }
+    }
+
     override fun onResume() {
         super.onResume()
+        supabaseClient.handleDeeplinks(intent)
 
         lifecycleScope.launch {
             permissionRepository.checkPermission()

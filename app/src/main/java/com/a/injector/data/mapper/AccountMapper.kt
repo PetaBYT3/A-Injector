@@ -1,7 +1,6 @@
 package com.a.injector.data.mapper
 
 import com.a.injector.data.dto.ProfileDto
-import com.a.injector.data.dto.RequestDetailDto
 import com.a.injector.data.dto.RequestDto
 import com.a.injector.domain.model.ProfileModel
 import com.a.injector.domain.model.RequestDetailModel
@@ -31,7 +30,7 @@ fun RequestModel.toRequestDto(): RequestDto = RequestDto(
     role = role
 )
 
-fun RequestDetailDto.toRequestDetailModel(): RequestDetailModel = RequestDetailModel(
+fun RequestDto.toRequestDetailModel(): RequestDetailModel = RequestDetailModel(
     id = this.id,
     role = role,
     profile = profileDto?.toProfileModel() ?: ProfileModel.EMPTY

@@ -33,7 +33,6 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
-import com.a.injector.domain.model.HeroModel
 import com.a.injector.presentation.component.CustomCenterCircularWavyProgressIndicator
 import com.a.injector.presentation.component.CustomFloatingActionButton
 import com.a.injector.presentation.component.CustomFloatingActionToolBar
@@ -42,28 +41,27 @@ import com.a.injector.presentation.component.CustomTopAppBar
 import com.a.injector.presentation.component.DefaultClickableListItem
 import com.a.injector.presentation.component.MessageListItem
 import com.a.injector.presentation.component.TransparentTextField
-import com.a.injector.presentation.navigation.NavigationRoute
+import com.a.injector.presentation.mainnavigation.MainNavigationRoute
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun ScriptScreen(
+fun ScriptScreenRoot(
     navBackStack: NavBackStack<NavKey>,
     viewModel: ScriptViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val onAction = viewModel::onAction
 
-    Screen(
+    ScriptScreen(
         navBackStack = navBackStack,
         state = state,
-        onAction = onAction
+        onAction = viewModel::onAction
     )
 }
 
 @Composable
 @Preview
 private fun Preview() {
-    Screen(
+    ScriptScreen(
         navBackStack = rememberNavBackStack(),
         state = ScriptState(
             isHeroesLoading = false,
@@ -76,7 +74,7 @@ private fun Preview() {
 }
 
 @Composable
-private fun Screen(
+private fun ScriptScreen(
     navBackStack: NavBackStack<NavKey>,
     state: ScriptState,
     onAction: (ScriptAction) -> Unit
@@ -123,7 +121,7 @@ private fun ScriptFloatingActionButton(
             floatingActionButton = if (state.isModifyEnabled) {
                 {
                     CustomFloatingActionButton(
-                        onClick = { navBackStack.add(NavigationRoute.ManageHeroScreen("")) },
+                        onClick = { navBackStack.add(MainNavigationRoute.ManageHeroScreen("")) },
                         content = { Icon(Icons.Rounded.Add, null) }
                     )
                 }
@@ -182,56 +180,53 @@ private fun Content(
             }
             return@LazyColumn
         }
-
-        when {
-            state.isHeroesError != null -> {
-                item("isHeroesError") {
-                    MessageListItem(
-                        modifier = Modifier
-                            .animateItem(),
-                        text = state.isHeroesError.asString(),
-                        isError = true
-                    )
-                }
+        if (state.isHeroesError != null) {
+            item("isHeroesError") {
+                MessageListItem(
+                    modifier = Modifier
+                        .animateItem(),
+                    text = state.isHeroesError.asString(),
+                    isError = true
+                )
             }
-            state.filteredHeroes.isEmpty() -> {
-                item("isHeroesEmpty") {
-                    MessageListItem(
-                        modifier = Modifier
-                            .animateItem(),
-                        text = stringResource(R.string.item_empty)
-                    )
-                }
+            return@LazyColumn
+        }
+        if (state.filteredHeroes.isEmpty()) {
+            item("isHeroesEmpty") {
+                MessageListItem(
+                    modifier = Modifier
+                        .animateItem(),
+                    text = stringResource(R.string.item_empty)
+                )
             }
-            else -> {
-                itemsIndexed(
-                    items = state.filteredHeroes,
-                    key = { _, hero -> hero.id }
-                ) { index, hero ->
-                    DefaultClickableListItem(
-                        modifier = Modifier
-                            .animateItem(),
-                        index = index,
-                        count = state.filteredHeroes.size,
-                        onClick = { navBackStack.add(NavigationRoute.HeroScreen(hero.id)) },
-                        leadingContent = { Icon(Icons.Rounded.Person4, null) },
-                        content = { Text(text = hero.name) },
-                        trailingContent = {
-                            if (state.isModifyEnabled) {
-                                IconButton(
-                                    onClick = {
-                                        val targetRoute = NavigationRoute.ManageHeroScreen(
-                                            heroId = hero.id
-                                        )
-                                        navBackStack.add(targetRoute)
-                                    },
-                                    content = { Icon(Icons.Rounded.Edit, null) }
+            return@LazyColumn
+        }
+        itemsIndexed(
+            items = state.filteredHeroes,
+            key = { _, hero -> hero.id }
+        ) { index, hero ->
+            DefaultClickableListItem(
+                modifier = Modifier
+                    .animateItem(),
+                index = index,
+                count = state.filteredHeroes.size,
+                onClick = { navBackStack.add(MainNavigationRoute.HeroScreen(hero.id)) },
+                leadingContent = { Icon(Icons.Rounded.Person4, null) },
+                content = { Text(text = hero.name) },
+                trailingContent = {
+                    if (state.isModifyEnabled) {
+                        IconButton(
+                            onClick = {
+                                val targetRoute = MainNavigationRoute.ManageHeroScreen(
+                                    heroId = hero.id
                                 )
-                            }
-                        }
-                    )
+                                navBackStack.add(targetRoute)
+                            },
+                            content = { Icon(Icons.Rounded.Edit, null) }
+                        )
+                    }
                 }
-            }
+            )
         }
     }
 }

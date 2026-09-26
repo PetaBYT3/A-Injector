@@ -57,7 +57,7 @@ import com.a.injector.presentation.component.CustomTopAppBar
 import com.a.injector.presentation.component.DefaultClickableListItem
 import com.a.injector.presentation.component.DefaultListItem
 import com.a.injector.presentation.component.spacer
-import com.a.injector.presentation.navigation.NavigationRoute
+import com.a.injector.presentation.mainnavigation.MainNavigationRoute
 import com.a.injector.presentation.signup.PasswordRequirement
 import com.a.injector.presentation.signup.passwordRequirements
 import com.a.injector.presentation.util.ScreenEffectLauncher
@@ -402,7 +402,7 @@ private fun Content(
                     onClick = {
                         when (staticModel.id) {
                             AdministratorMenu.RoleManager -> {
-                                navBackStack.add(NavigationRoute.ManageRoleScreen)
+                                navBackStack.add(MainNavigationRoute.ManageRoleScreen)
                             }
                             AdministratorMenu.CleanStorage -> {
                                 onAction(AccountAction.CleanStorageBottomSheet)

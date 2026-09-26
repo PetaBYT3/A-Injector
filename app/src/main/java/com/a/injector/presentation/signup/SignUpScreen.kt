@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
@@ -44,39 +45,37 @@ import com.a.injector.R
 import com.a.injector.presentation.component.CustomButton
 import com.a.injector.presentation.component.CustomSurfaceText
 import com.a.injector.presentation.component.CustomTextField
-import com.a.injector.presentation.component.CustomTextListTitle
 import com.a.injector.presentation.component.CustomTopAppBar
 import com.a.injector.presentation.component.spacer
-import com.a.injector.presentation.navigation.popBackStack
+import com.a.injector.presentation.mainnavigation.popBackStack
 import com.a.injector.presentation.util.ScreenEffectLauncher
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun SignUpScreen(
+fun SignUpScreenRoot(
     navBackStack: NavBackStack<NavKey>,
     viewModel: SignUpViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val onAction = viewModel::onAction
-
     val snackBarHostState = remember { SnackbarHostState() }
+
+    SignUpScreen(
+        navBackStack = navBackStack,
+        state = state,
+        onAction = viewModel::onAction,
+        snackBarHostState = snackBarHostState
+    )
+
     ScreenEffectLauncher(
         snackBarHostState = snackBarHostState,
         screenEffect = viewModel.effect
-    )
-
-    Screen(
-        navBackStack = navBackStack,
-        state = state,
-        onAction = onAction,
-        snackBarHostState = snackBarHostState
     )
 }
 
 @Composable
 @Preview
 private fun Preview() {
-    Screen(
+    SignUpScreen(
         navBackStack = rememberNavBackStack(),
         state = SignUpState(),
         onAction = {},
@@ -85,7 +84,7 @@ private fun Preview() {
 }
 
 @Composable
-private fun Screen(
+private fun SignUpScreen(
     navBackStack: NavBackStack<NavKey>,
     state: SignUpState,
     onAction: (SignUpAction) -> Unit,
@@ -133,13 +132,6 @@ private fun Content(
             )
         }
         spacer()
-        item("emailTitle") {
-            CustomTextListTitle(
-                modifier = Modifier
-                    .animateItem(),
-                text = stringResource(R.string.item_email)
-            )
-        }
         item("signUpEmail") {
             CustomTextField(
                 modifier = Modifier
@@ -150,13 +142,6 @@ private fun Content(
             )
         }
         spacer()
-        item("passwordTitle") {
-            CustomTextListTitle(
-                modifier = Modifier
-                    .animateItem(),
-                text = stringResource(R.string.item_password)
-            )
-        }
         item("signUpPassword") {
             CustomTextField(
                 modifier = Modifier
@@ -169,21 +154,17 @@ private fun Content(
                         checked = isPasswordVisible,
                         onCheckedChange = { isPasswordVisible = it },
                         content = {
-                            Icon(
-                                imageVector = if (isPasswordVisible) {
-                                    Icons.Rounded.VisibilityOff
-                                } else {
-                                    Icons.Rounded.Visibility
-                                },
-                                contentDescription = null
-                            )
+                            val imageVector = when (isPasswordVisible) {
+                                true -> Icons.Rounded.VisibilityOff
+                                false -> Icons.Rounded.Visibility
+                            }
+                            Icon(imageVector, null)
                         }
                     )
                 },
-                visualTransformation = if (isPasswordVisible) {
-                    VisualTransformation.None
-                } else {
-                    PasswordVisualTransformation()
+                visualTransformation = when (isPasswordVisible) {
+                    true -> VisualTransformation.None
+                    false -> PasswordVisualTransformation()
                 }
             )
         }
@@ -203,58 +184,29 @@ private fun Content(
                             horizontalArrangement = Arrangement.spacedBy(5.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
+                            val isRequirementMet = when (staticModel.id) {
+                                PasswordRequirement.MoreThanEightCharacter -> state.isPasswordMoreThan8Character
+                                PasswordRequirement.ContainUppercase -> state.isPasswordContainUppercase
+                                PasswordRequirement.ContainNumber -> state.isPasswordContainNumber
+                            }
+                            val tint = when (isRequirementMet) {
+                                true -> MaterialTheme.colorScheme.primary
+                                false -> MaterialTheme.colorScheme.onSurfaceVariant
+                            }
+                            val imageVector = when (isRequirementMet) {
+                                true -> Icons.Rounded.Check
+                                false -> Icons.Rounded.Close
+                            }
                             Icon(
-                                tint = when (staticModel.id) {
-                                    PasswordRequirement.MoreThanEightCharacter -> {
-                                        if (state.isPasswordMoreThan8Character) {
-                                            MaterialTheme.colorScheme.primary
-                                        } else {
-                                            MaterialTheme.colorScheme.onSurfaceVariant
-                                        }
-                                    }
-                                    PasswordRequirement.ContainUppercase -> {
-                                        if (state.isPasswordContainUppercase) {
-                                            MaterialTheme.colorScheme.primary
-                                        } else {
-                                            MaterialTheme.colorScheme.onSurfaceVariant
-                                        }
-                                    }
-                                    PasswordRequirement.ContainNumber -> {
-                                        if (state.isPasswordContainNumber) {
-                                            MaterialTheme.colorScheme.primary
-                                        } else {
-                                            MaterialTheme.colorScheme.onSurfaceVariant
-                                        }
-                                    }
-                                },
-                                imageVector = when (staticModel.id) {
-                                    PasswordRequirement.MoreThanEightCharacter -> {
-                                        if (state.isPasswordMoreThan8Character) {
-                                            Icons.Rounded.Check
-                                        } else {
-                                            Icons.Rounded.Close
-                                        }
-                                    }
-                                    PasswordRequirement.ContainUppercase -> {
-                                        if (state.isPasswordContainUppercase) {
-                                            Icons.Rounded.Check
-                                        } else {
-                                            Icons.Rounded.Close
-                                        }
-                                    }
-                                    PasswordRequirement.ContainNumber -> {
-                                        if (state.isPasswordContainNumber) {
-                                            Icons.Rounded.Check
-                                        } else {
-                                            Icons.Rounded.Close
-                                        }
-                                    }
-                                },
+                                modifier = Modifier
+                                    .size(20.dp),
+                                tint = tint,
+                                imageVector = imageVector,
                                 contentDescription = null
                             )
                             Text(
                                 text = stringResource(staticModel.contentTextResId),
-                                style = MaterialTheme.typography.bodyMedium
+                                style = MaterialTheme.typography.bodySmall
                             )
                         }
                     }
@@ -265,7 +217,8 @@ private fun Content(
                         .align(Alignment.TopEnd),
                     onClick = { onAction(SignUpAction.SignUpButton) },
                     text = stringResource(R.string.action_sign_in),
-                    isLoading = state.isSignUpButtonLoading
+                    isLoading = state.isSignUpButtonLoading,
+                    enabled = state.isDataValid
                 )
             }
         }

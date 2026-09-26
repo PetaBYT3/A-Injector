@@ -17,10 +17,10 @@ import org.koin.core.annotation.Single
 class SkinApiImpl(
     private val supabaseClient: SupabaseClient
 ): SkinApi {
-    override fun getSkin(id: String): Flow<SkinDto> {
+    override fun getSkin(skinId: String): Flow<SkinDto> {
         return supabaseClient.from(SupabaseConstanta.SKIN_TABLE).selectSingleValueAsFlow(
             primaryKey = SkinDto::id,
-            filter = { eq("id", id) }
+            filter = { eq("id", skinId) }
         )
     }
 

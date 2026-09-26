@@ -39,40 +39,38 @@ import com.a.injector.R
 import com.a.injector.presentation.component.CustomButton
 import com.a.injector.presentation.component.CustomSurfaceText
 import com.a.injector.presentation.component.CustomTextField
-import com.a.injector.presentation.component.CustomTextListTitle
 import com.a.injector.presentation.component.CustomTopAppBar
 import com.a.injector.presentation.component.spacer
-import com.a.injector.presentation.navigation.NavigationRoute
-import com.a.injector.presentation.navigation.popBackStack
+import com.a.injector.presentation.mainnavigation.MainNavigationRoute
+import com.a.injector.presentation.mainnavigation.popBackStack
 import com.a.injector.presentation.util.ScreenEffectLauncher
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun SignInScreen(
+fun SignInScreenRoot(
     navBackStack: NavBackStack<NavKey>,
     viewModel: SignInViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val onAction = viewModel::onAction
-    
     val snackBarHostState = remember { SnackbarHostState() }
+
+    SignInScreen(
+        navBackStack = navBackStack,
+        state = state,
+        onAction = viewModel::onAction,
+        snackBarHostState = snackBarHostState
+    )
+
     ScreenEffectLauncher(
         snackBarHostState = snackBarHostState,
         screenEffect = viewModel.effect
-    )
-
-    Screen(
-        navBackStack = navBackStack,
-        state = state,
-        onAction = onAction,
-        snackBarHostState = snackBarHostState
     )
 }
 
 @Composable
 @Preview
 private fun Preview() {
-    Screen(
+    SignInScreen(
         navBackStack = rememberNavBackStack(),
         state = SignInState(),
         onAction = {},
@@ -81,7 +79,7 @@ private fun Preview() {
 }
 
 @Composable
-private fun Screen(
+private fun SignInScreen(
     navBackStack: NavBackStack<NavKey>,
     state: SignInState,
     onAction: (SignInAction) -> Unit,
@@ -131,13 +129,6 @@ private fun Content(
             )
         }
         spacer()
-        item("emailTitle") {
-            CustomTextListTitle(
-                modifier = Modifier
-                    .animateItem(),
-                text = stringResource(R.string.item_email)
-            )
-        }
         item("signInEmail") {
             CustomTextField(
                 modifier = Modifier
@@ -148,13 +139,6 @@ private fun Content(
             )
         }
         spacer()
-        item("passwordTitle") {
-            CustomTextListTitle(
-                modifier = Modifier
-                    .animateItem(),
-                text = stringResource(R.string.item_password)
-            )
-        }
         item("signInPassword") {
             CustomTextField(
                 modifier = Modifier
@@ -167,21 +151,17 @@ private fun Content(
                         checked = isPasswordVisible,
                         onCheckedChange = { isPasswordVisible = it },
                         content = {
-                            Icon(
-                                imageVector = if (isPasswordVisible) {
-                                    Icons.Rounded.VisibilityOff
-                                } else {
-                                    Icons.Rounded.Visibility
-                                },
-                                contentDescription = null
-                            )
+                            val imageVector = when (isPasswordVisible) {
+                                true -> Icons.Rounded.VisibilityOff
+                                false -> Icons.Rounded.Visibility
+                            }
+                            Icon(imageVector, null)
                         }
                     )
                 },
-                visualTransformation = if (isPasswordVisible) {
-                    VisualTransformation.None
-                } else {
-                    PasswordVisualTransformation()
+                visualTransformation = when (isPasswordVisible) {
+                    true -> VisualTransformation.None
+                    false -> PasswordVisualTransformation()
                 }
             )
         }
@@ -195,7 +175,7 @@ private fun Content(
                 OutlinedButton(
                     modifier = Modifier
                         .align(Alignment.TopStart),
-                    onClick = { navBackStack.add(NavigationRoute.ResetPasswordScreen) },
+                    onClick = { navBackStack.add(MainNavigationRoute.SignLinkScreen) },
                     content = { Text(text = "Forget Password") }
                 )
                 CustomButton(
@@ -204,7 +184,8 @@ private fun Content(
                         .align(Alignment.TopEnd),
                     onClick = { onAction(SignInAction.SignInButton) },
                     text = stringResource(R.string.action_sign_in),
-                    isLoading = state.isSingInButtonLoading
+                    isLoading = state.isSingInButtonLoading,
+                    enabled = state.isDataValid
                 )
             }
         }

@@ -1,4 +1,4 @@
-package com.a.injector.presentation.resetpassword
+package com.a.injector.presentation.signlink
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,26 +27,24 @@ import com.a.injector.R
 import com.a.injector.presentation.component.CustomButton
 import com.a.injector.presentation.component.CustomSurfaceText
 import com.a.injector.presentation.component.CustomTextField
-import com.a.injector.presentation.component.CustomTextListTitle
 import com.a.injector.presentation.component.CustomTopAppBar
 import com.a.injector.presentation.component.spacer
-import com.a.injector.presentation.navigation.popBackStack
+import com.a.injector.presentation.mainnavigation.popBackStack
 import com.a.injector.presentation.util.ScreenEffectLauncher
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun ResetPasswordScreen(
+fun SignLinkScreenRoot(
     navBackStack: NavBackStack<NavKey>,
-    viewModel: ResetPasswordViewModel = koinViewModel()
+    viewModel: SignLinkViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val onAction = viewModel::onAction
     val snackBarHostState = remember { SnackbarHostState() }
 
-    Screen(
+    SignLinkScreen(
         navBackStack = navBackStack,
         state = state,
-        onAction = onAction,
+        onAction = viewModel::onAction,
         snackBarHostState = snackBarHostState
     )
 
@@ -59,32 +57,33 @@ fun ResetPasswordScreen(
 @Composable
 @Preview
 private fun Preview() {
-    Screen(
+    SignLinkScreen(
         navBackStack = rememberNavBackStack(),
-        state = ResetPasswordState(),
+        state = SignLinkState(),
         onAction = {},
         snackBarHostState = SnackbarHostState()
     )
 }
 
 @Composable
-private fun Screen(
+private fun SignLinkScreen(
     navBackStack: NavBackStack<NavKey>,
-    state: ResetPasswordState,
-    onAction: (ResetPasswordAction) -> Unit,
+    state: SignLinkState,
+    onAction: (SignLinkAction) -> Unit,
     snackBarHostState: SnackbarHostState
 ) {
     Scaffold(
         topBar = {
             CustomTopAppBar(
                 navigationClick = { navBackStack.popBackStack() },
-                title = stringResource(R.string.title_reset_password)
+                title = "Preview"
             )
         },
         content = { innerPadding ->
             Content(
                 modifier = Modifier
                     .padding(innerPadding),
+                navBackStack = navBackStack,
                 state = state,
                 onAction = onAction
             )
@@ -96,49 +95,46 @@ private fun Screen(
 @Composable
 private fun Content(
     modifier: Modifier = Modifier,
-    state: ResetPasswordState,
-    onAction: (ResetPasswordAction) -> Unit
+    navBackStack: NavBackStack<NavKey>,
+    state: SignLinkState,
+    onAction: (SignLinkAction) -> Unit
 ) {
     LazyColumn(
         modifier = modifier,
         contentPadding = PaddingValues(start = 10.dp, end = 10.dp, bottom = 100.dp),
         verticalArrangement = Arrangement.spacedBy(2.5.dp)
     ) {
-        item("resetPasswordMessage") {
+        item("messageTitle") {
             CustomSurfaceText(
                 modifier = Modifier
                     .animateItem(),
-                text = stringResource(R.string.message_reset_password)
+                text = "Message preview"
             )
         }
         spacer()
-        item {
-            CustomTextListTitle(
+        item("emailTextField") {
+            CustomTextField(
                 modifier = Modifier
                     .animateItem(),
-                text = stringResource(R.string.item_email)
-            )
-        }
-        item {
-            CustomTextField(
                 label = stringResource(R.string.item_email),
                 value = state.emailTextField,
-                onValueChange = { onAction(ResetPasswordAction.EmailTextField(it)) }
+                onValueChange = { onAction(SignLinkAction.EmailTextField(it)) }
             )
         }
         spacer()
-        item {
+        item("sendButton") {
             Box(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .animateItem(),
                 contentAlignment = Alignment.CenterEnd
             ) {
                 CustomButton(
                     modifier = Modifier
                         .height(ButtonDefaults.MediumContainerHeight),
-                    onClick = { onAction(ResetPasswordAction.SendResetButton) },
+                    onClick = { onAction(SignLinkAction.SendOtpButton) },
                     text = stringResource(R.string.action_send),
-                    isLoading = state.isSendResetButtonLoading
+                    isLoading = state.isSendOtpButtonLoading
                 )
             }
         }

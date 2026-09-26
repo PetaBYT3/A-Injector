@@ -44,7 +44,10 @@ class AppModule {
             supabaseKey = BuildConfig.SUPABASE_KEY,
             builder = {
                 install(Realtime)
-                install(Auth)
+                install(Auth) {
+                    scheme = BuildConfig.APPLICATION_ID
+                    host = "signin"
+                }
                 install(Postgrest)
                 install(Storage)
 

@@ -6,12 +6,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.CleaningServices
-import androidx.compose.material.icons.rounded.Language
-import androidx.compose.material3.Icon
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -85,18 +80,13 @@ private fun SettingsScreen(
             )
         },
         content = { innerPadding ->
-            LazyColumn(
+            Content(
                 modifier = Modifier
                     .padding(innerPadding),
-                contentPadding = PaddingValues(start = 10.dp, end = 10.dp, bottom = 100.dp),
-                verticalArrangement = Arrangement.spacedBy(2.5.dp)
-            ) {
-                content(
-                    navBackStack = navBackStack,
-                    state = state,
-                    onAction = onAction
-                )
-            }
+                navBackStack = navBackStack,
+                state = state,
+                onAction = onAction
+            )
         },
         snackbarHost = { SnackbarHost(hostState = snackBarHostState) }
     )
@@ -155,54 +145,52 @@ private fun SettingsScreen(
     )
 }
 
-private fun LazyListScope.content(
+@Composable
+private fun Content(
+    modifier: Modifier = Modifier,
     navBackStack: NavBackStack<NavKey>,
     state: SettingsState,
     onAction: (SettingsAction) -> Unit
 ) {
-    itemsIndexed(
-        items = settingsMenuItem,
-        key = { _, staticModel -> staticModel.id.name }
-    ) { index, staticModel ->
-        DefaultClickableListItem(
-            modifier = Modifier
-                .animateItem(),
-            index = index,
-            count = settingsMenuItem.size,
-            onClick = {
-                when (staticModel.id) {
-                    SettingsMenuId.Language -> {
-                        onAction(SettingsAction.LanguageBottomSheet)
+    LazyColumn(
+        modifier = modifier,
+        contentPadding = PaddingValues(start = 10.dp, end = 10.dp, bottom = 100.dp),
+        verticalArrangement = Arrangement.spacedBy(2.5.dp)
+    ) {
+        itemsIndexed(
+            items = settingsMenuItem,
+            key = { _, staticModel -> staticModel.id.name }
+        ) { index, staticModel ->
+            DefaultClickableListItem(
+                modifier = Modifier
+                    .animateItem(),
+                index = index,
+                count = settingsMenuItem.size,
+                onClick = {
+                    when (staticModel.id) {
+                        SettingsMenuId.Language -> {
+                            onAction(SettingsAction.LanguageBottomSheet)
+                        }
+                        SettingsMenuId.CleanCache -> {
+                            onAction(SettingsAction.CleanCacheBottomSheet)
+                        }
                     }
-                    SettingsMenuId.CleanCache -> {
-                        onAction(SettingsAction.CleanCacheBottomSheet)
+                },
+                leadingContent = staticModel.leadingContent,
+                content = { Text(text = stringResource(staticModel.contentTextResId)) },
+                supportingContent = {
+                    val text = when (staticModel.id) {
+                        SettingsMenuId.Language -> {
+                            val currentLanguage = state.currentLanguage
+                            "${currentLanguage.displayLanguage} - ${currentLanguage.displayCountry}"
+                        }
+                        SettingsMenuId.CleanCache -> {
+                            state.cacheSize.toMegaBytes()
+                        }
                     }
+                    Text(text = text)
                 }
-            },
-            leadingContent = {
-                val imageVector = when (staticModel.id) {
-                    SettingsMenuId.Language -> {
-                        Icons.Rounded.Language
-                    }
-                    SettingsMenuId.CleanCache -> {
-                        Icons.Rounded.CleaningServices
-                    }
-                }
-                Icon(imageVector, null)
-            },
-            content = { Text(text = stringResource(staticModel.contentTextResId)) },
-            supportingContent = {
-                val currentLanguage = state.currentLanguage
-                val text = when (staticModel.id) {
-                    SettingsMenuId.Language -> {
-                        "${currentLanguage.displayLanguage} - ${currentLanguage.displayCountry}"
-                    }
-                    SettingsMenuId.CleanCache -> {
-                        state.cacheSize.toMegaBytes()
-                    }
-                }
-                Text(text = text)
-            }
-        )
+            )
+        }
     }
 }

@@ -1,4 +1,4 @@
-package com.a.injector.presentation.navigation
+package com.a.injector.presentation.mainnavigation
 
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -29,9 +29,9 @@ import com.a.injector.presentation.managehero.ManageHeroScreenRoot
 import com.a.injector.presentation.managereplace.ManageReplaceScreenRoot
 import com.a.injector.presentation.managerole.ManageRoleScreenRoot
 import com.a.injector.presentation.manageskin.ManageSkinScreen
-import com.a.injector.presentation.resetpassword.ResetPasswordScreen
-import com.a.injector.presentation.signin.SignInScreen
-import com.a.injector.presentation.signup.SignUpScreen
+import com.a.injector.presentation.signin.SignInScreenRoot
+import com.a.injector.presentation.signlink.SignLinkScreenRoot
+import com.a.injector.presentation.signup.SignUpScreenRoot
 import org.koin.compose.koinInject
 
 @Composable
@@ -39,7 +39,7 @@ fun NavigationScreen(
     navigationRepository: NavigationRepository = koinInject()
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
-    val navBackStack = rememberNavBackStack(NavigationRoute.LoadingScreen)
+    val navBackStack = rememberNavBackStack(MainNavigationRoute.LoadingScreen())
 
     LaunchedEffect(lifecycleOwner.lifecycle, navigationRepository.navigationEffect) {
         lifecycleOwner.repeatOnLifecycle(Lifecycle.State.RESUMED) {
@@ -71,49 +71,50 @@ fun NavigationScreen(
         ),
         entryProvider = { navKey ->
             when (navKey) {
-                is NavigationRoute.LoadingScreen -> {
+                is MainNavigationRoute.LoadingScreen -> {
                     NavEntry(navKey) {
                         LoadingScreenRoot(
-                            navBackStack = navBackStack
+                            navBackStack = navBackStack,
+                            signMethod = navKey.signMethod
                         )
                     }
                 }
-                is NavigationRoute.LandingScreen -> {
+                is MainNavigationRoute.LandingScreen -> {
                     NavEntry(navKey) {
                         LandingScreenRoot(
                             navBackStack = navBackStack
                         )
                     }
                 }
-                is NavigationRoute.SignInScreen -> {
+                is MainNavigationRoute.SignInScreen -> {
                     NavEntry(navKey) {
-                        SignInScreen(
+                        SignInScreenRoot(
                             navBackStack = navBackStack
                         )
                     }
                 }
-                is NavigationRoute.SignUpScreen -> {
+                is MainNavigationRoute.SignUpScreen -> {
                     NavEntry(navKey) {
-                        SignUpScreen(
+                        SignUpScreenRoot(
                             navBackStack = navBackStack
                         )
                     }
                 }
-                is NavigationRoute.ResetPasswordScreen -> {
+                is MainNavigationRoute.SignLinkScreen -> {
                     NavEntry(navKey) {
-                        ResetPasswordScreen(
+                        SignLinkScreenRoot(
                             navBackStack = navBackStack
                         )
                     }
                 }
-                is NavigationRoute.BottomNavigation -> {
+                is MainNavigationRoute.BottomNavigation -> {
                     NavEntry(navKey) {
                         BottomNavigationScreenRoot(
                             navBackStack = navBackStack
                         )
                     }
                 }
-                is NavigationRoute.HeroScreen -> {
+                is MainNavigationRoute.HeroScreen -> {
                     NavEntry(navKey) {
                         HeroScreenRoot(
                             navBackStack = navBackStack,
@@ -121,7 +122,7 @@ fun NavigationScreen(
                         )
                     }
                 }
-                is NavigationRoute.ManageHeroScreen -> {
+                is MainNavigationRoute.ManageHeroScreen -> {
                     NavEntry(navKey) {
                         ManageHeroScreenRoot(
                             navBackStack = navBackStack,
@@ -129,7 +130,7 @@ fun NavigationScreen(
                         )
                     }
                 }
-                is NavigationRoute.ManageSkinScreen -> {
+                is MainNavigationRoute.ManageSkinScreen -> {
                     NavEntry(navKey) {
                         ManageSkinScreen(
                             navBackStack = navBackStack,
@@ -138,7 +139,7 @@ fun NavigationScreen(
                         )
                     }
                 }
-                is NavigationRoute.ManageReplaceScreen -> {
+                is MainNavigationRoute.ManageReplaceScreen -> {
                     NavEntry(navKey) {
                         ManageReplaceScreenRoot(
                             navBackStack = navBackStack,
@@ -148,7 +149,7 @@ fun NavigationScreen(
                         )
                     }
                 }
-                is NavigationRoute.ManageRoleScreen -> {
+                is MainNavigationRoute.ManageRoleScreen -> {
                     NavEntry(navKey) {
                         ManageRoleScreenRoot(
                             navBackStack = navBackStack

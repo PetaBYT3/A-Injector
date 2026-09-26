@@ -19,11 +19,17 @@ import com.a.injector.R
 import com.a.injector.presentation.component.CustomSurfaceText
 import com.a.injector.presentation.component.CustomUndismissableBottomSheet
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun LoadingScreenRoot(
     navBackStack: NavBackStack<NavKey>,
-    viewModel: LoadingViewModel = koinViewModel()
+    signMethod: SignMethod,
+    viewModel: LoadingViewModel = koinViewModel(
+        parameters = {
+            parametersOf(signMethod)
+        }
+    )
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 

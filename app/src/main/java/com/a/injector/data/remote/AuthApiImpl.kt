@@ -17,10 +17,12 @@ import org.koin.core.annotation.Single
 class AuthApiImpl(
     private val supabaseClient: SupabaseClient
 ): AuthApi {
-    override val currentAuth: Flow<UserInfo?> = supabaseClient.auth.sessionStatus.filter { sessionStatus ->
-        sessionStatus !is SessionStatus.Initializing && sessionStatus !is SessionStatus.RefreshFailure
-    }.map {
-        supabaseClient.auth.currentUserOrNull()
+    override fun getAuthState(): Flow<UserInfo?> {
+        return supabaseClient.auth.sessionStatus.filter { sessionStatus ->
+            sessionStatus !is SessionStatus.Initializing && sessionStatus !is SessionStatus.RefreshFailure
+        }.map {
+            supabaseClient.auth.currentUserOrNull()
+        }
     }
 
     override suspend fun signIn(email: String, password: String) {

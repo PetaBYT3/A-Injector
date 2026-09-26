@@ -4,5 +4,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 enum class Role {
-    Administrator, Contributor, User
+    Administrator,
+    Manager,
+    Contributor,
+    User
 }

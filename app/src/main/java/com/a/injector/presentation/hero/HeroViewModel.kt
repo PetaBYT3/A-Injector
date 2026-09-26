@@ -2,13 +2,15 @@ package com.a.injector.presentation.hero
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.a.injector.R
 import com.a.injector.data.dto.Role
+import com.a.injector.data.util.TextResource
 import com.a.injector.domain.model.ReplaceModel
+import com.a.injector.domain.model.SkinModel
 import com.a.injector.domain.repository.AccountRepository
-import com.a.injector.domain.repository.DatabaseRepository
 import com.a.injector.domain.repository.InjectRepository
+import com.a.injector.domain.repository.ScriptRepository
 import com.a.injector.presentation.util.ScreenEffect
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,14 +21,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.InjectedParam
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ConcurrentMap
 
 @KoinViewModel
 class HeroViewModel(
     @InjectedParam private val heroId: String,
     private val accountRepository: AccountRepository,
-    private val databaseRepository: DatabaseRepository,
+    private val scriptRepository: ScriptRepository,
     private val injectRepository: InjectRepository
 ): ViewModel() {
     private val _state = MutableStateFlow(HeroState())
@@ -34,8 +34,6 @@ class HeroViewModel(
 
     private val _effect = Channel<ScreenEffect>()
     val effect = _effect.receiveAsFlow()
-
-    private val injectJob: ConcurrentMap<String, Job> = ConcurrentHashMap()
 
     init {
         viewModelScope.launch {
@@ -49,8 +47,8 @@ class HeroViewModel(
         }
 
         viewModelScope.launch {
-            databaseRepository.getHeroDetail(
-                id = heroId
+            scriptRepository.getHero(
+                heroId = heroId
             ).collect { either ->
                 either.onRight { heroDetailModel ->
                     _state.update { currentState ->
@@ -75,7 +73,10 @@ class HeroViewModel(
         when (action) {
             is HeroAction.ShowActionSkinBottomSheet -> {
                 _state.update { currentState ->
-                    currentState.copy(isActionSkinBottomSheetVisible = true, skinToAction = action.skin)
+                    currentState.copy(
+                        isActionSkinBottomSheetVisible = true,
+                        skinToAction = action.skin
+                    )
                 }
             }
             HeroAction.DismissSkinActionBottomSheet -> {
@@ -84,23 +85,40 @@ class HeroViewModel(
                 }
             }
             is HeroAction.StartInject -> {
-                startInject(replace = action.replace)
+                startInject(skinModel = action.skin, replaceModel = action.replace)
             }
         }
     }
 
-    private fun startInject(replace: ReplaceModel) {
-        injectJob[replace.id] = viewModelScope.launch {
+    private fun startInject(skinModel: SkinModel, replaceModel: ReplaceModel) {
+        viewModelScope.launch {
             injectRepository.execute(
-                replaceModel = replace
+                replaceModel = replaceModel
             ).onStart {
-                _state.update { it.copy(isInjectLoading = it.isInjectLoading + (replace.id to Unit)) }
+                _state.update { currentState ->
+                    currentState.copy(
+                        targetSkin = skinModel,
+                        targetReplace = replaceModel,
+                        injectStatus = TextResource.DynamicString("Starting"),
+                        isInjectBottomSheetVisible = true
+                    )
+                }
             }.onCompletion {
-                injectJob.remove(replace.id)
-                _state.update { it.copy(isInjectLoading = it.isInjectLoading - replace.id) }
+                _state.update { currentState ->
+                    currentState.copy(
+                        isInjectBottomSheetVisible = false
+                    )
+                }
+                _effect.send(
+                    element = ScreenEffect.ShowSnackBar(
+                        message = TextResource.StringResource(R.string.success_install_script)
+                    )
+                )
             }.collect { either ->
                 either.onRight { message ->
-                    _effect.send(ScreenEffect.ShowSnackBar(message))
+                    _state.update { currentState ->
+                        currentState.copy(injectStatus = message)
+                    }
                 }.onLeft { error ->
                     _effect.send(ScreenEffect.ShowSnackBar(error))
                 }

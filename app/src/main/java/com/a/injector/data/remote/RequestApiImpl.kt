@@ -2,7 +2,6 @@
 
 package com.a.injector.data.remote
 
-import com.a.injector.data.dto.RequestDetailDto
 import com.a.injector.data.dto.RequestDto
 import com.a.injector.data.util.SupabaseConstanta
 import com.a.injector.data.util.postgrestActionToUnit
@@ -30,7 +29,7 @@ import kotlin.uuid.Uuid
 class RequestApiImpl(
     private val supabaseClient: SupabaseClient
 ): RequestApi {
-    override fun getRequestDetails(): Flow<List<RequestDetailDto>> {
+    override fun getRequests(): Flow<List<RequestDto>> {
         val channel = supabaseClient.channel("getRequestDetail:${Uuid.random()}")
         return merge(
             channel.postgresChangeFlow<PostgresAction>(
@@ -51,12 +50,12 @@ class RequestApiImpl(
                 columns = Columns.raw(
                     "*, ${SupabaseConstanta.PROFILE_TABLE}(*)"
                 )
-            ).decodeList<RequestDetailDto>()
+            ).decodeList<RequestDto>()
             flowOf(data)
         }
     }
 
-    override fun getRequestDetail(id: String): Flow<RequestDetailDto?> {
+    override fun getRequest(profileId: String): Flow<RequestDto?> {
         val channel = supabaseClient.channel("getRequestDetail:${Uuid.random()}")
         return merge(
             channel.postgresChangeFlow<PostgresAction>(
@@ -74,11 +73,11 @@ class RequestApiImpl(
             supabaseClient.realtime.removeChannel(channel)
         }.map {
             supabaseClient.from(SupabaseConstanta.REQUEST_TABLE).select(
-                request = { filter { eq("id", id) } },
+                request = { filter { eq("id", profileId) } },
                 columns = Columns.raw(
                     "*, ${SupabaseConstanta.PROFILE_TABLE}(*)"
                 )
-            ).decodeSingleOrNull<RequestDetailDto>()
+            ).decodeSingleOrNull<RequestDto>()
         }
     }
 

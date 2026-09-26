@@ -2,9 +2,9 @@ package com.a.injector.presentation.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.a.injector.domain.repository.ApplicationRepository
 import com.a.injector.domain.repository.NavigationRepository
-import com.a.injector.domain.repository.SettingsRepository
-import com.a.injector.presentation.navigation.NavigationRoute
+import com.a.injector.presentation.mainnavigation.MainNavigationRoute
 import com.a.injector.presentation.util.ScreenEffect
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +19,7 @@ import java.util.Locale
 
 @KoinViewModel
 class SettingsViewModel(
-    private val settingsRepository: SettingsRepository,
+    private val applicationRepository: ApplicationRepository,
     private val navigationRepository: NavigationRepository
 ): ViewModel() {
     private val _state = MutableStateFlow(SettingsState())
@@ -30,7 +30,7 @@ class SettingsViewModel(
 
     init {
         viewModelScope.launch {
-            settingsRepository.language.collect { locale ->
+            applicationRepository.language.collect { locale ->
                 _state.update { currentState ->
                     currentState.copy(currentLanguage = locale)
                 }
@@ -38,7 +38,7 @@ class SettingsViewModel(
         }
 
         viewModelScope.launch {
-            settingsRepository.cacheSize.collect { size ->
+            applicationRepository.cacheSize.collect { size ->
                 _state.update { currentState ->
                     currentState.copy(cacheSize = size)
                 }
@@ -56,7 +56,6 @@ class SettingsViewModel(
             is SettingsAction.SetLanguageButton -> {
                 setLanguageButton(locale = action.locale)
             }
-
             SettingsAction.CleanCacheBottomSheet -> {
                 _state.update { currentState ->
                     currentState.copy(isClearCacheBottomSheetVisible = !currentState.isClearCacheBottomSheetVisible)
@@ -70,11 +69,11 @@ class SettingsViewModel(
 
     private fun setLanguageButton(locale: Locale) {
         viewModelScope.launch {
-            settingsRepository.setLanguage(
+            applicationRepository.setLanguage(
                 locale = locale
             ).collect { either ->
                 either.onRight {
-                    navigationRepository.replaceTo(NavigationRoute.LoadingScreen)
+                    navigationRepository.replaceTo(MainNavigationRoute.LoadingScreen())
                 }.onLeft { error ->
                     _effect.send(ScreenEffect.ShowSnackBar(error))
                 }
@@ -84,15 +83,15 @@ class SettingsViewModel(
 
     private fun cleanCacheButton() {
         viewModelScope.launch {
-            settingsRepository.cleanCache().onStart {
+            applicationRepository.cleanCache().onStart {
                 _state.update { it.copy(isClearCacheButtonLoading = true) }
             }.onCompletion {
                 _state.update { it.copy(isClearCacheButtonLoading = false) }
             }.collect { either ->
-                either.onRight { textRes ->
-                    _effect.send(ScreenEffect.ShowSnackBar(textRes))
-                }.onLeft { textRes ->
-                    _effect.send(ScreenEffect.ShowSnackBar(textRes))
+                either.onRight { textResource ->
+                    _effect.send(ScreenEffect.ShowSnackBar(textResource))
+                }.onLeft { textResource ->
+                    _effect.send(ScreenEffect.ShowSnackBar(textResource))
                 }
             }
         }

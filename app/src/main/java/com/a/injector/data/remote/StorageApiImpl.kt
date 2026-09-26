@@ -36,11 +36,7 @@ class StorageApiImpl(
         }
     }
 
-    override suspend fun delete(fromBucket: Bucket, fileName: String) {
-        supabaseClient.storage.from(fromBucket.absoluteName).delete(fileName)
-    }
-
-    override suspend fun deleteFiles(fromBucket: Bucket, files: List<String>) {
+    override suspend fun delete(fromBucket: Bucket, files: List<String>) {
         supabaseClient.storage.from(fromBucket.absoluteName).delete(files)
     }
 }

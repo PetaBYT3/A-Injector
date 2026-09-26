@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
 interface AccountRepository {
-    val authState: StateFlow<AuthResult?>
+    fun getAuthState(): Flow<AuthResult>
     val currentUserInfo: StateFlow<UserInfo?>
     val currentProfile: StateFlow<ProfileModel>
 

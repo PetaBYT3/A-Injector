@@ -1,6 +1,6 @@
 package com.a.injector.data.mapper
 
-interface Mapper<Dto, Model> {
-    fun toModel(dto: Dto): Model
-    fun toDto(model: Model): Dto
+interface Mapper<D, M> {
+    fun toModel(dto: D): M
+    fun toDto(model: M): D
 }

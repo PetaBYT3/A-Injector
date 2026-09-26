@@ -2,8 +2,8 @@ package com.a.injector.presentation.managehero
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.a.injector.domain.repository.DatabaseRepository
 import com.a.injector.domain.repository.NavigationRepository
+import com.a.injector.domain.repository.ScriptRepository
 import com.a.injector.presentation.util.ScreenEffect
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +20,7 @@ import kotlin.uuid.Uuid
 @KoinViewModel
 class ManageHeroViewModel(
     @InjectedParam private val heroId: String,
-    private val databaseRepository: DatabaseRepository,
+    private val scriptRepository: ScriptRepository,
     private val navigationRepository: NavigationRepository
 ): ViewModel() {
     private val _state = MutableStateFlow(ManageHeroState())
@@ -34,12 +34,15 @@ class ManageHeroViewModel(
 
         viewModelScope.launch {
             if (heroId.isNotBlank()) {
-                databaseRepository.getHero(
+                scriptRepository.getHero(
                     heroId = heroId
                 ).collect { either ->
                     either.onRight { hero ->
                         _state.update { currentState ->
-                            currentState.copy(hero = hero, isHeroLoading = false)
+                            currentState.copy(
+                                hero = hero.copy(skins = emptyList()),
+                                isHeroLoading = false
+                            )
                         }
                     }.onLeft { error ->
                         navigationRepository.popBackStack()
@@ -78,8 +81,8 @@ class ManageHeroViewModel(
     private fun deleteButton() {
         viewModelScope.launch {
             val hero = _state.value.hero
-            databaseRepository.deleteHero(
-                heroModel = hero
+            scriptRepository.deleteHero(
+                heroModel = hero,
             ).onStart {
                 _state.update { it.copy(isDeleteButtonLoading = true) }
             }.onCompletion {
@@ -99,7 +102,7 @@ class ManageHeroViewModel(
             val hero = _state.value.hero.copy(
                 id = heroId.ifBlank { Uuid.random().toString() }
             )
-            databaseRepository.upsertHero(
+            scriptRepository.upsertHero(
                 heroModel = hero
             ).onStart {
                 _state.update { it.copy(isUpsertButtonLoading = true) }

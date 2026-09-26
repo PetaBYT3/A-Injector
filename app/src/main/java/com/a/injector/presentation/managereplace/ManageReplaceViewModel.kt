@@ -2,8 +2,8 @@ package com.a.injector.presentation.managereplace
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.a.injector.domain.repository.DatabaseRepository
 import com.a.injector.domain.repository.NavigationRepository
+import com.a.injector.domain.repository.ScriptRepository
 import com.a.injector.presentation.util.ScreenEffect
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +22,7 @@ class ManageReplaceViewModel(
     @InjectedParam private val heroId: String,
     @InjectedParam private val skinId: String,
     @InjectedParam private val replaceId: String,
-    private val databaseRepository: DatabaseRepository,
+    private val scriptRepository: ScriptRepository,
     private val navigationRepository: NavigationRepository
 ): ViewModel() {
     private val _state = MutableStateFlow(ManageReplaceState())
@@ -35,7 +35,7 @@ class ManageReplaceViewModel(
         _state.update { it.copy(isOnEdit = replaceId.isNotBlank()) }
 
         viewModelScope.launch {
-            databaseRepository.getHero(
+            scriptRepository.getHero(
                 heroId = heroId
             ).collect { either ->
                 either.onRight { heroModel ->
@@ -52,7 +52,7 @@ class ManageReplaceViewModel(
         }
 
         viewModelScope.launch {
-            databaseRepository.getSkin(
+            scriptRepository.getSkin(
                 skinId = skinId
             ).collect { either ->
                 either.onRight { skinModel ->
@@ -70,7 +70,7 @@ class ManageReplaceViewModel(
 
         viewModelScope.launch {
             if (replaceId.isNotBlank()) {
-                databaseRepository.getReplace(
+                scriptRepository.getReplace(
                     replaceId = replaceId
                 ).collect { either ->
                     either.onRight { replaceModel ->
@@ -124,7 +124,7 @@ class ManageReplaceViewModel(
     private fun deleteButton() {
         viewModelScope.launch {
             val script = _state.value.replace
-            databaseRepository.deleteReplace(
+            scriptRepository.deleteReplace(
                 replaceModel = script
             ).onStart {
                 _state.update { it.copy(isDeleteButtonLoading = true) }
@@ -147,9 +147,9 @@ class ManageReplaceViewModel(
                 id = replaceId.ifBlank { Uuid.random().toString() },
                 skinId = skinId
             )
-            databaseRepository.upsertReplace(
+            scriptRepository.upsertReplace(
                 replaceModel = script,
-                platformFile = scriptFile
+                replaceFile = scriptFile
             ).onStart {
                 _state.update { it.copy(isUpsertButtonLoading = true) }
             }.onCompletion {

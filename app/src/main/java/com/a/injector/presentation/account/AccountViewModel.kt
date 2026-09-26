@@ -5,9 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.a.injector.data.dto.Role
 import com.a.injector.domain.model.RequestModel
 import com.a.injector.domain.repository.AccountRepository
-import com.a.injector.domain.repository.DatabaseRepository
 import com.a.injector.domain.repository.NavigationRepository
-import com.a.injector.presentation.navigation.NavigationRoute
+import com.a.injector.presentation.mainnavigation.MainNavigationRoute
 import com.a.injector.presentation.util.ScreenEffect
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -202,7 +201,7 @@ class AccountViewModel(
                 _state.update { it.copy(isSingOutButtonLoading = false) }
             }.collect { either ->
                 either.onRight {
-                    navigationRepository.replaceTo(NavigationRoute.LandingScreen)
+                    navigationRepository.replaceTo(MainNavigationRoute.LandingScreen)
                 }.onLeft { error ->
                     _effect.send(ScreenEffect.ShowSnackBar(error))
                 }

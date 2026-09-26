@@ -1,4 +1,4 @@
-package com.a.injector.presentation.resetpassword
+package com.a.injector.presentation.signlink
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,40 +16,45 @@ import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
-class ResetPasswordViewModel(
+class SignLinkViewModel(
     private val accountRepository: AccountRepository,
     private val navigationRepository: NavigationRepository
 ): ViewModel() {
-    private val _state = MutableStateFlow(ResetPasswordState())
+    private val _state = MutableStateFlow(SignLinkState())
     val state = _state.asStateFlow()
 
     private val _effect = Channel<ScreenEffect>()
     val effect = _effect.receiveAsFlow()
 
-    fun onAction(action: ResetPasswordAction) {
+    fun onAction(action: SignLinkAction) {
         when (action) {
-            is ResetPasswordAction.EmailTextField -> {
+            is SignLinkAction.EmailTextField -> {
                 _state.update { currentState ->
                     currentState.copy(emailTextField = action.email)
                 }
             }
-            ResetPasswordAction.SendResetButton -> {
-                sendResetButton()
+            SignLinkAction.SendOtpButton -> {
+                sendOtpButton()
             }
         }
     }
 
-    private fun sendResetButton() {
+    private fun sendOtpButton() {
         viewModelScope.launch {
-            accountRepository.sendResetPassword(
+            accountRepository.signOtp(
                 email = _state.value.emailTextField
             ).onStart {
-                _state.update { it.copy(isSendResetButtonLoading = true) }
+                _state.update { it.copy(isSendOtpButtonLoading = true) }
             }.onCompletion {
-                _state.update { it.copy(isSendResetButtonLoading = false) }
+                _state.update { currentState ->
+                    currentState.copy(
+                        isSendOtpButtonLoading = false,
+                        emailTextField = ""
+                    )
+                }
             }.collect { either ->
-                either.onRight {
-                    navigationRepository.popBackStack()
+                either.onRight { message ->
+                    _effect.send(ScreenEffect.ShowSnackBar(message))
                 }.onLeft { error ->
                     _effect.send(ScreenEffect.ShowSnackBar(error))
                 }

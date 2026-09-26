@@ -31,7 +31,7 @@ import com.a.injector.R
 import com.a.injector.data.util.toDateTime
 import com.a.injector.data.util.toMegaBytes
 import com.a.injector.domain.model.ReplaceModel
-import com.a.injector.domain.model.SkinDetailModel
+import com.a.injector.domain.model.SkinModel
 import kotlin.uuid.Uuid
 
 @Composable
@@ -197,7 +197,7 @@ fun MessageListItem(
 @Composable
 fun SkinDetailListItem(
     modifier: Modifier = Modifier,
-    skinDetail: SkinDetailModel,
+    skinDetail: SkinModel,
     skinTrailingContent: @Composable (() -> Unit)? = null,
     replaceTrailingContent: @Composable ((ReplaceModel) -> Unit)? = null
 ) {

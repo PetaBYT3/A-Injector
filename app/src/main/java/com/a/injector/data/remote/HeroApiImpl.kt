@@ -2,7 +2,6 @@
 
 package com.a.injector.data.remote
 
-import com.a.injector.data.dto.HeroDetailDto
 import com.a.injector.data.dto.HeroDto
 import com.a.injector.data.util.SupabaseConstanta
 import com.a.injector.data.util.postgrestActionToUnit
@@ -14,8 +13,6 @@ import io.github.jan.supabase.realtime.PostgresAction
 import io.github.jan.supabase.realtime.channel
 import io.github.jan.supabase.realtime.postgresChangeFlow
 import io.github.jan.supabase.realtime.realtime
-import io.github.jan.supabase.realtime.selectAsFlow
-import io.github.jan.supabase.realtime.selectSingleValueAsFlow
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
@@ -33,7 +30,7 @@ import kotlin.uuid.Uuid
 class HeroApiImpl(
     private val supabaseClient: SupabaseClient
 ): HeroApi {
-    override fun getHeroDetails(): Flow<List<HeroDetailDto>> {
+    override fun getHeroes(): Flow<List<HeroDto>> {
         val channel = supabaseClient.channel("getHeroDetails:${Uuid.random()}")
         return merge(
             channel.postgresChangeFlow<PostgresAction>(
@@ -58,12 +55,12 @@ class HeroApiImpl(
                 columns = Columns.raw(
                     "*, ${SupabaseConstanta.SKIN_TABLE}(*, ${SupabaseConstanta.REPLACE_TABLE}(*))"
                 )
-            ).decodeList<HeroDetailDto>()
+            ).decodeList<HeroDto>()
             flowOf(data)
         }
     }
 
-    override fun getHeroDetail(id: String): Flow<HeroDetailDto?> {
+    override fun getHero(heroId: String): Flow<HeroDto?> {
         val channel = supabaseClient.channel("getHeroDetail:${Uuid.random()}")
         return merge(
             channel.postgresChangeFlow<PostgresAction>(
@@ -85,26 +82,13 @@ class HeroApiImpl(
             supabaseClient.realtime.removeChannel(channel)
         }.flatMapLatest {
             val data = supabaseClient.from(SupabaseConstanta.HERO_TABLE).select(
-                request = { filter { eq("id", id) } },
+                request = { filter { eq("id", heroId) } },
                 columns = Columns.raw(
                     "*, ${SupabaseConstanta.SKIN_TABLE}(*, ${SupabaseConstanta.REPLACE_TABLE}(*))"
                 )
-            ).decodeSingleOrNull<HeroDetailDto>()
+            ).decodeSingleOrNull<HeroDto>()
             flowOf(data)
         }
-    }
-
-    override fun getHeroes(): Flow<List<HeroDto>> {
-        return supabaseClient.from(SupabaseConstanta.HERO_TABLE).selectAsFlow(
-            primaryKey = HeroDto::id
-        )
-    }
-
-    override fun getHero(id: String): Flow<HeroDto?> {
-        return supabaseClient.from(SupabaseConstanta.HERO_TABLE).selectSingleValueAsFlow(
-            primaryKey = HeroDto::id,
-            filter = { eq("id", id) }
-        )
     }
 
     override suspend fun upsertHero(hero: HeroDto) {

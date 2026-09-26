@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a.injector.domain.repository.AccountRepository
 import com.a.injector.domain.repository.NavigationRepository
-import com.a.injector.presentation.navigation.NavigationRoute
+import com.a.injector.presentation.mainnavigation.MainNavigationRoute
 import com.a.injector.presentation.util.ScreenEffect
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -56,7 +56,7 @@ class SignInViewModel(
                 _state.update { it.copy(isSingInButtonLoading = false) }
             }.collect { either ->
                 either.onRight {
-                    navigationRepository.replaceTo(NavigationRoute.BottomNavigation)
+                    navigationRepository.replaceTo(MainNavigationRoute.BottomNavigation)
                 }.onLeft { error ->
                     _effect.send(ScreenEffect.ShowSnackBar(error))
                 }

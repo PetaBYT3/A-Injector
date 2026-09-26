@@ -2,7 +2,6 @@ package com.a.injector.presentation.manageskin
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.a.injector.domain.repository.DatabaseRepository
 import com.a.injector.domain.repository.NavigationRepository
 import com.a.injector.presentation.util.ScreenEffect
 import kotlinx.coroutines.channels.Channel

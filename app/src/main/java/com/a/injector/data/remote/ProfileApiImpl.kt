@@ -63,10 +63,10 @@ class ProfileApiImpl(
         }
     }
 
-    override fun getProfile(id: String): Flow<ProfileDto?> {
+    override fun getProfile(profileId: String): Flow<ProfileDto?> {
         return supabaseClient.from(SupabaseConstanta.PROFILE_TABLE).selectSingleValueAsFlow(
             primaryKey = ProfileDto::id,
-            filter = { eq("id", id) }
+            filter = { eq("id", profileId) }
         )
     }
 
@@ -79,6 +79,32 @@ class ProfileApiImpl(
             request = { filter { eq("id", id) } },
             update = { set("role", role.name) }
         )
+    }
+
+    override fun getTopSupporter(): Flow<List<ProfileDto>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getTopContributor(): Flow<List<ProfileDto>> {
+        val channel = supabaseClient.channel("getProfileByHighestContribution:${Uuid.random()}")
+        return channel.postgresChangeFlow<PostgresAction>(
+            schema = SupabaseConstanta.SCHEMA,
+            filter = { table = SupabaseConstanta.PROFILE_TABLE }
+        ).map(::postgrestActionToUnit).debounce(SupabaseConstanta.DEBOUNCE).onStart {
+            channel.subscribe()
+            emit(Unit)
+        }.onCompletion {
+            supabaseClient.realtime.removeChannel(channel)
+        }.flatMapLatest {
+            val data = supabaseClient.from(SupabaseConstanta.PROFILE_TABLE).select(
+                request = {
+                    filter { gt("contribution", 0) }
+                    order("contribution", Order.DESCENDING)
+                    limit(10)
+                }
+            ).decodeList<ProfileDto>()
+            flowOf(data)
+        }
     }
 
     override suspend fun incrementContribution(id: String) {

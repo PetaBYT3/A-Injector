@@ -3,7 +3,6 @@ package com.a.injector.presentation.bottomnavigation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a.injector.BuildConfig
-import com.a.injector.domain.repository.DatabaseRepository
 import com.a.injector.presentation.util.ScreenEffect
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow

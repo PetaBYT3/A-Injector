@@ -31,7 +31,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
 import com.a.injector.presentation.component.DefaultClickableListItem
-import com.a.injector.presentation.navigation.NavigationRoute
+import com.a.injector.presentation.mainnavigation.MainNavigationRoute
 import com.a.injector.presentation.util.ScreenEffectLauncher
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -123,10 +123,10 @@ private fun Content(
                     onClick = {
                         when (staticModel.id) {
                             SignOption.SignIn -> {
-                                navBackStack.add(NavigationRoute.SignInScreen)
+                                navBackStack.add(MainNavigationRoute.SignInScreen)
                             }
                             SignOption.SignUp -> {
-                                navBackStack.add(NavigationRoute.SignUpScreen)
+                                navBackStack.add(MainNavigationRoute.SignUpScreen)
                             }
                             SignOption.Guest -> {
                                 onAction(LandingAction.ButtonSignGuest)

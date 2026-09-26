@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a.injector.data.dto.Role
 import com.a.injector.domain.repository.AccountRepository
-import com.a.injector.domain.repository.DatabaseRepository
+import com.a.injector.domain.repository.ScriptRepository
 import com.a.injector.presentation.util.ScreenEffect
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +17,7 @@ import org.koin.android.annotation.KoinViewModel
 @KoinViewModel
 class ScriptViewModel(
     private val accountRepository: AccountRepository,
-    private val databaseRepository: DatabaseRepository
+    private val scriptRepository: ScriptRepository
 ): ViewModel() {
     private val _state = MutableStateFlow(ScriptState())
     val state = _state.asStateFlow()
@@ -37,7 +37,7 @@ class ScriptViewModel(
         }
 
         viewModelScope.launch {
-            databaseRepository.getHeroes().collect { either ->
+            scriptRepository.getHeroes().collect { either ->
                 either.onRight { heroes ->
                     _state.update { currentState ->
                         currentState.copy(heroes = heroes, isHeroesLoading = false)
