@@ -29,6 +29,8 @@ import com.a.injector.presentation.managehero.ManageHeroScreenRoot
 import com.a.injector.presentation.managereplace.ManageReplaceScreenRoot
 import com.a.injector.presentation.managerole.ManageRoleScreenRoot
 import com.a.injector.presentation.manageskin.ManageSkinScreen
+import com.a.injector.presentation.manageuser.ManageUserScreenRoot
+import com.a.injector.presentation.paneluser.PanelUserScreenRoot
 import com.a.injector.presentation.signin.SignInScreenRoot
 import com.a.injector.presentation.signlink.SignLinkScreenRoot
 import com.a.injector.presentation.signup.SignUpScreenRoot
@@ -156,6 +158,20 @@ fun NavigationScreen(
                         )
                     }
                 }
+                is MainNavigationRoute.PanelUserScreen -> {
+                    NavEntry(navKey) {
+                        PanelUserScreenRoot(
+                            navBackStack = navBackStack
+                        )
+                    }
+                }
+                is MainNavigationRoute.ManageUserScreen ->
+                    NavEntry(navKey) {
+                        ManageUserScreenRoot(
+                            navBackStack = navBackStack,
+                            profileId = navKey.profileId
+                        )
+                    }
                 else -> error("Unknown NavKey: $navKey")
             }
         },

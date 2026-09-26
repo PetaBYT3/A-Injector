@@ -13,5 +13,5 @@ data class RequestDto(
 
     @EncodeDefault(EncodeDefault.Mode.NEVER)
     @SerialName("profile")
-    val profileDto: ProfileDto?
+    val profile: ProfileDto? = null
 )

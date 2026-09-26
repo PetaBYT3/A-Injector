@@ -38,4 +38,10 @@ sealed interface MainNavigationRoute: NavKey {
 
     @Serializable
     data object ManageRoleScreen: MainNavigationRoute, NavKey
+
+    @Serializable
+    data object PanelUserScreen: MainNavigationRoute, NavKey
+
+    @Serializable
+    data class ManageUserScreen(val profileId: String): MainNavigationRoute, NavKey
 }

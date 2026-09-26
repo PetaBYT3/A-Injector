@@ -6,7 +6,11 @@ import com.a.injector.domain.model.ProfileModel
 data class HomeState(
     val isManageExternalStorageGranted: Boolean = false,
 
-    val isHighestContributionProfileLoading: Boolean = true,
-    val isHighestContributionProfileError: TextResource? = null,
-    val highestContributionProfile: List<ProfileModel> = emptyList()
+    val isTopSupporterLoading: Boolean = true,
+    val isTopSupporterError: TextResource? = null,
+    val topSupporter: List<ProfileModel> = emptyList(),
+
+    val isTopContributionLoading: Boolean = true,
+    val isTopContributionError: TextResource? = null,
+    val topContribution: List<ProfileModel> = emptyList()
 )

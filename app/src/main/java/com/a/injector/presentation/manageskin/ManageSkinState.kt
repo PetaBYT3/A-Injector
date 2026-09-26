@@ -1,6 +1,8 @@
 package com.a.injector.presentation.manageskin
 
 import com.a.injector.data.util.TextResource
+import com.a.injector.domain.model.HeroModel
+import com.a.injector.domain.model.SkinModel
 
 data class ManageSkinState(
     val isOnEdit: Boolean = false,

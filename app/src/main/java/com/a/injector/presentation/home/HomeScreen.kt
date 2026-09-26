@@ -42,6 +42,7 @@ import com.a.injector.presentation.component.PrimaryListItem
 import com.a.injector.presentation.component.spacer
 import com.a.injector.presentation.util.openInBrowser
 import com.a.injector.presentation.util.openStoragePermissionSettings
+import com.a.injector.presentation.util.toIdr
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -167,6 +168,66 @@ private fun Content(
             )
         }
         spacer()
+        item("supporterTitle") {
+            CustomTextListTitle(
+                modifier = Modifier
+                    .animateItem(),
+                text = stringResource(R.string.item_top_supporter)
+            )
+        }
+        when {
+            state.isTopSupporterLoading -> {
+                item("isTopSupporterLoading") {
+                    CustomCenterCircularWavyProgressIndicator(
+                        modifier = Modifier
+                            .animateItem()
+                    )
+                }
+            }
+            state.isTopSupporterError != null -> {
+                item("isTopSupporterError") {
+                    MessageListItem(
+                        modifier = Modifier
+                            .animateItem(),
+                        text = state.isTopSupporterError.asString()
+                    )
+                }
+            }
+            state.topSupporter.isEmpty() -> {
+                item("isTopSupporterEmpty") {
+                    MessageListItem(
+                        modifier = Modifier
+                            .animateItem(),
+                        text = stringResource(R.string.item_empty)
+                    )
+                }
+            }
+            else -> {
+                itemsIndexed(
+                    items = state.topSupporter,
+                    key = { _, profileModel -> "topSupporter${profileModel.id}" }
+                ) { index, profileModel ->
+                    DefaultListItem(
+                        modifier = Modifier
+                            .animateItem(),
+                        index = index,
+                        count = state.topSupporter.size,
+                        leadingContent = { Icon(Icons.Rounded.Person, null) },
+                        content = {
+                            Text(
+                                text = profileModel.username,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        },
+                        trailingContent = {
+                            Text(text = profileModel.nominal.toIdr())
+                        }
+                    )
+                }
+            }
+        }
+        spacer()
         item("contributorTitle") {
             CustomTextListTitle(
                 modifier = Modifier
@@ -174,58 +235,59 @@ private fun Content(
                 text = stringResource(R.string.item_top_contributor)
             )
         }
-        if (state.isHighestContributionProfileLoading) {
-            item("isHighestContributionProfileLoading") {
-                CustomCenterCircularWavyProgressIndicator(
-                    modifier = Modifier
-                        .animateItem()
-                )
-            }
-            return@LazyColumn
-        }
-        if (state.isHighestContributionProfileError != null) {
-            item("isHighestContributionProfileError") {
-                MessageListItem(
-                    modifier = Modifier
-                        .animateItem(),
-                    text = state.isHighestContributionProfileError.asString(),
-                    isError = true
-                )
-            }
-            return@LazyColumn
-        }
-        if (state.highestContributionProfile.isEmpty()) {
-            item("isHighestContributionProfileEmpty") {
-                MessageListItem(
-                    modifier = Modifier
-                        .animateItem(),
-                    text = stringResource(R.string.item_empty)
-                )
-            }
-            return@LazyColumn
-        }
-        itemsIndexed(
-            items = state.highestContributionProfile,
-            key = { _, profileModel -> profileModel.id }
-        ) { index, profileModel ->
-            DefaultListItem(
-                modifier = Modifier
-                    .animateItem(),
-                index = index,
-                count = state.highestContributionProfile.size,
-                leadingContent = { Icon(Icons.Rounded.Person, null) },
-                content = {
-                    Text(
-                        text = profileModel.username,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+        when {
+            state.isTopContributionLoading -> {
+                item("isHighestContributionProfileLoading") {
+                    CustomCenterCircularWavyProgressIndicator(
+                        modifier = Modifier
+                            .animateItem()
                     )
-                },
-                trailingContent = {
-                    val text = "${profileModel.contribution} ${stringResource(R.string.item_files_uploaded)}"
-                    Text(text = text)
                 }
-            )
+            }
+            state.isTopContributionError != null -> {
+                item("isHighestContributionProfileError") {
+                    MessageListItem(
+                        modifier = Modifier
+                            .animateItem(),
+                        text = state.isTopContributionError.asString(),
+                        isError = true
+                    )
+                }
+            }
+            state.topContribution.isEmpty() -> {
+                item("isHighestContributionProfileEmpty") {
+                    MessageListItem(
+                        modifier = Modifier
+                            .animateItem(),
+                        text = stringResource(R.string.item_empty)
+                    )
+                }
+            }
+            else -> {
+                itemsIndexed(
+                    items = state.topContribution,
+                    key = { _, profileModel -> "topContributor${profileModel.id}" }
+                ) { index, profileModel ->
+                    DefaultListItem(
+                        modifier = Modifier
+                            .animateItem(),
+                        index = index,
+                        count = state.topContribution.size,
+                        leadingContent = { Icon(Icons.Rounded.Person, null) },
+                        content = {
+                            Text(
+                                text = profileModel.username,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        },
+                        trailingContent = {
+                            val text = "${profileModel.contribution} ${stringResource(R.string.item_files_uploaded)}"
+                            Text(text = text)
+                        }
+                    )
+                }
+            }
         }
     }
 }

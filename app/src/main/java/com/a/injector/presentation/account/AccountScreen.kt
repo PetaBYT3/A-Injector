@@ -14,10 +14,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.CircularWavyProgressIndicator
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.MaterialTheme
@@ -45,10 +45,11 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
 import com.a.injector.data.dto.Role
 import com.a.injector.domain.model.ProfileModel
-import com.a.injector.domain.model.state.RequestState
+import com.a.injector.domain.model.RequestModel
 import com.a.injector.presentation.component.CustomBottomSheet
 import com.a.injector.presentation.component.CustomButton
 import com.a.injector.presentation.component.CustomCenterCircularWavyProgressIndicator
+import com.a.injector.presentation.component.CustomFadeAnimatedVisibility
 import com.a.injector.presentation.component.CustomIconButton
 import com.a.injector.presentation.component.CustomSurfaceText
 import com.a.injector.presentation.component.CustomTextField
@@ -61,6 +62,7 @@ import com.a.injector.presentation.mainnavigation.MainNavigationRoute
 import com.a.injector.presentation.signup.PasswordRequirement
 import com.a.injector.presentation.signup.passwordRequirements
 import com.a.injector.presentation.util.ScreenEffectLauncher
+import com.a.injector.presentation.util.toIdr
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -95,7 +97,7 @@ private fun Preview() {
             profile = ProfileModel.EMPTY.copy(
                 role = Role.Administrator
             ),
-            requestState = RequestState.Applied
+            request = RequestModel.EMPTY.copy(role = Role.Contributor)
         ),
         onAction = {},
         snackBarHostState = SnackbarHostState()
@@ -129,27 +131,6 @@ private fun Screen(
     )
 
     CustomBottomSheet(
-        visible = state.isSignOutBottomSheetVisible,
-        onDismiss = { onAction(AccountAction.SignOutBottomSheet) },
-        title = stringResource(R.string.action_sign_out),
-        content = {
-            item {
-                CustomSurfaceText(text = stringResource(R.string.message_sign_out))
-            }
-        },
-        bottomBar = {
-            CustomButton(
-                onClick = {
-                    onAction(AccountAction.SignOutBottomSheet)
-                    onAction(AccountAction.SignOutButton)
-                },
-                text = stringResource(R.string.action_confirm),
-                isError = true
-            )
-        }
-    )
-
-    CustomBottomSheet(
         visible = state.isUpsertProfileBottomSheetVisible,
         onDismiss = { onAction(AccountAction.DismissUpsertProfileBottomSheet) },
         title = stringResource(R.string.title_profile),
@@ -170,6 +151,30 @@ private fun Screen(
                 },
                 text = stringResource(R.string.action_confirm)
             )
+        }
+    )
+
+    CustomBottomSheet(
+        visible = state.isRequestRoleBottomSheetVisible,
+        onDismiss = { onAction(AccountAction.RequestRoleBottomSheet) },
+        title = stringResource(R.string.item_role),
+        content = {
+            val allowedRole = Role.entries.filterNot { role ->
+                role == Role.Administrator || role == state.profile.role
+            }
+            itemsIndexed(
+                items = allowedRole
+            ) { index, role ->
+                DefaultClickableListItem(
+                    index = index,
+                    count = allowedRole.size,
+                    onClick = {
+                        onAction(AccountAction.RequestRoleBottomSheet)
+                        onAction(AccountAction.RequestRoleButton(role))
+                    },
+                    content = { Text(text = role.name) }
+                )
+            }
         }
     )
 
@@ -271,6 +276,27 @@ private fun Screen(
             )
         }
     )
+
+    CustomBottomSheet(
+        visible = state.isSignOutBottomSheetVisible,
+        onDismiss = { onAction(AccountAction.SignOutBottomSheet) },
+        title = stringResource(R.string.action_sign_out),
+        content = {
+            item {
+                CustomSurfaceText(text = stringResource(R.string.message_sign_out))
+            }
+        },
+        bottomBar = {
+            CustomButton(
+                onClick = {
+                    onAction(AccountAction.SignOutBottomSheet)
+                    onAction(AccountAction.SignOutButton)
+                },
+                text = stringResource(R.string.action_confirm),
+                isError = true
+            )
+        }
+    )
 }
 
 @Composable
@@ -336,8 +362,11 @@ private fun Content(
                         Profile.Contribution -> {
                             "${state.profile.contribution} ${stringResource(R.string.item_files_uploaded)}"
                         }
+                        Profile.Nominal -> {
+                            state.profile.nominal.toIdr()
+                        }
                         Profile.Role -> {
-                            state.profile.role.name
+                            "Current: ${state.profile.role.name} | Pending: ${state.request.role.name}"
                         }
                     }
                     Text(
@@ -358,21 +387,12 @@ private fun Content(
                             )
                         }
                         Profile.Role -> {
-                            if (state.profile.role == Role.User) {
-                                FilledTonalButton(
-                                    onClick = { onAction(AccountAction.RequestContributorButton) },
-                                    enabled = state.requestState == RequestState.NotApplied,
-                                    content = {
-                                        val text = when (state.requestState) {
-                                            RequestState.Applied -> {
-                                                stringResource(R.string.action_requested)
-                                            }
-                                            RequestState.NotApplied -> {
-                                                stringResource(R.string.action_apply_contributor)
-                                            }
-                                        }
-                                        Text(text = text)
-                                    }
+                            CustomFadeAnimatedVisibility(
+                                visible = state.request == RequestModel.EMPTY
+                            ) {
+                                CustomIconButton(
+                                    onClick = { onAction(AccountAction.RequestRoleBottomSheet) },
+                                    content = { Icon(Icons.Rounded.OpenInNew, null) }
                                 )
                             }
                         }
@@ -404,6 +424,9 @@ private fun Content(
                             AdministratorMenu.RoleManager -> {
                                 navBackStack.add(MainNavigationRoute.ManageRoleScreen)
                             }
+                            AdministratorMenu.UserPanel -> {
+                                navBackStack.add(MainNavigationRoute.PanelUserScreen)
+                            }
                             AdministratorMenu.CleanStorage -> {
                                 onAction(AccountAction.CleanStorageBottomSheet)
                             }
@@ -414,17 +437,17 @@ private fun Content(
                     supportingContent = { Text(text = stringResource(staticModel.supportingTextResId!!)) },
                     trailingContent = {
                         when (staticModel.id) {
-                            AdministratorMenu.RoleManager -> {
-
-                            }
                             AdministratorMenu.CleanStorage -> {
-                                if (state.isCleanStorageButtonLoading) {
+                                CustomFadeAnimatedVisibility(
+                                    visible = state.isCleanStorageButtonLoading
+                                ) {
                                     CircularWavyProgressIndicator(
                                         modifier = Modifier
                                             .size(24.dp)
                                     )
                                 }
                             }
+                            else -> {}
                         }
                     }
                 )

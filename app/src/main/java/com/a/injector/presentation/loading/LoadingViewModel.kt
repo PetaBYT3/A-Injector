@@ -28,7 +28,7 @@ class LoadingViewModel(
         viewModelScope.launch {
             when (signMethod) {
                 SignMethod.EmailPassword -> {
-                    accountRepository.getAuthState().collect { currentAuth ->
+                    accountRepository.currentAuthState.collect { currentAuth ->
                         delay(1.5.seconds)
                         when (currentAuth) {
                             AuthResult.Unauthenticated -> {
@@ -42,7 +42,7 @@ class LoadingViewModel(
                 }
                 SignMethod.EmailLink -> {
                     val authResult = withTimeoutOrNull(10.seconds) {
-                        accountRepository.getAuthState().first { it == AuthResult.Authenticated }
+                        accountRepository.currentAuthState.first { it == AuthResult.Authenticated }
                     }
 
                     if (authResult != null) {

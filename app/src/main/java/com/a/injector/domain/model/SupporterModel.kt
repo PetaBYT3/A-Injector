@@ -1,16 +1,14 @@
 package com.a.injector.domain.model
 
-import com.a.injector.data.dto.Role
-
-data class RequestDetailModel(
+data class SupporterModel(
     val id: String,
-    val role: Role,
+    val nominal: Long,
     val profile: ProfileModel
 ) {
     companion object {
-        val EMPTY = RequestDetailModel(
+        val EMPTY = SupporterModel(
             id = "",
-            role = Role.User,
+            nominal = 0,
             profile = ProfileModel.EMPTY
         )
     }

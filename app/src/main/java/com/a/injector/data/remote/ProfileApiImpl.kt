@@ -21,8 +21,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
@@ -35,32 +33,10 @@ import kotlin.uuid.Uuid
 class ProfileApiImpl(
     private val supabaseClient: SupabaseClient
 ): ProfileApi {
-    override fun getProfilesByRole(role: Role): Flow<List<ProfileDto>> {
+    override fun getProfiles(): Flow<List<ProfileDto>> {
         return supabaseClient.from(SupabaseConstanta.PROFILE_TABLE).selectAsFlow(
-            primaryKey = ProfileDto::id,
-            filter = { eq("role", role.name) }
+            primaryKey = ProfileDto::id
         )
-    }
-
-    override fun getProfileByHighestContribution(): Flow<List<ProfileDto>> {
-        val channel = supabaseClient.channel("getProfileByHighestContribution:${Uuid.random()}")
-        return channel.postgresChangeFlow<PostgresAction>(
-            schema = SupabaseConstanta.SCHEMA,
-            filter = { table = SupabaseConstanta.PROFILE_TABLE }
-        ).map(::postgrestActionToUnit).debounce(SupabaseConstanta.DEBOUNCE).onStart {
-            channel.subscribe()
-            emit(Unit)
-        }.onCompletion {
-            supabaseClient.realtime.removeChannel(channel)
-        }.flatMapLatest {
-            val data = supabaseClient.from(SupabaseConstanta.PROFILE_TABLE).select(
-                request = {
-                    order("contribution", Order.DESCENDING)
-                    limit(10)
-                }
-            ).decodeList<ProfileDto>()
-            flowOf(data)
-        }
     }
 
     override fun getProfile(profileId: String): Flow<ProfileDto?> {
@@ -82,7 +58,14 @@ class ProfileApiImpl(
     }
 
     override fun getTopSupporter(): Flow<List<ProfileDto>> {
-        TODO("Not yet implemented")
+        return supabaseClient.from(SupabaseConstanta.PROFILE_TABLE).selectAsFlow(
+            primaryKey = ProfileDto::id,
+            filter = {
+                gt("nominal", 0)
+            }
+        ).map { profileDtos ->
+            profileDtos.sortedByDescending { it.nominal }.take(10)
+        }
     }
 
     override fun getTopContributor(): Flow<List<ProfileDto>> {
@@ -95,15 +78,14 @@ class ProfileApiImpl(
             emit(Unit)
         }.onCompletion {
             supabaseClient.realtime.removeChannel(channel)
-        }.flatMapLatest {
-            val data = supabaseClient.from(SupabaseConstanta.PROFILE_TABLE).select(
+        }.map {
+            supabaseClient.from(SupabaseConstanta.PROFILE_TABLE).select(
                 request = {
                     filter { gt("contribution", 0) }
                     order("contribution", Order.DESCENDING)
                     limit(10)
                 }
             ).decodeList<ProfileDto>()
-            flowOf(data)
         }
     }
 

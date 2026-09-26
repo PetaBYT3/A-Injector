@@ -39,8 +39,8 @@ class InjectRepositoryImpl(
     private val directoryRepository: DirectoryRepository
 ): InjectRepository {
     private companion object {
-        private const val TARGET_PATH = "/storage/emulated/0/Android/data/com.mobile.legends/files/dragon2017/assets"
-        private val TARGET_FOLDERS = setOf("Art", "Audio", "UI")
+        private const val TARGET_PATH =
+            "/storage/emulated/0/Android/data/com.mobile.legends/files/dragon2017/assets"
     }
 
     override val commandService: Flow<CommandServiceModel> = combine(

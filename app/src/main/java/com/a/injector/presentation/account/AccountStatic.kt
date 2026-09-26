@@ -7,13 +7,16 @@ import androidx.compose.material.icons.rounded.Email
 import androidx.compose.material.icons.rounded.Password
 import androidx.compose.material.icons.rounded.PermIdentity
 import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.rounded.PersonAdd
 import androidx.compose.material.icons.rounded.Upload
 import androidx.compose.material3.Icon
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import com.a.injector.R
 import com.a.injector.domain.model.StaticModel
 
 enum class Profile {
-    Email, Username, Contribution, Role
+    Email, Username, Contribution, Nominal, Role
 }
 
 val profiles = listOf(
@@ -33,6 +36,11 @@ val profiles = listOf(
         contentTextResId = R.string.item_contribution
     ),
     StaticModel(
+        id = Profile.Nominal,
+        leadingContent = { Icon(ImageVector.vectorResource(R.drawable.support), null) },
+        contentTextResId = R.string.item_support_nominal
+    ),
+    StaticModel(
         id = Profile.Role,
         leadingContent = { Icon(Icons.Rounded.PermIdentity, null) },
         contentTextResId = R.string.item_role
@@ -40,7 +48,7 @@ val profiles = listOf(
 )
 
 enum class AdministratorMenu {
-    RoleManager, CleanStorage
+    RoleManager, UserPanel, CleanStorage
 }
 
 val administratorMenus = listOf(
@@ -49,6 +57,12 @@ val administratorMenus = listOf(
         leadingContent = { Icon(Icons.Rounded.AdminPanelSettings, null) },
         contentTextResId = R.string.item_role_manager,
         supportingTextResId = R.string.item_role_manager_desc
+    ),
+    StaticModel(
+        id = AdministratorMenu.UserPanel,
+        leadingContent = { Icon(Icons.Rounded.PersonAdd, null) },
+        contentTextResId = R.string.item_user_panel,
+        supportingTextResId = R.string.item_user_panel_desc
     ),
     StaticModel(
         id = AdministratorMenu.CleanStorage,

@@ -1,5 +1,6 @@
 package com.a.injector.presentation.account
 
+import com.a.injector.data.dto.Role
 import com.a.injector.domain.model.ProfileModel
 
 sealed interface AccountAction {
@@ -8,7 +9,8 @@ sealed interface AccountAction {
     data class UsernameTextField(val username: String): AccountAction
     data object UpsertProfileButton: AccountAction
 
-    data object RequestContributorButton: AccountAction
+    data object RequestRoleBottomSheet: AccountAction
+    data class RequestRoleButton(val role: Role): AccountAction
 
     data object CleanStorageBottomSheet: AccountAction
     data object CleanStorageButton: AccountAction

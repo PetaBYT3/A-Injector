@@ -3,6 +3,7 @@ package com.a.injector.presentation.manageskin
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a.injector.domain.repository.NavigationRepository
+import com.a.injector.domain.repository.ScriptRepository
 import com.a.injector.presentation.util.ScreenEffect
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +21,7 @@ import kotlin.uuid.Uuid
 class ManageSkinViewModel(
     @InjectedParam private val heroId: String,
     @InjectedParam private val skinId: String,
-    private val databaseRepository: DatabaseRepository,
+    private val scriptRepository: ScriptRepository,
     private val navigationRepository: NavigationRepository
 ): ViewModel() {
     private val _state = MutableStateFlow(ManageSkinState())
@@ -33,7 +34,7 @@ class ManageSkinViewModel(
         _state.update { it.copy(isOnEdit = skinId.isNotBlank()) }
 
         viewModelScope.launch {
-            databaseRepository.getHero(
+            scriptRepository.getHero(
                 heroId = heroId
             ).collect { either ->
                 either.onRight { hero ->
@@ -51,7 +52,7 @@ class ManageSkinViewModel(
 
         viewModelScope.launch {
             if (skinId.isNotBlank()) {
-                databaseRepository.getSkin(
+                scriptRepository.getSkin(
                     skinId = skinId
                 ).collect { either ->
                     either.onRight { skin ->
@@ -100,7 +101,7 @@ class ManageSkinViewModel(
     private fun deleteButton() {
         viewModelScope.launch {
             val skin = _state.value.skin
-            databaseRepository.deleteSkin(
+            scriptRepository.deleteSkin(
                 skinModel = skin
             ).onStart {
                 _state.update { it.copy(isDeleteButtonLoading = true) }
@@ -122,7 +123,7 @@ class ManageSkinViewModel(
                 id = skinId.ifBlank { Uuid.random().toString() },
                 heroId = heroId
             )
-            databaseRepository.upsertSkin(
+            scriptRepository.upsertSkin(
                 skinModel = skin
             ).onStart {
                 _state.update { it.copy(isUpsertButtonLoading = true) }

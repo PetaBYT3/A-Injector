@@ -18,12 +18,16 @@
     <string name="item_github">Github</string>
     <string name="item_support">Dukungan</string>
 
+    <string name="item_top_supporter">Dukungan Teratas</string>
+
     <string name="item_top_contributor">Kontributor Teratas</string>
     <string name="item_files_uploaded">File Diunggah</string>
 
     <string name="item_admin_menu">Menu Administrator</string>
     <string name="item_role_manager">Pengelola Peran</string>
     <string name="item_role_manager_desc">Kelola izin peran pengguna lain</string>
+    <string name="item_user_panel">Panel Pengguna</string>
+    <string name="item_user_panel_desc">Kelola semua data pengguna</string>
     <string name="item_clean_storage">Bersihkan Penyimpanan</string>
     <string name="item_clean_storage_desc">Hapus semua file sisa di penyimpanan awan</string>
 
@@ -33,6 +37,8 @@
     <string name="item_profile">Profil</string>
     <string name="item_username">Nama Pengguna</string>
     <string name="item_contribution">Kontribusi</string>
+    <string name="item_support_nominal">Nominal Dukungan</string>
+    <string name="item_nominal_to_add">Nominal Yang Di Tambah</string>
     <string name="item_role">Peran</string>
 
     <string name="item_manage">Kelola</string>

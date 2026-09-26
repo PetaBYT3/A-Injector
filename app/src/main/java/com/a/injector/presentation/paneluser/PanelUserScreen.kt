@@ -1,31 +1,29 @@
-package com.a.injector.presentation.script
+package com.a.injector.presentation.paneluser
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.Person4
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -33,26 +31,26 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
-import com.a.injector.domain.model.HeroModel
 import com.a.injector.presentation.component.CustomCenterCircularWavyProgressIndicator
-import com.a.injector.presentation.component.CustomFloatingActionButton
 import com.a.injector.presentation.component.CustomFloatingActionToolBar
-import com.a.injector.presentation.component.CustomSlideUpAnimatedVisibility
+import com.a.injector.presentation.component.CustomIconButton
 import com.a.injector.presentation.component.CustomTopAppBar
-import com.a.injector.presentation.component.DefaultClickableListItem
+import com.a.injector.presentation.component.DefaultListItem
 import com.a.injector.presentation.component.MessageListItem
 import com.a.injector.presentation.component.TransparentTextField
 import com.a.injector.presentation.mainnavigation.MainNavigationRoute
+import com.a.injector.presentation.mainnavigation.popBackStack
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun ScriptScreenRoot(
+fun PanelUserScreenRoot(
     navBackStack: NavBackStack<NavKey>,
-    viewModel: ScriptViewModel = koinViewModel()
+    viewModel: PanelUserViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val snackBarHostState = remember { SnackbarHostState() }
 
-    ScriptScreen(
+    PanelUserScreen(
         navBackStack = navBackStack,
         state = state,
         onAction = viewModel::onAction
@@ -62,29 +60,26 @@ fun ScriptScreenRoot(
 @Composable
 @Preview
 private fun Preview() {
-    ScriptScreen(
+    PanelUserScreen(
         navBackStack = rememberNavBackStack(),
-        state = ScriptState(
-            isHeroesLoading = false,
-            filteredHeroes = List(10) {
-                HeroModel("", "Hero Preview")
-            }
-        ),
+        state = PanelUserState(),
         onAction = {}
     )
 }
 
 @Composable
-private fun ScriptScreen(
+private fun PanelUserScreen(
     navBackStack: NavBackStack<NavKey>,
-    state: ScriptState,
-    onAction: (ScriptAction) -> Unit
+    state: PanelUserState,
+    onAction: (PanelUserAction) -> Unit
 ) {
+    var isSearchExpanded by remember { mutableStateOf(false) }
+
     Scaffold(
-        contentWindowInsets = WindowInsets.statusBars,
         topBar = {
             CustomTopAppBar(
-                title = stringResource(R.string.title_script)
+                navigationClick = { navBackStack.popBackStack() },
+                title = stringResource(R.string.title_user_panel)
             )
         },
         content = { innerPadding ->
@@ -97,39 +92,9 @@ private fun ScriptScreen(
             )
         },
         floatingActionButton = {
-            ScriptFloatingActionButton(
-                navBackStack = navBackStack,
-                state = state,
-                onAction = onAction
-            )
-        }
-    )
-}
-
-@Composable
-private fun ScriptFloatingActionButton(
-    navBackStack: NavBackStack<NavKey>,
-    state: ScriptState,
-    onAction: (ScriptAction) -> Unit
-) {
-    var isSearchExpand by rememberSaveable {
-        mutableStateOf(false)
-    }
-    CustomSlideUpAnimatedVisibility(
-        visible = !state.isContentLoading
-    ) {
-        CustomFloatingActionToolBar(
-            floatingActionButton = if (state.isModifyEnabled) {
-                {
-                    CustomFloatingActionButton(
-                        onClick = { navBackStack.add(MainNavigationRoute.ManageHeroScreen("")) },
-                        content = { Icon(Icons.Rounded.Add, null) }
-                    )
-                }
-            } else null,
-            content = {
+            CustomFloatingActionToolBar {
                 AnimatedContent(
-                    targetState = isSearchExpand
+                    targetState = isSearchExpanded
                 ) { animatedContentState ->
                     if (animatedContentState) {
                         TransparentTextField(
@@ -137,12 +102,12 @@ private fun ScriptFloatingActionButton(
                                 .width(250.dp),
                             placeholder = stringResource(R.string.action_search),
                             value = state.searchTextField,
-                            onValueChange = { onAction(ScriptAction.SearchTextField(it)) },
+                            onValueChange = { onAction(PanelUserAction.SearchTextField(it)) },
                             trailingIcon = {
                                 IconButton(
                                     onClick = {
-                                        isSearchExpand = false
-                                        onAction(ScriptAction.SearchTextField(""))
+                                        isSearchExpanded = false
+                                        onAction(PanelUserAction.SearchTextField(""))
                                     },
                                     content = { Icon(Icons.Rounded.Close, null) }
                                 )
@@ -150,22 +115,22 @@ private fun ScriptFloatingActionButton(
                         )
                     } else {
                         IconButton(
-                            onClick = { isSearchExpand = true },
+                            onClick = { isSearchExpanded = true },
                             content = { Icon(Icons.Rounded.Search, null) }
                         )
                     }
                 }
             }
-        )
-    }
+        }
+    )
 }
 
 @Composable
 private fun Content(
     modifier: Modifier = Modifier,
     navBackStack: NavBackStack<NavKey>,
-    state: ScriptState,
-    onAction: (ScriptAction) -> Unit
+    state: PanelUserState,
+    onAction: (PanelUserAction) -> Unit
 ) {
     LazyColumn(
         modifier = modifier,
@@ -173,7 +138,7 @@ private fun Content(
         verticalArrangement = Arrangement.spacedBy(2.5.dp)
     ) {
         if (state.isContentLoading) {
-            item("isHeroesLoading") {
+            item("isContentLoading") {
                 CustomCenterCircularWavyProgressIndicator(
                     modifier = Modifier
                         .animateItem()
@@ -181,51 +146,49 @@ private fun Content(
             }
             return@LazyColumn
         }
-        if (state.isHeroesError != null) {
-            item("isHeroesError") {
+        if (state.isProfileError != null) {
+            item("isProfileError") {
                 MessageListItem(
                     modifier = Modifier
                         .animateItem(),
-                    text = state.isHeroesError.asString(),
-                    isError = true
+                    text = state.isProfileError.asString()
                 )
             }
             return@LazyColumn
         }
-        if (state.filteredHeroes.isEmpty()) {
-            item("isHeroesEmpty") {
+        if (state.filteredProfiles.isEmpty()) {
+            item("isProfileEmpty") {
                 MessageListItem(
                     modifier = Modifier
                         .animateItem(),
                     text = stringResource(R.string.item_empty)
                 )
             }
-            return@LazyColumn
         }
         itemsIndexed(
-            items = state.filteredHeroes,
-            key = { _, hero -> hero.id }
-        ) { index, hero ->
-            DefaultClickableListItem(
+            items = state.filteredProfiles,
+            key = { _, profileModel -> profileModel.id }
+        ) { index, profileModel ->
+            DefaultListItem(
                 modifier = Modifier
                     .animateItem(),
                 index = index,
-                count = state.filteredHeroes.size,
-                onClick = { navBackStack.add(MainNavigationRoute.HeroScreen(hero.id)) },
-                leadingContent = { Icon(Icons.Rounded.Person4, null) },
-                content = { Text(text = hero.name) },
+                count = state.filteredProfiles.size,
+                overlineContent = { Text(text = profileModel.role.name) },
+                content = {
+                    Text(
+                        text = profileModel.username,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
                 trailingContent = {
-                    if (state.isModifyEnabled) {
-                        IconButton(
-                            onClick = {
-                                val targetRoute = MainNavigationRoute.ManageHeroScreen(
-                                    heroId = hero.id
-                                )
-                                navBackStack.add(targetRoute)
-                            },
-                            content = { Icon(Icons.Rounded.Edit, null) }
-                        )
-                    }
+                    CustomIconButton(
+                        onClick = {
+                            navBackStack.add(MainNavigationRoute.ManageUserScreen(profileModel.id))
+                        },
+                        content = { Icon(Icons.Rounded.Edit, null) }
+                    )
                 }
             )
         }

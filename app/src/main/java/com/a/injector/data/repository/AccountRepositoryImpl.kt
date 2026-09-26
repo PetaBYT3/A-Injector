@@ -5,21 +5,13 @@ package com.a.injector.data.repository
 import arrow.core.Either
 import com.a.injector.R
 import com.a.injector.data.dto.ProfileDto
-import com.a.injector.data.dto.Role
-import com.a.injector.data.mapper.toProfileDto
-import com.a.injector.data.mapper.toProfileModel
-import com.a.injector.data.mapper.toRequestDetailModel
-import com.a.injector.data.mapper.toRequestDto
+import com.a.injector.data.mapper.ProfileMapper
 import com.a.injector.data.remote.AuthApi
 import com.a.injector.data.remote.ProfileApi
-import com.a.injector.data.remote.RequestApi
 import com.a.injector.data.util.TextResource
 import com.a.injector.data.util.toMessage
 import com.a.injector.domain.model.ProfileModel
-import com.a.injector.domain.model.RequestDetailModel
-import com.a.injector.domain.model.RequestModel
 import com.a.injector.domain.model.state.AuthResult
-import com.a.injector.domain.model.state.RequestState
 import com.a.injector.domain.repository.AccountRepository
 import io.github.jan.supabase.auth.user.UserInfo
 import kotlinx.coroutines.CoroutineScope
@@ -45,30 +37,33 @@ import kotlin.uuid.Uuid
 @Single
 class AccountRepositoryImpl(
     private val authApi: AuthApi,
-    private val profileApi: ProfileApi,
-    private val requestApi: RequestApi
+    private val profileApi: ProfileApi
 ): AccountRepository {
     private val repositoryScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-    override fun getAuthState(): Flow<AuthResult> {
-        return authApi.getAuthState().flatMapLatest { userInfo ->
-            val authResult = when {
-                userInfo == null -> AuthResult.Unauthenticated
-                else -> AuthResult.Authenticated
-            }
-            flowOf(authResult)
-        }.flowOn(Dispatchers.IO)
-    }
+    override val currentAuthState: Flow<AuthResult> = authApi.getAuthState().map { userInfo ->
+        when {
+            userInfo == null -> AuthResult.Unauthenticated
+            else -> AuthResult.Authenticated
+        }
+    }.flowOn(Dispatchers.IO)
 
-    override val currentUserInfo: StateFlow<UserInfo?> = authApi.getAuthState().flowOn(Dispatchers.IO).stateIn(
-        scope = repositoryScope,
-        started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = null
+    override val currentUserInfo: StateFlow<UserInfo?> =
+        authApi.getAuthState().flowOn(Dispatchers.IO).stateIn(
+            scope = repositoryScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = null
     )
 
     override val currentProfile: StateFlow<ProfileModel> = authApi.getAuthState().flatMapLatest { userInfo ->
         when (userInfo?.isAnonymous) {
-            false -> profileApi.getProfile(userInfo.id).map { it?.toProfileModel() ?: ProfileModel.EMPTY }
+            false -> profileApi.getProfile(userInfo.id).map { profileDto ->
+                if (profileDto != null) {
+                    ProfileMapper.toModel(profileDto)
+                } else {
+                    ProfileModel.EMPTY
+                }
+            }
             true -> flowOf(ProfileModel.GUEST)
             else -> flowOf(ProfileModel.EMPTY)
         }
@@ -100,9 +95,7 @@ class AccountRepositoryImpl(
             profileApi.upsertProfile(
                 profileDto = ProfileDto(
                     id = authApi.getAuthState().first()!!.id,
-                    username = "user${Uuid.random()}",
-                    role = Role.User,
-                    contribution = 0
+                    username = "user${Uuid.random()}"
                 )
             )
             emit(Either.Right(Unit))
@@ -172,82 +165,6 @@ class AccountRepositoryImpl(
                 email = email
             )
             emit(Either.Right(TextResource.StringResource(R.string.success_password_reset)))
-        }.catch { throwable ->
-            emit(Either.Left(throwable.toMessage()))
-        }.flowOn(Dispatchers.IO)
-    }
-
-    override fun getProfileByHighestContribution(): Flow<Either<TextResource, List<ProfileModel>>> {
-        return profileApi.getProfileByHighestContribution().map { profileDtos ->
-            val profileModels = profileDtos.map { it.toProfileModel() }
-            Either.Right(profileModels) as Either<TextResource, List<ProfileModel>>
-        }.catch { throwable ->
-            emit(Either.Left(throwable.toMessage()))
-        }.flowOn(Dispatchers.IO)
-    }
-
-    override fun upsertProfile(profileModel: ProfileModel): Flow<Either<TextResource, TextResource>> {
-        return flow<Either<TextResource, TextResource>> {
-            profileApi.upsertProfile(
-                profileDto = profileModel.toProfileDto()
-            )
-            emit(Either.Right(TextResource.StringResource(R.string.success_update_profile)))
-        }.catch { throwable ->
-            emit(Either.Left(throwable.toMessage()))
-        }.flowOn(Dispatchers.IO)
-    }
-
-    override fun getRequestStatus(): Flow<RequestState> {
-        return authApi.getAuthState().flatMapLatest { userInfo ->
-            if (userInfo != null) {
-                requestApi.getRequest(userInfo.id).map { requestDetailDto ->
-                    if (requestDetailDto != null) RequestState.Applied else RequestState.NotApplied
-                }
-            } else {
-                flowOf(RequestState.NotApplied)
-            }
-        }.flowOn(Dispatchers.IO)
-    }
-
-    override fun getRequestDetails(): Flow<Either<TextResource, List<RequestDetailModel>>> {
-        return requestApi.getRequests().map { requestDetailDtos ->
-            val requestDetailModelDto = requestDetailDtos.map { it.toRequestDetailModel() }
-            Either.Right(requestDetailModelDto) as Either<TextResource, List<RequestDetailModel>>
-        }.catch { throwable ->
-            emit(Either.Left(throwable.toMessage()))
-        }.flowOn(Dispatchers.IO)
-    }
-
-    override fun getGrantedByRole(role: Role): Flow<Either<TextResource, List<ProfileModel>>> {
-        return profileApi.getProfilesByRole(role).map { profileDtos ->
-            val profileModels = profileDtos.map { it.toProfileModel() }
-            Either.Right(profileModels) as Either<TextResource, List<ProfileModel>>
-        }.catch { throwable ->
-            emit(Either.Left(throwable.toMessage()))
-        }.flowOn(Dispatchers.IO)
-    }
-
-    override fun upsertRequest(requestModel: RequestModel): Flow<Either<TextResource, TextResource>> {
-        return flow<Either<TextResource, TextResource>> {
-            requestApi.upsertRequest(
-                requestDto = requestModel.toRequestDto()
-            )
-            emit(Either.Right(TextResource.StringResource(R.string.success_request_role)))
-        }.catch { throwable ->
-            emit(Either.Left(throwable.toMessage()))
-        }.flowOn(Dispatchers.IO)
-    }
-
-    override fun grantRequest(requestModel: RequestModel): Flow<Either<TextResource, TextResource>> {
-        return flow<Either<TextResource, TextResource>> {
-            profileApi.upsertRole(
-                id = requestModel.id,
-                role = requestModel.role
-            )
-            requestApi.deleteRequest(
-                requestDto = requestModel.toRequestDto()
-            )
-            emit(Either.Left(TextResource.StringResource(R.string.success_grant_role)))
         }.catch { throwable ->
             emit(Either.Left(throwable.toMessage()))
         }.flowOn(Dispatchers.IO)

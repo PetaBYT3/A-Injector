@@ -64,8 +64,8 @@ class ScriptViewModel(
         val filteredHeroes = if (keyword.isBlank()) {
             _state.value.heroes
         } else {
-            _state.value.heroes.filter { hero ->
-                hero.name.contains(keyword, true)
+            _state.value.heroes.filter { heroModel ->
+                heroModel.name.contains(keyword, true)
             }
         }
         _state.update { currentState ->

@@ -32,3 +32,22 @@ fun CustomSlideUpAnimatedVisibility(
         content = content
     )
 }
+
+@Composable
+fun CustomFadeAnimatedVisibility(
+    visible: Boolean,
+    modifier: Modifier = Modifier,
+    content: @Composable AnimatedVisibilityScope.() -> Unit
+) {
+    AnimatedVisibility(
+        visible = visible,
+        modifier = modifier,
+        enter = fadeIn(
+            animationSpec = tween()
+        ),
+        exit = fadeOut(
+            animationSpec = tween()
+        ),
+        content = content
+    )
+}

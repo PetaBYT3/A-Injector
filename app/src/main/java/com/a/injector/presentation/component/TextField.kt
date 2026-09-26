@@ -1,6 +1,7 @@
 package com.a.injector.presentation.component
 
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MotionScheme
 import androidx.compose.material3.OutlinedTextField
@@ -20,7 +21,9 @@ fun CustomTextField(
     value: String,
     onValueChange: (String) -> Unit,
     trailingIcon: @Composable (() -> Unit)? = null,
-    visualTransformation: VisualTransformation = VisualTransformation.None
+    readOnly: Boolean = false,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
 ) {
     MaterialTheme(
         motionScheme = MotionScheme.standard()
@@ -37,7 +40,9 @@ fun CustomTextField(
             value = value,
             onValueChange = { onValueChange(it) },
             trailingIcon = trailingIcon,
-            visualTransformation = visualTransformation
+            readOnly = readOnly,
+            visualTransformation = visualTransformation,
+            keyboardOptions = keyboardOptions
         )
     }
 }
@@ -70,7 +75,8 @@ fun TransparentTextField(
             } else null,
             value = value,
             onValueChange = { onValueChange(it) },
-            trailingIcon = trailingIcon
+            trailingIcon = trailingIcon,
+            singleLine = true
         )
     }
 }

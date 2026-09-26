@@ -3,6 +3,7 @@ package com.a.injector.presentation.bottomnavigation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a.injector.BuildConfig
+import com.a.injector.domain.repository.ApplicationRepository
 import com.a.injector.presentation.util.ScreenEffect
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +15,7 @@ import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
 class BottomNavigationViewModel(
-    private val databaseRepository: DatabaseRepository
+    private val applicationRepository: ApplicationRepository
 ): ViewModel() {
     private val _state = MutableStateFlow(BottomNavigationState())
     val state = _state.asStateFlow()
@@ -24,7 +25,7 @@ class BottomNavigationViewModel(
 
     init {
         viewModelScope.launch {
-            databaseRepository.getVersion().collect { either ->
+            applicationRepository.getVersion().collect { either ->
                 either.onRight { versionModel ->
                     if (versionModel.maintenance) {
                         _state.update { currentState ->

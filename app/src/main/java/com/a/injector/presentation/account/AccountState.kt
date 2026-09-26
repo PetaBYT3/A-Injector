@@ -1,7 +1,7 @@
 package com.a.injector.presentation.account
 
 import com.a.injector.domain.model.ProfileModel
-import com.a.injector.domain.model.state.RequestState
+import com.a.injector.domain.model.RequestModel
 import io.github.jan.supabase.auth.user.UserInfo
 
 data class AccountState(
@@ -10,7 +10,9 @@ data class AccountState(
 
     val isProfileLoading: Boolean = true,
     val profile: ProfileModel = ProfileModel.EMPTY,
-    val requestState: RequestState = RequestState.NotApplied,
+
+    val isRequestLoading: Boolean = true,
+    val request: RequestModel = RequestModel.EMPTY,
 
     val isUpsertProfileBottomSheetVisible: Boolean = false,
     val profileToUpsert: ProfileModel = ProfileModel.EMPTY,
@@ -30,6 +32,7 @@ data class AccountState(
 ) {
     val isContentLoading: Boolean get() =
         isUserInfoLoading &&
+        isRequestLoading &&
         isProfileLoading
 
     val isPasswordMoreThan8Character: Boolean get() = newPasswordTextField.length >= 8
