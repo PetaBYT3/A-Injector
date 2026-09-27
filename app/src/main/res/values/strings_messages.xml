@@ -25,17 +25,13 @@
         Enter your registered email address. We will send you a link to reset your password.
     </string>
 
-    <string name="message_delete_hero">
-        This action will permanently delete hero and all of its skin, replaces data and files
+    <string name="message_support">
+        
     </string>
 
-    <string name="message_delete_skin">
-        This action will permanently delete skin and all of its replaces data and files
-    </string>
-
-    <string name="message_delete_replace">
-        This action will permanently delete this replace data and file
-    </string>
+    <string name="message_delete_hero">This action will permanently delete hero and all of its skin, replaces data and files</string>
+    <string name="message_delete_skin">This action will permanently delete skin and all of its replaces data and files</string>
+    <string name="message_delete_replace">This action will permanently delete this replace data and file</string>
 
     <string name="message_clean">
         This action will perform file deletion all orphan file on cloud storage

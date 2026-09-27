@@ -22,21 +22,11 @@
         Masukkan alamat email Anda yang terdaftar. Kami akan mengirimkan tautan untuk mengatur ulang kata sandi Anda.
     </string>
 
-    <string name="message_delete_hero">
-        Tindakan ini akan menghapus secara permanen hero beserta semua data skin, data replace, dan filenya
-    </string>
+    <string name="message_delete_hero">Tindakan ini akan menghapus secara permanen hero beserta semua data skin, data replace, dan filenya</string>
+    <string name="message_delete_skin">Tindakan ini akan menghapus secara permanen skin beserta semua data replace dan filenya</string>
+    <string name="message_delete_replace">Tindakan ini akan menghapus secara permanen data replace dan file ini</string>
 
-    <string name="message_delete_skin">
-        Tindakan ini akan menghapus secara permanen skin beserta semua data replace dan filenya
-    </string>
-
-    <string name="message_delete_replace">
-        Tindakan ini akan menghapus secara permanen data replace dan file ini
-    </string>
-
-    <string name="message_clean">
-        Tindakan ini akan melakukan penghapusan untuk semua file sisa di penyimpanan awan
-    </string>
+    <string name="message_clean">Tindakan ini akan melakukan penghapusan untuk semua file sisa di penyimpanan awan</string>
 
     <string name="message_change_password">
         Kami akan mengirimkan formulir untuk mengubah kata sandi ke email Anda

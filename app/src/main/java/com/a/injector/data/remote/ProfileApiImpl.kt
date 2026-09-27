@@ -4,7 +4,7 @@ package com.a.injector.data.remote
 
 import com.a.injector.data.dto.ProfileDto
 import com.a.injector.data.dto.Role
-import com.a.injector.data.util.SupabaseConstanta
+import com.a.injector.data.util.SupabaseElement
 import com.a.injector.data.util.postgrestActionToUnit
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.annotations.SupabaseExperimental
@@ -33,53 +33,53 @@ import kotlin.uuid.Uuid
 class ProfileApiImpl(
     private val supabaseClient: SupabaseClient
 ): ProfileApi {
-    override fun getProfiles(): Flow<List<ProfileDto>> {
-        return supabaseClient.from(SupabaseConstanta.PROFILE_TABLE).selectAsFlow(
+    override fun getList(): Flow<List<ProfileDto>> {
+        return supabaseClient.from(SupabaseElement.PROFILE_TABLE).selectAsFlow(
             primaryKey = ProfileDto::id
         )
     }
 
-    override fun getProfile(profileId: String): Flow<ProfileDto?> {
-        return supabaseClient.from(SupabaseConstanta.PROFILE_TABLE).selectSingleValueAsFlow(
+    override fun getSingle(profileId: String): Flow<ProfileDto?> {
+        return supabaseClient.from(SupabaseElement.PROFILE_TABLE).selectSingleValueAsFlow(
             primaryKey = ProfileDto::id,
             filter = { eq("id", profileId) }
         )
     }
 
-    override suspend fun upsertProfile(profileDto: ProfileDto) {
-        supabaseClient.from(SupabaseConstanta.PROFILE_TABLE).upsert(profileDto)
+    override suspend fun upsert(profileDto: ProfileDto) {
+        supabaseClient.from(SupabaseElement.PROFILE_TABLE).upsert(profileDto)
     }
 
-    override suspend fun upsertRole(id: String,  role: Role) {
-        supabaseClient.from(SupabaseConstanta.PROFILE_TABLE).update(
+    override suspend fun delete(id: String, role: Role) {
+        supabaseClient.from(SupabaseElement.PROFILE_TABLE).update(
             request = { filter { eq("id", id) } },
             update = { set("role", role.name) }
         )
     }
 
-    override fun getTopSupporter(): Flow<List<ProfileDto>> {
-        return supabaseClient.from(SupabaseConstanta.PROFILE_TABLE).selectAsFlow(
+    override fun getListBySupporting(): Flow<List<ProfileDto>> {
+        return supabaseClient.from(SupabaseElement.PROFILE_TABLE).selectAsFlow(
             primaryKey = ProfileDto::id,
             filter = {
                 gt("nominal", 0)
             }
         ).map { profileDtos ->
-            profileDtos.sortedByDescending { it.nominal }.take(10)
+            profileDtos.sortedByDescending { it.supporting }.take(10)
         }
     }
 
-    override fun getTopContributor(): Flow<List<ProfileDto>> {
+    override fun getListByContributor(): Flow<List<ProfileDto>> {
         val channel = supabaseClient.channel("getProfileByHighestContribution:${Uuid.random()}")
         return channel.postgresChangeFlow<PostgresAction>(
-            schema = SupabaseConstanta.SCHEMA,
-            filter = { table = SupabaseConstanta.PROFILE_TABLE }
-        ).map(::postgrestActionToUnit).debounce(SupabaseConstanta.DEBOUNCE).onStart {
+            schema = SupabaseElement.SCHEMA,
+            filter = { table = SupabaseElement.PROFILE_TABLE }
+        ).map(::postgrestActionToUnit).debounce(SupabaseElement.DEBOUNCE).onStart {
             channel.subscribe()
             emit(Unit)
         }.onCompletion {
             supabaseClient.realtime.removeChannel(channel)
         }.map {
-            supabaseClient.from(SupabaseConstanta.PROFILE_TABLE).select(
+            supabaseClient.from(SupabaseElement.PROFILE_TABLE).select(
                 request = {
                     filter { gt("contribution", 0) }
                     order("contribution", Order.DESCENDING)

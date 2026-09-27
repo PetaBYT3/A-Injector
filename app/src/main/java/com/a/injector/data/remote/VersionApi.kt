@@ -4,5 +4,5 @@ import com.a.injector.data.dto.VersionDto
 import kotlinx.coroutines.flow.Flow
 
 interface VersionApi {
-    fun getVersion(): Flow<VersionDto?>
+    fun getSingle(): Flow<VersionDto?>
 }

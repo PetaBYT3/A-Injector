@@ -80,7 +80,12 @@ class HomeViewModel(
     fun onAction(action: HomeAction) {
         when (action) {
             is HomeAction.SetCommandServiceButton -> {
-                setCommandServiceButton(action.commandService)
+                setCommandServiceButton(commandService = action.commandService)
+            }
+            HomeAction.SupportBottomSheet -> {
+                _state.update { currentState ->
+                    currentState.copy(isSupportBottomSheetVisible = !currentState.isSupportBottomSheetVisible)
+                }
             }
         }
     }

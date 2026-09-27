@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 
 @Keep
 @Serializable
-data class RequestDto(
+data class RoleDto(
     val id: String,
     val role: Role,
 

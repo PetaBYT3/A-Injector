@@ -57,7 +57,7 @@ class AccountRepositoryImpl(
 
     override val currentProfile: StateFlow<ProfileModel> = authApi.getAuthState().flatMapLatest { userInfo ->
         when (userInfo?.isAnonymous) {
-            false -> profileApi.getProfile(userInfo.id).map { profileDto ->
+            false -> profileApi.getSingle(userInfo.id).map { profileDto ->
                 if (profileDto != null) {
                     ProfileMapper.toModel(profileDto)
                 } else {
@@ -92,7 +92,7 @@ class AccountRepositoryImpl(
                 password = password
             )
             delay(1.seconds)
-            profileApi.upsertProfile(
+            profileApi.upsert(
                 profileDto = ProfileDto(
                     id = authApi.getAuthState().first()!!.id,
                     username = "user${Uuid.random()}"

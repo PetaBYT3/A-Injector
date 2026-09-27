@@ -45,7 +45,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
 import com.a.injector.data.dto.Role
 import com.a.injector.domain.model.ProfileModel
-import com.a.injector.domain.model.RequestModel
+import com.a.injector.domain.model.RoleModel
 import com.a.injector.presentation.component.CustomBottomSheet
 import com.a.injector.presentation.component.CustomButton
 import com.a.injector.presentation.component.CustomCenterCircularWavyProgressIndicator
@@ -97,7 +97,7 @@ private fun Preview() {
             profile = ProfileModel.EMPTY.copy(
                 role = Role.Administrator
             ),
-            request = RequestModel.EMPTY.copy(role = Role.Contributor)
+            request = RoleModel.EMPTY.copy(role = Role.Contributor)
         ),
         onAction = {},
         snackBarHostState = SnackbarHostState()
@@ -388,7 +388,7 @@ private fun Content(
                         }
                         Profile.Role -> {
                             CustomFadeAnimatedVisibility(
-                                visible = state.request == RequestModel.EMPTY
+                                visible = state.request == RoleModel.EMPTY
                             ) {
                                 CustomIconButton(
                                     onClick = { onAction(AccountAction.RequestRoleBottomSheet) },

@@ -2,15 +2,18 @@
 
 package com.a.injector.presentation.home
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.OpenInNew
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Storage
 import androidx.compose.material3.Button
@@ -20,10 +23,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,6 +39,8 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
+import com.a.injector.data.util.TextResource
+import com.a.injector.presentation.component.CustomBottomSheet
 import com.a.injector.presentation.component.CustomCenterCircularWavyProgressIndicator
 import com.a.injector.presentation.component.CustomTextListTitle
 import com.a.injector.presentation.component.CustomTopAppBar
@@ -40,6 +49,11 @@ import com.a.injector.presentation.component.DefaultListItem
 import com.a.injector.presentation.component.MessageListItem
 import com.a.injector.presentation.component.PrimaryListItem
 import com.a.injector.presentation.component.spacer
+import com.a.injector.presentation.home.AboutDeveloper.Github
+import com.a.injector.presentation.home.AboutDeveloper.Linkedin
+import com.a.injector.presentation.home.AboutDeveloper.Mlbb
+import com.a.injector.presentation.home.AboutDeveloper.Support
+import com.a.injector.presentation.home.AboutDeveloper.Tiktok
 import com.a.injector.presentation.util.openInBrowser
 import com.a.injector.presentation.util.openStoragePermissionSettings
 import com.a.injector.presentation.util.toIdr
@@ -94,6 +108,30 @@ private fun HomeScreen(
             )
         }
     )
+
+    CustomBottomSheet(
+        visible = state.isSupportBottomSheetVisible,
+        onDismiss = { onAction(HomeAction.SupportBottomSheet) },
+        title = stringResource(R.string.support),
+        content = {
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        modifier = Modifier
+                            .fillMaxWidth(0.65f)
+                            .aspectRatio(1f),
+                        painter = painterResource(R.drawable.qris),
+                        contentDescription = null
+                    )
+                }
+            }
+            spacer()
+        }
+    )
 }
 
 @Composable
@@ -104,6 +142,7 @@ private fun Content(
 ) {
     val context = LocalContext.current
     val uriHandler = LocalUriHandler.current
+    val clipboardManager = LocalClipboardManager.current
 
     LazyColumn(
         modifier = modifier,
@@ -152,19 +191,32 @@ private fun Content(
                 index = index,
                 count = AboutDevelopers.size,
                 onClick = {
-                    val url = when (staticModel.id) {
-                        AboutDeveloper.Github -> "https://github.com/PetaBYT3"
-                        AboutDeveloper.Support -> ""
+                    if (staticModel.supportingTextResId != null) {
+                        val supportingText = TextResource.StringResource(staticModel.supportingTextResId)
+                        when (staticModel.id) {
+                            Mlbb -> {
+                                clipboardManager.setText(
+                                    annotatedString = AnnotatedString(
+                                        text = supportingText.asString(context)
+                                    )
+                                )
+                            }
+                            Linkedin, Tiktok, Github -> {
+                                openInBrowser(
+                                    context = context,
+                                    uriHandler = uriHandler,
+                                    url = supportingText.asString(context)
+                                )
+                            }
+                            Support -> {
+                                onAction(HomeAction.SupportBottomSheet)
+                            }
+                        }
                     }
-                    openInBrowser(
-                        context = context,
-                        uriHandler = uriHandler,
-                        url = url
-                    )
                 },
                 leadingContent = staticModel.leadingContent,
                 content = { Text(text = stringResource(staticModel.contentTextResId)) },
-                trailingContent = { Icon(Icons.Rounded.OpenInNew, null) }
+                trailingContent = staticModel.trailingContent
             )
         }
         spacer()

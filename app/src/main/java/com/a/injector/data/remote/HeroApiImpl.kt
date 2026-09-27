@@ -3,7 +3,7 @@
 package com.a.injector.data.remote
 
 import com.a.injector.data.dto.HeroDto
-import com.a.injector.data.util.SupabaseConstanta
+import com.a.injector.data.util.SupabaseElement
 import com.a.injector.data.util.postgrestActionToUnit
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.annotations.SupabaseExperimental
@@ -30,73 +30,73 @@ import kotlin.uuid.Uuid
 class HeroApiImpl(
     private val supabaseClient: SupabaseClient
 ): HeroApi {
-    override fun getHeroes(): Flow<List<HeroDto>> {
+    override fun getList(): Flow<List<HeroDto>> {
         val channel = supabaseClient.channel("getHeroDetails:${Uuid.random()}")
         return merge(
             channel.postgresChangeFlow<PostgresAction>(
-                schema = SupabaseConstanta.SCHEMA,
-                filter = { table = SupabaseConstanta.HERO_TABLE }
+                schema = SupabaseElement.SCHEMA,
+                filter = { table = SupabaseElement.HERO_TABLE }
             ),
             channel.postgresChangeFlow<PostgresAction>(
-                schema = SupabaseConstanta.SCHEMA,
-                filter = { table = SupabaseConstanta.SKIN_TABLE }
+                schema = SupabaseElement.SCHEMA,
+                filter = { table = SupabaseElement.SKIN_TABLE }
             ),
             channel.postgresChangeFlow<PostgresAction>(
-                schema = SupabaseConstanta.SCHEMA,
-                filter = { table = SupabaseConstanta.REPLACE_TABLE }
+                schema = SupabaseElement.SCHEMA,
+                filter = { table = SupabaseElement.REPLACE_TABLE }
             )
-        ).map(::postgrestActionToUnit).debounce(SupabaseConstanta.DEBOUNCE).onStart {
+        ).map(::postgrestActionToUnit).debounce(SupabaseElement.DEBOUNCE).onStart {
             channel.subscribe()
             emit(Unit)
         }.onCompletion {
             supabaseClient.realtime.removeChannel(channel)
         }.flatMapLatest {
-            val data = supabaseClient.from(SupabaseConstanta.HERO_TABLE).select(
+            val data = supabaseClient.from(SupabaseElement.HERO_TABLE).select(
                 columns = Columns.raw(
-                    "*, ${SupabaseConstanta.SKIN_TABLE}(*, ${SupabaseConstanta.REPLACE_TABLE}(*))"
+                    "*, ${SupabaseElement.SKIN_TABLE}(*, ${SupabaseElement.REPLACE_TABLE}(*))"
                 )
             ).decodeList<HeroDto>()
             flowOf(data)
         }
     }
 
-    override fun getHero(heroId: String): Flow<HeroDto?> {
+    override fun getSingle(heroId: String): Flow<HeroDto?> {
         val channel = supabaseClient.channel("getHeroDetail:${Uuid.random()}")
         return merge(
             channel.postgresChangeFlow<PostgresAction>(
-                schema = SupabaseConstanta.SCHEMA,
-                filter = { table = SupabaseConstanta.HERO_TABLE }
+                schema = SupabaseElement.SCHEMA,
+                filter = { table = SupabaseElement.HERO_TABLE }
             ),
             channel.postgresChangeFlow<PostgresAction>(
-                schema = SupabaseConstanta.SCHEMA,
-                filter = { table = SupabaseConstanta.SKIN_TABLE }
+                schema = SupabaseElement.SCHEMA,
+                filter = { table = SupabaseElement.SKIN_TABLE }
             ),
             channel.postgresChangeFlow<PostgresAction>(
-                schema = SupabaseConstanta.SCHEMA,
-                filter = { table = SupabaseConstanta.REPLACE_TABLE }
+                schema = SupabaseElement.SCHEMA,
+                filter = { table = SupabaseElement.REPLACE_TABLE }
             )
-        ).map(::postgrestActionToUnit).debounce(SupabaseConstanta.DEBOUNCE).onStart {
+        ).map(::postgrestActionToUnit).debounce(SupabaseElement.DEBOUNCE).onStart {
             channel.subscribe()
             emit(Unit)
         }.onCompletion {
             supabaseClient.realtime.removeChannel(channel)
         }.flatMapLatest {
-            val data = supabaseClient.from(SupabaseConstanta.HERO_TABLE).select(
+            val data = supabaseClient.from(SupabaseElement.HERO_TABLE).select(
                 request = { filter { eq("id", heroId) } },
                 columns = Columns.raw(
-                    "*, ${SupabaseConstanta.SKIN_TABLE}(*, ${SupabaseConstanta.REPLACE_TABLE}(*))"
+                    "*, ${SupabaseElement.SKIN_TABLE}(*, ${SupabaseElement.REPLACE_TABLE}(*))"
                 )
             ).decodeSingleOrNull<HeroDto>()
             flowOf(data)
         }
     }
 
-    override suspend fun upsertHero(hero: HeroDto) {
-        supabaseClient.from(SupabaseConstanta.HERO_TABLE).upsert(hero)
+    override suspend fun upsert(hero: HeroDto) {
+        supabaseClient.from(SupabaseElement.HERO_TABLE).upsert(hero)
     }
 
-    override suspend fun deleteHero(hero: HeroDto) {
-        supabaseClient.from(SupabaseConstanta.HERO_TABLE).delete(
+    override suspend fun delete(hero: HeroDto) {
+        supabaseClient.from(SupabaseElement.HERO_TABLE).delete(
             request = { filter { HeroDto::id eq hero.id } }
         )
     }

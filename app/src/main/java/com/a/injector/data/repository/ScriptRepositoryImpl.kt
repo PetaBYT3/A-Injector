@@ -41,7 +41,7 @@ class ScriptRepositoryImpl(
     private val storageApi: StorageApi
 ): ScriptRepository {
     override fun getHeroes(): Flow<Either<TextResource, List<HeroModel>>> {
-        return heroApi.getHeroes().map { heroDtos ->
+        return heroApi.getList().map { heroDtos ->
             val heroModels = heroDtos.map { HeroMapper.toModel(it) }
             Either.Right(heroModels) as Either<TextResource, List<HeroModel>>
         }.catch { throwable ->
@@ -50,7 +50,7 @@ class ScriptRepositoryImpl(
     }
 
     override fun getHero(heroId: String): Flow<Either<TextResource, HeroModel>> {
-        return heroApi.getHero(
+        return heroApi.getSingle(
             heroId = heroId
         ).map { heroDto ->
             if (heroDto != null) {
@@ -65,7 +65,7 @@ class ScriptRepositoryImpl(
 
     override fun upsertHero(heroModel: HeroModel): Flow<Either<TextResource, Unit>> {
         return flow<Either<TextResource, Unit>> {
-            heroApi.upsertHero(
+            heroApi.upsert(
                 hero = HeroMapper.toDto(heroModel)
             )
             emit(Either.Right(Unit))
@@ -76,7 +76,7 @@ class ScriptRepositoryImpl(
 
     override fun deleteHero(heroModel: HeroModel): Flow<Either<TextResource, Unit>> {
         return flow<Either<TextResource, Unit>> {
-            heroApi.deleteHero(
+            heroApi.delete(
                 hero = HeroMapper.toDto(heroModel)
             )
             emit(Either.Right(Unit))
@@ -86,7 +86,7 @@ class ScriptRepositoryImpl(
     }
 
     override fun getSkin(skinId: String): Flow<Either<TextResource, SkinModel>> {
-        return skinApi.getSkin(
+        return skinApi.getSingle(
             skinId = skinId
         ).map { skinDto ->
             if (skinDto != null) {
@@ -101,7 +101,7 @@ class ScriptRepositoryImpl(
 
     override fun upsertSkin(skinModel: SkinModel): Flow<Either<TextResource, Unit>> {
         return flow<Either<TextResource, Unit>> {
-            skinApi.upsertSkin(
+            skinApi.upsert(
                 skin = SkinMapper.toDto(skinModel)
             )
             emit(Either.Right(Unit))
@@ -112,7 +112,7 @@ class ScriptRepositoryImpl(
 
     override fun deleteSkin(skinModel: SkinModel): Flow<Either<TextResource, Unit>> {
         return flow<Either<TextResource, Unit>> {
-            skinApi.deleteSkin(
+            skinApi.delete(
                 skin = SkinMapper.toDto(skinModel)
             )
             emit(Either.Right(Unit))
@@ -122,7 +122,7 @@ class ScriptRepositoryImpl(
     }
 
     override fun getReplace(replaceId: String): Flow<Either<TextResource, ReplaceModel>> {
-        return replaceApi.getReplace(
+        return replaceApi.getSingle(
             replaceId = replaceId
         ).map { replaceDto ->
             if (replaceDto != null) {
@@ -141,7 +141,7 @@ class ScriptRepositoryImpl(
     ): Flow<Either<TextResource, Unit>> {
         return flow<Either<TextResource, Unit>> {
             if (replaceFile != null) {
-                replaceApi.upsertReplace(
+                replaceApi.upsert(
                     replace = ReplaceMapper.toDto(replaceModel).copy(
                         lastUpdate = Clock.System.now().toEpochMilliseconds(),
                         fileSize = replaceFile.size()
@@ -156,7 +156,7 @@ class ScriptRepositoryImpl(
                     id = authApi.getAuthState().first()?.id!!
                 )
             } else {
-                replaceApi.upsertReplace(
+                replaceApi.upsert(
                     replace = ReplaceMapper.toDto(replaceModel)
                 )
             }
@@ -168,7 +168,7 @@ class ScriptRepositoryImpl(
 
     override fun deleteReplace(replaceModel: ReplaceModel): Flow<Either<TextResource, Unit>> {
         return flow<Either<TextResource, Unit>> {
-            replaceApi.deleteReplace(
+            replaceApi.delete(
                 replace = ReplaceMapper.toDto(replaceModel)
             )
             storageApi.delete(

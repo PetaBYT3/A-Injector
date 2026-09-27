@@ -5,13 +5,13 @@ import com.a.injector.data.dto.Role
 import kotlinx.coroutines.flow.Flow
 
 interface ProfileApi {
-    fun getProfiles(): Flow<List<ProfileDto>>
-    fun getProfile(profileId: String): Flow<ProfileDto?>
-    suspend fun upsertProfile(profileDto: ProfileDto)
-    suspend fun upsertRole(id: String, role: Role)
+    fun getList(): Flow<List<ProfileDto>>
+    fun getSingle(profileId: String): Flow<ProfileDto?>
+    suspend fun upsert(profileDto: ProfileDto)
+    suspend fun delete(id: String, role: Role)
 
-    fun getTopSupporter(): Flow<List<ProfileDto>>
-    fun getTopContributor(): Flow<List<ProfileDto>>
+    fun getListBySupporting(): Flow<List<ProfileDto>>
+    fun getListByContributor(): Flow<List<ProfileDto>>
 
     suspend fun incrementContribution(id: String)
 }

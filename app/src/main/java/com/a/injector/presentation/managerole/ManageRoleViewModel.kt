@@ -68,7 +68,7 @@ class ManageRoleViewModel(
     private fun grantRequestButton() {
         viewModelScope.launch {
             userRepository.grantRequest(
-                requestModel = _state.value.requestToGrant
+                roleModel = _state.value.requestToGrant
             ).collect { either ->
                 either.onRight { message ->
                     _effect.send(ScreenEffect.ShowSnackBar(message))

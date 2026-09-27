@@ -23,7 +23,7 @@ class OptimizeDatabaseRepositoryImpl(
 ): OptimizeDatabaseRepository {
     override fun cleanStorage(): Flow<Either<TextResource, TextResource>> {
         return flow<Either<TextResource, TextResource>> {
-            val filesInPostgrest = replaceApi.getReplaces().first().map { "${it.id}.zip" }
+            val filesInPostgrest = replaceApi.getList().first().map { "${it.id}.zip" }
             val filesInStorage = storageApi.getFileNames(Bucket.SCRIPT)
             val filesToDelete = filesInStorage.filter { it !in filesInPostgrest }
 

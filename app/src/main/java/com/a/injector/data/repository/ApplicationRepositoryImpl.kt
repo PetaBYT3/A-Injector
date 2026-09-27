@@ -41,7 +41,7 @@ class ApplicationRepositoryImpl(
     }
 
     override fun getVersion(): Flow<Either<TextResource, VersionModel>> {
-        return versionApi.getVersion().map { versionDto ->
+        return versionApi.getSingle().map { versionDto ->
             if (versionDto != null) {
                 Either.Right(VersionMapper.toModel(versionDto)) as Either<TextResource, VersionModel>
             } else {

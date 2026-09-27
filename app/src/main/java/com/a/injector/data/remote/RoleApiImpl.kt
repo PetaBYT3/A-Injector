@@ -2,8 +2,8 @@
 
 package com.a.injector.data.remote
 
-import com.a.injector.data.dto.RequestDto
-import com.a.injector.data.util.SupabaseConstanta
+import com.a.injector.data.dto.RoleDto
+import com.a.injector.data.util.SupabaseElement
 import com.a.injector.data.util.postgrestActionToUnit
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
@@ -26,68 +26,68 @@ import org.koin.core.annotation.Single
 import kotlin.uuid.Uuid
 
 @Single
-class RequestApiImpl(
+class RoleApiImpl(
     private val supabaseClient: SupabaseClient
-): RequestApi {
-    override fun getRequests(): Flow<List<RequestDto>> {
+): RoleApi {
+    override fun getList(): Flow<List<RoleDto>> {
         val channel = supabaseClient.channel("getRequestDetail:${Uuid.random()}")
         return merge(
             channel.postgresChangeFlow<PostgresAction>(
-                schema = SupabaseConstanta.SCHEMA,
-                filter = { table = SupabaseConstanta.REQUEST_TABLE }
+                schema = SupabaseElement.SCHEMA,
+                filter = { table = SupabaseElement.ROLE_TABLE }
             ),
             channel.postgresChangeFlow<PostgresAction>(
-                schema = SupabaseConstanta.SCHEMA,
-                filter = { table = SupabaseConstanta.PROFILE_TABLE }
+                schema = SupabaseElement.SCHEMA,
+                filter = { table = SupabaseElement.PROFILE_TABLE }
             )
-        ).map(::postgrestActionToUnit).debounce(SupabaseConstanta.DEBOUNCE).onStart {
+        ).map(::postgrestActionToUnit).debounce(SupabaseElement.DEBOUNCE).onStart {
             channel.subscribe()
             emit(Unit)
         }.onCompletion {
             supabaseClient.realtime.removeChannel(channel)
         }.flatMapLatest {
-            val data = supabaseClient.from(SupabaseConstanta.REQUEST_TABLE).select(
+            val data = supabaseClient.from(SupabaseElement.ROLE_TABLE).select(
                 columns = Columns.raw(
-                    "*, ${SupabaseConstanta.PROFILE_TABLE}(*)"
+                    "*, ${SupabaseElement.PROFILE_TABLE}(*)"
                 )
-            ).decodeList<RequestDto>()
+            ).decodeList<RoleDto>()
             flowOf(data)
         }
     }
 
-    override fun getRequest(profileId: String): Flow<RequestDto?> {
+    override fun getSingle(profileId: String): Flow<RoleDto?> {
         val channel = supabaseClient.channel("getRequestDetail:${Uuid.random()}")
         return merge(
             channel.postgresChangeFlow<PostgresAction>(
-                schema = SupabaseConstanta.SCHEMA,
-                filter = { table = SupabaseConstanta.REQUEST_TABLE }
+                schema = SupabaseElement.SCHEMA,
+                filter = { table = SupabaseElement.ROLE_TABLE }
             ),
             channel.postgresChangeFlow<PostgresAction>(
-                schema = SupabaseConstanta.SCHEMA,
-                filter = { table = SupabaseConstanta.PROFILE_TABLE }
+                schema = SupabaseElement.SCHEMA,
+                filter = { table = SupabaseElement.PROFILE_TABLE }
             )
-        ).map(::postgrestActionToUnit).debounce(SupabaseConstanta.DEBOUNCE).onStart {
+        ).map(::postgrestActionToUnit).debounce(SupabaseElement.DEBOUNCE).onStart {
             channel.subscribe()
             emit(Unit)
         }.onCompletion {
             supabaseClient.realtime.removeChannel(channel)
         }.map {
-            supabaseClient.from(SupabaseConstanta.REQUEST_TABLE).select(
+            supabaseClient.from(SupabaseElement.ROLE_TABLE).select(
                 request = { filter { eq("id", profileId) } },
                 columns = Columns.raw(
-                    "*, ${SupabaseConstanta.PROFILE_TABLE}(*)"
+                    "*, ${SupabaseElement.PROFILE_TABLE}(*)"
                 )
-            ).decodeSingleOrNull<RequestDto>()
+            ).decodeSingleOrNull<RoleDto>()
         }
     }
 
-    override suspend fun upsertRequest(requestDto: RequestDto) {
-        supabaseClient.from(SupabaseConstanta.REQUEST_TABLE).upsert(requestDto)
+    override suspend fun upsert(roleDto: RoleDto) {
+        supabaseClient.from(SupabaseElement.ROLE_TABLE).upsert(roleDto)
     }
 
-    override suspend fun deleteRequest(requestDto: RequestDto) {
-        supabaseClient.from(SupabaseConstanta.REQUEST_TABLE).delete(
-            request = { filter { eq("id", requestDto.id) } }
+    override suspend fun delete(roleDto: RoleDto) {
+        supabaseClient.from(SupabaseElement.ROLE_TABLE).delete(
+            request = { filter { eq("id", roleDto.id) } }
         )
     }
 }

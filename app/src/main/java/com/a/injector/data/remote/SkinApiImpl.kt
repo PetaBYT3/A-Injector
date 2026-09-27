@@ -3,7 +3,7 @@
 package com.a.injector.data.remote
 
 import com.a.injector.data.dto.SkinDto
-import com.a.injector.data.util.SupabaseConstanta
+import com.a.injector.data.util.SupabaseElement
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.annotations.SupabaseExperimental
 import io.github.jan.supabase.postgrest.from
@@ -17,19 +17,19 @@ import org.koin.core.annotation.Single
 class SkinApiImpl(
     private val supabaseClient: SupabaseClient
 ): SkinApi {
-    override fun getSkin(skinId: String): Flow<SkinDto> {
-        return supabaseClient.from(SupabaseConstanta.SKIN_TABLE).selectSingleValueAsFlow(
+    override fun getSingle(skinId: String): Flow<SkinDto> {
+        return supabaseClient.from(SupabaseElement.SKIN_TABLE).selectSingleValueAsFlow(
             primaryKey = SkinDto::id,
             filter = { eq("id", skinId) }
         )
     }
 
-    override suspend fun upsertSkin(skin: SkinDto) {
-        supabaseClient.from(SupabaseConstanta.SKIN_TABLE).upsert(skin)
+    override suspend fun upsert(skin: SkinDto) {
+        supabaseClient.from(SupabaseElement.SKIN_TABLE).upsert(skin)
     }
 
-    override suspend fun deleteSkin(skin: SkinDto) {
-        supabaseClient.from(SupabaseConstanta.SKIN_TABLE).delete(
+    override suspend fun delete(skin: SkinDto) {
+        supabaseClient.from(SupabaseElement.SKIN_TABLE).delete(
             request = { filter { SkinDto::id eq skin.id } }
         )
     }

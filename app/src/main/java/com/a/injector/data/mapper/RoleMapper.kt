@@ -1,12 +1,12 @@
 package com.a.injector.data.mapper
 
-import com.a.injector.data.dto.RequestDto
+import com.a.injector.data.dto.RoleDto
 import com.a.injector.domain.model.ProfileModel
-import com.a.injector.domain.model.RequestModel
+import com.a.injector.domain.model.RoleModel
 
-object RequestMapper: Mapper<RequestDto, RequestModel> {
-    override fun toModel(dto: RequestDto): RequestModel {
-        return RequestModel(
+object RoleMapper: Mapper<RoleDto, RoleModel> {
+    override fun toModel(dto: RoleDto): RoleModel {
+        return RoleModel(
             id = dto.id,
             role = dto.role,
             profile = if (dto.profile != null) {
@@ -17,8 +17,8 @@ object RequestMapper: Mapper<RequestDto, RequestModel> {
         )
     }
 
-    override fun toDto(model: RequestModel): RequestDto {
-        return RequestDto(
+    override fun toDto(model: RoleModel): RoleDto {
+        return RoleDto(
             id = model.id,
             role = model.role,
             profile = null,

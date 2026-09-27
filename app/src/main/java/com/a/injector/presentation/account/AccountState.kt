@@ -1,7 +1,7 @@
 package com.a.injector.presentation.account
 
 import com.a.injector.domain.model.ProfileModel
-import com.a.injector.domain.model.RequestModel
+import com.a.injector.domain.model.RoleModel
 import io.github.jan.supabase.auth.user.UserInfo
 
 data class AccountState(
@@ -12,7 +12,7 @@ data class AccountState(
     val profile: ProfileModel = ProfileModel.EMPTY,
 
     val isRequestLoading: Boolean = true,
-    val request: RequestModel = RequestModel.EMPTY,
+    val request: RoleModel = RoleModel.EMPTY,
 
     val isUpsertProfileBottomSheetVisible: Boolean = false,
     val profileToUpsert: ProfileModel = ProfileModel.EMPTY,

@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a.injector.data.dto.Role
 import com.a.injector.domain.model.ProfileModel
-import com.a.injector.domain.model.RequestModel
+import com.a.injector.domain.model.RoleModel
 import com.a.injector.domain.repository.AccountRepository
 import com.a.injector.domain.repository.NavigationRepository
 import com.a.injector.domain.repository.OptimizeDatabaseRepository
@@ -162,7 +162,7 @@ class AccountViewModel(
     private fun requestRoleButton(role: Role) {
         viewModelScope.launch {
             userRepository.upsertRequest(
-                requestModel = RequestModel(
+                roleModel = RoleModel(
                     id = _state.value.profile.id,
                     role = role,
                     profile = ProfileModel.EMPTY

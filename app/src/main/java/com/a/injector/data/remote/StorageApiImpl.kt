@@ -19,6 +19,10 @@ class StorageApiImpl(
         }.map { it.name }
     }
 
+    override suspend fun getFileUrl(fromBucket: Bucket, fileName: String): String {
+        return supabaseClient.storage.from(fromBucket.absoluteName).publicUrl(fileName)
+    }
+
     override suspend fun upload(targetBucket: Bucket, fileByte: ByteArray, fileName: String) {
         supabaseClient.storage.from(targetBucket.absoluteName).upload(
             path = fileName,

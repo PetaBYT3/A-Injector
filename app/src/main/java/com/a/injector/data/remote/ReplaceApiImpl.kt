@@ -3,7 +3,7 @@
 package com.a.injector.data.remote
 
 import com.a.injector.data.dto.ReplaceDto
-import com.a.injector.data.util.SupabaseConstanta
+import com.a.injector.data.util.SupabaseElement
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.annotations.SupabaseExperimental
 import io.github.jan.supabase.postgrest.from
@@ -16,25 +16,25 @@ import org.koin.core.annotation.Single
 class ReplaceApiImpl(
     private val supabaseClient: SupabaseClient
 ): ReplaceApi {
-    override fun getReplaces(): Flow<List<ReplaceDto>> {
-        return supabaseClient.from(SupabaseConstanta.REPLACE_TABLE).selectAsFlow(
+    override fun getList(): Flow<List<ReplaceDto>> {
+        return supabaseClient.from(SupabaseElement.REPLACE_TABLE).selectAsFlow(
             primaryKey = ReplaceDto::id
         )
     }
 
-    override fun getReplace(replaceId: String): Flow<ReplaceDto?> {
-        return supabaseClient.from(SupabaseConstanta.REPLACE_TABLE).selectSingleValueAsFlow(
+    override fun getSingle(replaceId: String): Flow<ReplaceDto?> {
+        return supabaseClient.from(SupabaseElement.REPLACE_TABLE).selectSingleValueAsFlow(
             primaryKey = ReplaceDto::id,
             filter = { eq("id", replaceId) }
         )
     }
 
-    override suspend fun upsertReplace(replace: ReplaceDto) {
-        supabaseClient.from(SupabaseConstanta.REPLACE_TABLE).upsert(replace)
+    override suspend fun upsert(replace: ReplaceDto) {
+        supabaseClient.from(SupabaseElement.REPLACE_TABLE).upsert(replace)
     }
 
-    override suspend fun deleteReplace(replace: ReplaceDto) {
-        supabaseClient.from(SupabaseConstanta.REPLACE_TABLE).delete(
+    override suspend fun delete(replace: ReplaceDto) {
+        supabaseClient.from(SupabaseElement.REPLACE_TABLE).delete(
             request = { filter { eq("id", replace.id) } }
         )
     }
