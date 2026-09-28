@@ -5,6 +5,7 @@ import com.a.injector.data.util.TextResource
 import com.a.injector.domain.model.ProfileModel
 import com.a.injector.domain.model.RoleModel
 import com.a.injector.domain.model.SupportingModel
+import io.github.vinceglb.filekit.PlatformFile
 import kotlinx.coroutines.flow.Flow
 
 interface UserRepository {
@@ -16,10 +17,14 @@ interface UserRepository {
     fun getTopContributor(): Flow<Either<TextResource, List<ProfileModel>>>
 
 
-    fun getPendingSupportings(): Flow<Either<TextResource, List<SupportingModel>>>
-    fun getPendingSupporting(profileId: String): Flow<Either<TextResource, SupportingModel>>
-    fun confirmPendingSupporting(supportingModel: SupportingModel): Flow<Either<TextResource, TextResource>>
-    fun denyPendingSupporting(supportingModel: SupportingModel): Flow<Either<TextResource, TextResource>>
+    fun getSupportingList(): Flow<Either<TextResource, List<SupportingModel>>>
+    fun getSupporting(profileId: String): Flow<Either<TextResource, SupportingModel>>
+    fun upsertSupporting(
+        supportingModel: SupportingModel,
+        image: PlatformFile?
+    ): Flow<Either<TextResource, TextResource>>
+    fun confirmSupporting(supportingModel: SupportingModel): Flow<Either<TextResource, TextResource>>
+    fun denySupporting(supportingModel: SupportingModel): Flow<Either<TextResource, TextResource>>
 
     fun getRequests(): Flow<Either<TextResource, List<RoleModel>>>
     fun getRequest(profileId: String): Flow<Either<TextResource, RoleModel>>

@@ -20,6 +20,8 @@ dataStoreVersion = "1.2.1"
 ktorVersion = "3.0.0"
 firebaseVersion = "34.18.0"
 supabaseVersion = "3.8.0"
+coilVersion = "2.6.0"
+zoomableImageCoilVersion = "0.19.0"
 gitliveFirestoreVersion = "2.6.0"
 fileKitVersion = "0.15.0"
 shizukuVersion = "13.1.5"
@@ -81,6 +83,10 @@ supabase-realtime = { module = "io.github.jan-tennert.supabase:realtime-kt" }
 supabase-auth = { module = "io.github.jan-tennert.supabase:auth-kt" }
 supabase-postgrest = { module = "io.github.jan-tennert.supabase:postgrest-kt" }
 supabase-storage = { module = "io.github.jan-tennert.supabase:storage-kt" }
+
+#Coil
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilVersion" }
+zoomable-image-coil = { module = "me.saket.telephoto:zoomable-image-coil", version.ref = "zoomableImageCoilVersion" }
 
 #Navigation
 androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "navigationVersion" }

@@ -21,8 +21,8 @@ fun Throwable.toMessage(): TextResource {
                     TextResource.StringResource(R.string.exception_no_data)
                 }
                 else -> {
-                    if (this.message != null) {
-                        TextResource.DynamicString(this.message!!)
+                    if (SupabaseElement.IS_DEBUG_ENABLED) {
+                        TextResource.DynamicString(this.message ?: "Unknown Error")
                     } else {
                         TextResource.StringResource(R.string.exception_server_error)
                     }
@@ -55,8 +55,8 @@ fun Throwable.toMessage(): TextResource {
                     TextResource.StringResource(R.string.exception_user_not_found)
                 }
                 else -> {
-                    if (this.message != null) {
-                        TextResource.DynamicString(this.message!!)
+                    if (SupabaseElement.IS_DEBUG_ENABLED) {
+                        TextResource.DynamicString(this.message ?: "Unknown Error")
                     } else {
                         TextResource.StringResource(R.string.exception_server_error)
                     }

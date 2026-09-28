@@ -1,28 +1,22 @@
-package com.a.injector.presentation.paneluser
+package com.a.injector.presentation.panelsupporting
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,58 +26,67 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
+import com.a.injector.presentation.component.CustomBottomSheet
+import com.a.injector.presentation.component.CustomButton
 import com.a.injector.presentation.component.CustomCenterCircularWavyProgressIndicator
-import com.a.injector.presentation.component.CustomFloatingActionToolBar
+import com.a.injector.presentation.component.CustomCenterTextMessage
 import com.a.injector.presentation.component.CustomIconButton
 import com.a.injector.presentation.component.CustomTopAppBar
+import com.a.injector.presentation.component.DefaultClickableListItem
 import com.a.injector.presentation.component.DefaultListItem
-import com.a.injector.presentation.component.MessageListItem
-import com.a.injector.presentation.component.TransparentTextField
+import com.a.injector.presentation.component.spacer
 import com.a.injector.presentation.mainnavigation.MainNavigationRoute
 import com.a.injector.presentation.mainnavigation.popBackStack
+import com.a.injector.presentation.util.ScreenEffectLauncher
+import com.a.injector.presentation.util.toIdr
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun PanelUserScreenRoot(
+fun PanelSupportingScreenRoot(
     navBackStack: NavBackStack<NavKey>,
-    viewModel: PanelUserViewModel = koinViewModel()
+    viewModel: PanelSupportingViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackBarHostState = remember { SnackbarHostState() }
 
-    PanelUserScreen(
+    PanelSupportingScreen(
         navBackStack = navBackStack,
         state = state,
         onAction = viewModel::onAction,
         snackBarHostState = snackBarHostState
+    )
+
+    ScreenEffectLauncher(
+        snackBarHostState = snackBarHostState,
+        screenEffect = viewModel.effect
     )
 }
 
 @Composable
 @Preview
 private fun Preview() {
-    PanelUserScreen(
+    PanelSupportingScreen(
         navBackStack = rememberNavBackStack(),
-        state = PanelUserState(),
+        state = PanelSupportingState(),
         onAction = {},
         snackBarHostState = SnackbarHostState()
     )
 }
 
 @Composable
-private fun PanelUserScreen(
+private fun PanelSupportingScreen(
     navBackStack: NavBackStack<NavKey>,
-    state: PanelUserState,
-    onAction: (PanelUserAction) -> Unit,
+    state: PanelSupportingState,
+    onAction: (PanelSupportingAction) -> Unit,
     snackBarHostState: SnackbarHostState
 ) {
-    var isSearchExpanded by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
             CustomTopAppBar(
                 navigationClick = { navBackStack.popBackStack() },
-                title = stringResource(R.string.title_user_panel)
+                title = stringResource(R.string.support)
             )
         },
         content = { innerPadding ->
@@ -95,37 +98,59 @@ private fun PanelUserScreen(
                 onAction = onAction
             )
         },
-        snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
-        floatingActionButton = {
-            CustomFloatingActionToolBar {
-                AnimatedContent(
-                    targetState = isSearchExpanded
-                ) { animatedContentState ->
-                    if (animatedContentState) {
-                        TransparentTextField(
-                            modifier = Modifier
-                                .width(250.dp),
-                            placeholder = stringResource(R.string.action_search),
-                            value = state.searchTextField,
-                            onValueChange = { onAction(PanelUserAction.SearchTextField(it)) },
-                            trailingIcon = {
-                                IconButton(
-                                    onClick = {
-                                        isSearchExpanded = false
-                                        onAction(PanelUserAction.SearchTextField(""))
-                                    },
-                                    content = { Icon(Icons.Rounded.Close, null) }
-                                )
-                            }
+        snackbarHost = { SnackbarHost(hostState = snackBarHostState) }
+    )
+
+    CustomBottomSheet(
+        visible = state.isSupportingBottomSheetVisible,
+        onDismiss = { onAction(PanelSupportingAction.DismissSupportingBottomSheet) },
+        title = stringResource(R.string.title_action),
+        content = {
+            item("supportingItem") {
+                DefaultListItem(
+                    modifier = Modifier
+                        .animateItem(),
+                    content = {
+                        Text(
+                            text = state.supportingToAction.profile.username,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
-                    } else {
-                        IconButton(
-                            onClick = { isSearchExpanded = true },
-                            content = { Icon(Icons.Rounded.Search, null) }
-                        )
-                    }
-                }
+                    },
+                    supportingContent = { Text(text = state.supportingToAction.nominal.toIdr()) }
+                )
             }
+            spacer()
+            item("proofImage") {
+                DefaultClickableListItem(
+                    modifier = Modifier
+                        .animateItem(),
+                    onClick = {
+                        val targetScreen = MainNavigationRoute.ImagePreviewScreen(
+                            imageUrl = state.supportingToAction.imageUrl
+                        )
+                        navBackStack.add(targetScreen)
+                    },
+                    content = { Text(text = "Proof") }
+                )
+            }
+        },
+        bottomBar = {
+            CustomButton(
+                onClick = {
+                    onAction(PanelSupportingAction.DismissSupportingBottomSheet)
+                    onAction(PanelSupportingAction.DenySupportingButton)
+                },
+                text = "Deny",
+                isError = true
+            )
+            CustomButton(
+                onClick = {
+                    onAction(PanelSupportingAction.DismissSupportingBottomSheet)
+                    onAction(PanelSupportingAction.ConfirmSupportingButton)
+                },
+                text = stringResource(R.string.action_confirm),
+            )
         }
     )
 }
@@ -134,8 +159,8 @@ private fun PanelUserScreen(
 private fun Content(
     modifier: Modifier = Modifier,
     navBackStack: NavBackStack<NavKey>,
-    state: PanelUserState,
-    onAction: (PanelUserAction) -> Unit
+    state: PanelSupportingState,
+    onAction: (PanelSupportingAction) -> Unit,
 ) {
     LazyColumn(
         modifier = modifier,
@@ -151,48 +176,39 @@ private fun Content(
             }
             return@LazyColumn
         }
-        if (state.isProfileError != null) {
-            item("isProfileError") {
-                MessageListItem(
+        if (state.isSupportingListError != null) {
+            item("isSupportingListError") {
+                CustomCenterTextMessage(
                     modifier = Modifier
                         .animateItem(),
-                    text = state.isProfileError.asString()
-                )
-            }
-            return@LazyColumn
-        }
-        if (state.filteredProfiles.isEmpty()) {
-            item("isProfileEmpty") {
-                MessageListItem(
-                    modifier = Modifier
-                        .animateItem(),
-                    text = stringResource(R.string.item_empty)
+                    text = state.isSupportingListError.asString()
                 )
             }
         }
         itemsIndexed(
-            items = state.filteredProfiles,
-            key = { _, profileModel -> profileModel.id }
-        ) { index, profileModel ->
+            items = state.supportingList,
+            key = { _, supportingModel -> supportingModel.id }
+        ) { index, supportingModel ->
             DefaultListItem(
                 modifier = Modifier
                     .animateItem(),
                 index = index,
-                count = state.filteredProfiles.size,
-                overlineContent = { Text(text = profileModel.role.name) },
+                count = state.supportingList.size,
                 content = {
                     Text(
-                        text = profileModel.username,
+                        text = supportingModel.profile.username,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                 },
+                supportingContent = { Text(text = supportingModel.nominal.toIdr()) },
                 trailingContent = {
                     CustomIconButton(
                         onClick = {
-                            navBackStack.add(MainNavigationRoute.ManageUserScreen(profileModel.id))
+                            onAction(PanelSupportingAction.ShowSupportingBottomSheet(supportingModel))
                         },
-                        content = { Icon(Icons.Rounded.Edit, null) }
+                        content = { Icon(Icons.Rounded.Edit, null) },
+                        isLoading = state.isActionSupportingButtonLoading
                     )
                 }
             )

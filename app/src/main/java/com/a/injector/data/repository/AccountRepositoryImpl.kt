@@ -95,7 +95,7 @@ class AccountRepositoryImpl(
             profileApi.upsert(
                 profileDto = ProfileDto(
                     id = authApi.getAuthState().first()!!.id,
-                    username = "user${Uuid.random()}"
+                    username = "user${Uuid.random()}",
                 )
             )
             emit(Either.Right(Unit))

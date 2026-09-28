@@ -1,4 +1,4 @@
-@file:OptIn(FlowPreview::class)
+@file:OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 
 package com.a.injector.data.remote
 
@@ -12,9 +12,12 @@ import io.github.jan.supabase.realtime.PostgresAction
 import io.github.jan.supabase.realtime.channel
 import io.github.jan.supabase.realtime.postgresChangeFlow
 import io.github.jan.supabase.realtime.realtime
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onCompletion
@@ -42,12 +45,13 @@ class SupportingApiImpl(
             emit(Unit)
         }.onCompletion {
             supabaseClient.realtime.removeChannel(channel)
-        }.map {
-            supabaseClient.from(SupabaseElement.SUPPORTING_TABLE).select(
+        }.flatMapLatest {
+            val data = supabaseClient.from(SupabaseElement.SUPPORTING_TABLE).select(
                 columns = Columns.raw(
                     "*, ${SupabaseElement.PROFILE_TABLE}(*)"
                 )
             ).decodeList<SupportingDto>()
+            flowOf(data)
         }
     }
 

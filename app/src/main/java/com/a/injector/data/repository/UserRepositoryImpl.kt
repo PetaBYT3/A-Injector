@@ -2,18 +2,22 @@ package com.a.injector.data.repository
 
 import arrow.core.Either
 import com.a.injector.R
+import com.a.injector.data.dto.Bucket
 import com.a.injector.data.mapper.ProfileMapper
 import com.a.injector.data.mapper.RoleMapper
 import com.a.injector.data.mapper.SupportingMapper
 import com.a.injector.data.remote.ProfileApi
 import com.a.injector.data.remote.RoleApi
+import com.a.injector.data.remote.StorageApi
 import com.a.injector.data.remote.SupportingApi
 import com.a.injector.data.util.TextResource
 import com.a.injector.data.util.toMessage
+import com.a.injector.data.util.toWebpByteArray
 import com.a.injector.domain.model.ProfileModel
 import com.a.injector.domain.model.RoleModel
 import com.a.injector.domain.model.SupportingModel
 import com.a.injector.domain.repository.UserRepository
+import io.github.vinceglb.filekit.PlatformFile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -28,6 +32,7 @@ class UserRepositoryImpl(
     private val profileApi: ProfileApi,
     private val supportingApi: SupportingApi,
     private val roleApi: RoleApi,
+    private val storageApi: StorageApi
 ): UserRepository {
     override fun getProfiles(): Flow<Either<TextResource, List<ProfileModel>>> {
         return flow<Either<TextResource, List<ProfileModel>>> {
@@ -87,20 +92,20 @@ class UserRepositoryImpl(
         }.flowOn(Dispatchers.IO)
     }
 
-    override fun getPendingSupportings(): Flow<Either<TextResource, List<SupportingModel>>> {
+    override fun getSupportingList(): Flow<Either<TextResource, List<SupportingModel>>> {
         return flow<Either<TextResource, List<SupportingModel>>> {
             supportingApi.getList().collect { pendingSupportingDtos ->
                 val pendingSupportingModels = pendingSupportingDtos.map { pendingSupportingDto ->
                     SupportingMapper.toModel(pendingSupportingDto)
                 }
-                Either.Right(pendingSupportingModels)
+                emit(Either.Right(pendingSupportingModels))
             }
         }.catch { throwable ->
             emit(Either.Left(throwable.toMessage()))
         }.flowOn(Dispatchers.IO)
     }
 
-    override fun getPendingSupporting(profileId: String): Flow<Either<TextResource, SupportingModel>> {
+    override fun getSupporting(profileId: String): Flow<Either<TextResource, SupportingModel>> {
         return flow<Either<TextResource, SupportingModel>> {
             supportingApi.getSingle(
                 profileId = profileId
@@ -116,12 +121,37 @@ class UserRepositoryImpl(
         }.flowOn(Dispatchers.IO)
     }
 
-    override fun confirmPendingSupporting(
+    override fun upsertSupporting(
+        supportingModel: SupportingModel,
+        image: PlatformFile?
+    ): Flow<Either<TextResource, TextResource>> {
+        return flow<Either<TextResource, TextResource>> {
+            if (image == null) {
+                emit(Either.Left(TextResource.StringResource(R.string.exception_no_image)))
+                return@flow
+            }
+
+            val imageUrl = storageApi.upload(
+                targetBucket = Bucket.IMAGE,
+                fileByte = image.toWebpByteArray(),
+                fileName = "${supportingModel.id}.webp"
+            )
+            supportingApi.upsert(
+                supportingDto = SupportingMapper.toDto(supportingModel).copy(
+                    imageUrl = imageUrl
+                )
+            )
+            emit(Either.Right(TextResource.StringResource(R.string.title_success)))
+        }.catch { throwable ->
+            emit(Either.Left(throwable.toMessage()))
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override fun confirmSupporting(
         supportingModel: SupportingModel
     ): Flow<Either<TextResource, TextResource>> {
         return flow<Either<TextResource, TextResource>> {
             val currentProfile = profileApi.getSingle(supportingModel.id).first()
-
             if (currentProfile == null) {
                 emit(Either.Left(TextResource.StringResource(R.string.exception_no_data)))
                 return@flow
@@ -129,25 +159,32 @@ class UserRepositoryImpl(
 
             profileApi.upsert(
                 profileDto = currentProfile.copy(
-                    nominal = currentProfile.supporting + supportingModel.nominal
+                    supporting = currentProfile.supporting + supportingModel.nominal
                 )
             )
             supportingApi.delete(
                 supportingDto = SupportingMapper.toDto(supportingModel)
             )
-
+            storageApi.delete(
+                fromBucket = Bucket.IMAGE,
+                files = listOf("${supportingModel.id}.webp")
+            )
             emit(Either.Right(TextResource.StringResource(R.string.title_success)))
         }.catch { throwable ->
             emit(Either.Left(throwable.toMessage()))
         }.flowOn(Dispatchers.IO)
     }
 
-    override fun denyPendingSupporting(
+    override fun denySupporting(
         supportingModel: SupportingModel
     ): Flow<Either<TextResource, TextResource>> {
         return flow<Either<TextResource, TextResource>> {
             supportingApi.delete(
                 supportingDto = SupportingMapper.toDto(supportingModel)
+            )
+            storageApi.delete(
+                fromBucket = Bucket.IMAGE,
+                files = listOf("${supportingModel.id}.webp")
             )
             emit(Either.Right(TextResource.StringResource(R.string.title_success)))
         }.catch { throwable ->

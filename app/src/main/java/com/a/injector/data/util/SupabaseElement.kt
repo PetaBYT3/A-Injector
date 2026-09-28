@@ -13,5 +13,7 @@ object SupabaseElement {
     const val SKIN_TABLE = "skin"
     const val REPLACE_TABLE = "replace"
 
+    const val IS_DEBUG_ENABLED = true
+
     val DEBOUNCE = 150.milliseconds
 }

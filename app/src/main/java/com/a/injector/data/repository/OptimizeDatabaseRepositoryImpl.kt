@@ -21,6 +21,21 @@ class OptimizeDatabaseRepositoryImpl(
     private val replaceApi: ReplaceApi,
     private val storageApi: StorageApi
 ): OptimizeDatabaseRepository {
+    override fun getFileUrl(
+        bucket: Bucket,
+        fileName: String
+    ): Flow<Either<TextResource, String>> {
+        return flow<Either<TextResource, String>> {
+            val url = storageApi.getFileUrl(
+                fromBucket = bucket,
+                fileName = fileName
+            )
+            emit(Either.Right(url))
+        }.catch { throwable ->
+            emit(Either.Left(throwable.toMessage()))
+        }.flowOn(Dispatchers.IO)
+    }
+
     override fun cleanStorage(): Flow<Either<TextResource, TextResource>> {
         return flow<Either<TextResource, TextResource>> {
             val filesInPostgrest = replaceApi.getList().first().map { "${it.id}.zip" }

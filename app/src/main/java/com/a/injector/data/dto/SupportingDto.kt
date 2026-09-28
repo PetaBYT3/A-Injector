@@ -8,7 +8,9 @@ import kotlin.uuid.Uuid
 @Serializable
 data class SupportingDto(
     val id: String = Uuid.random().toString(),
-    val nominal: Long,
+    val nominal: Long = 0,
+    @SerialName("image_url")
+    val imageUrl: String = "",
 
     @EncodeDefault(EncodeDefault.Mode.NEVER)
     @SerialName("profile")

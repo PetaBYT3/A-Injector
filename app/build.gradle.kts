@@ -104,6 +104,10 @@ dependencies {
     implementation(libs.supabase.postgrest)
     implementation(libs.supabase.storage)
 
+    //Coil
+    implementation(libs.coil.compose)
+    implementation(libs.zoomable.image.coil)
+
     //Navigation
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.navigation3.ui)

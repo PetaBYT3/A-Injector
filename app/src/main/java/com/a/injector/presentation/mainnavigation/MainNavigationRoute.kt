@@ -37,6 +37,14 @@ sealed interface MainNavigationRoute: NavKey {
     data class ManageReplaceScreen(val heroId: String, val skinId: String, val replaceId: String): MainNavigationRoute, NavKey
 
     @Serializable
+    data class SupportingScreen(
+        val profileId: String
+    ): MainNavigationRoute, NavKey
+
+    @Serializable
+    data object PanelSupportingScreen: MainNavigationRoute, NavKey
+
+    @Serializable
     data object ManageRoleScreen: MainNavigationRoute, NavKey
 
     @Serializable
@@ -44,4 +52,9 @@ sealed interface MainNavigationRoute: NavKey {
 
     @Serializable
     data class ManageUserScreen(val profileId: String): MainNavigationRoute, NavKey
+
+    @Serializable
+    data class ImagePreviewScreen(
+        val imageUrl: String
+    ): MainNavigationRoute, NavKey
 }

@@ -23,6 +23,7 @@ import com.a.injector.domain.model.state.NavigationState
 import com.a.injector.domain.repository.NavigationRepository
 import com.a.injector.presentation.bottomnavigation.BottomNavigationScreenRoot
 import com.a.injector.presentation.hero.HeroScreenRoot
+import com.a.injector.presentation.imagepreview.ImagePreviewScreenRoot
 import com.a.injector.presentation.landing.LandingScreenRoot
 import com.a.injector.presentation.loading.LoadingScreenRoot
 import com.a.injector.presentation.managehero.ManageHeroScreenRoot
@@ -30,10 +31,12 @@ import com.a.injector.presentation.managereplace.ManageReplaceScreenRoot
 import com.a.injector.presentation.managerole.ManageRoleScreenRoot
 import com.a.injector.presentation.manageskin.ManageSkinScreen
 import com.a.injector.presentation.manageuser.ManageUserScreenRoot
+import com.a.injector.presentation.panelsupporting.PanelSupportingScreenRoot
 import com.a.injector.presentation.paneluser.PanelUserScreenRoot
 import com.a.injector.presentation.signin.SignInScreenRoot
 import com.a.injector.presentation.signlink.SignLinkScreenRoot
 import com.a.injector.presentation.signup.SignUpScreenRoot
+import com.a.injector.presentation.supporting.SupportingScreenRoot
 import org.koin.compose.koinInject
 
 @Composable
@@ -151,6 +154,21 @@ fun NavigationScreen(
                         )
                     }
                 }
+                is MainNavigationRoute.SupportingScreen -> {
+                    NavEntry(navKey) {
+                        SupportingScreenRoot(
+                            navBackStack = navBackStack,
+                            profileId = navKey.profileId
+                        )
+                    }
+                }
+                is MainNavigationRoute.PanelSupportingScreen -> {
+                    NavEntry(navKey) {
+                        PanelSupportingScreenRoot(
+                            navBackStack = navBackStack
+                        )
+                    }
+                }
                 is MainNavigationRoute.ManageRoleScreen -> {
                     NavEntry(navKey) {
                         ManageRoleScreenRoot(
@@ -165,13 +183,22 @@ fun NavigationScreen(
                         )
                     }
                 }
-                is MainNavigationRoute.ManageUserScreen ->
+                is MainNavigationRoute.ManageUserScreen -> {
                     NavEntry(navKey) {
                         ManageUserScreenRoot(
                             navBackStack = navBackStack,
                             profileId = navKey.profileId
                         )
                     }
+                }
+                is MainNavigationRoute.ImagePreviewScreen -> {
+                    NavEntry(navKey) {
+                        ImagePreviewScreenRoot(
+                            navBackStack = navBackStack,
+                            imageUrl = navKey.imageUrl
+                        )
+                    }
+                }
                 else -> error("Unknown NavKey: $navKey")
             }
         },

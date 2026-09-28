@@ -9,6 +9,7 @@ object SupportingMapper: Mapper<SupportingDto, SupportingModel> {
         return SupportingModel(
             id = dto.id,
             nominal = dto.nominal,
+            imageUrl = dto.imageUrl,
             profile = if (dto.profile != null) {
                 ProfileMapper.toModel(dto.profile)
             } else {
@@ -21,6 +22,7 @@ object SupportingMapper: Mapper<SupportingDto, SupportingModel> {
         return SupportingDto(
             id = model.id,
             nominal = model.nominal,
+            imageUrl = model.imageUrl,
             profile = null
         )
     }

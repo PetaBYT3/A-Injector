@@ -23,7 +23,7 @@ class StorageApiImpl(
         return supabaseClient.storage.from(fromBucket.absoluteName).publicUrl(fileName)
     }
 
-    override suspend fun upload(targetBucket: Bucket, fileByte: ByteArray, fileName: String) {
+    override suspend fun upload(targetBucket: Bucket, fileByte: ByteArray, fileName: String): String {
         supabaseClient.storage.from(targetBucket.absoluteName).upload(
             path = fileName,
             data = fileByte,
@@ -31,6 +31,7 @@ class StorageApiImpl(
                 upsert = true
             }
         )
+        return supabaseClient.storage.from(targetBucket.absoluteName).publicUrl(fileName)
     }
 
     override suspend fun download(fromBucket: Bucket, fileName: String, outputPath: File) {

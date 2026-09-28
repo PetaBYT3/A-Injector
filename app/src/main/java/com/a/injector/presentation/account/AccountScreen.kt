@@ -362,7 +362,7 @@ private fun Content(
                         Profile.Contribution -> {
                             "${state.profile.contribution} ${stringResource(R.string.item_files_uploaded)}"
                         }
-                        Profile.Nominal -> {
+                        Profile.Supporting -> {
                             state.profile.nominal.toIdr()
                         }
                         Profile.Role -> {
@@ -384,6 +384,17 @@ private fun Content(
                                 },
                                 content = { Icon(Icons.Rounded.Edit, null) },
                                 isLoading = state.isUpsertProfileButtonLoading
+                            )
+                        }
+                        Profile.Supporting -> {
+                            CustomIconButton(
+                                onClick = {
+                                    val targetScreen = MainNavigationRoute.SupportingScreen(
+                                        profileId = state.profile.id
+                                    )
+                                    navBackStack.add(targetScreen)
+                                },
+                                content = { Icon(Icons.Rounded.OpenInNew, null) }
                             )
                         }
                         Profile.Role -> {
@@ -421,6 +432,9 @@ private fun Content(
                     count = administratorMenus.size,
                     onClick = {
                         when (staticModel.id) {
+                            AdministratorMenu.PanelSupporting -> {
+                                navBackStack.add(MainNavigationRoute.PanelSupportingScreen)
+                            }
                             AdministratorMenu.RoleManager -> {
                                 navBackStack.add(MainNavigationRoute.ManageRoleScreen)
                             }

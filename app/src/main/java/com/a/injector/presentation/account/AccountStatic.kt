@@ -16,7 +16,7 @@ import com.a.injector.R
 import com.a.injector.domain.model.StaticModel
 
 enum class Profile {
-    Email, Username, Contribution, Nominal, Role
+    Email, Username, Contribution, Supporting, Role
 }
 
 val profiles = listOf(
@@ -36,7 +36,7 @@ val profiles = listOf(
         contentTextResId = R.string.item_contribution
     ),
     StaticModel(
-        id = Profile.Nominal,
+        id = Profile.Supporting,
         leadingContent = { Icon(ImageVector.vectorResource(R.drawable.support), null) },
         contentTextResId = R.string.item_support_nominal
     ),
@@ -48,10 +48,16 @@ val profiles = listOf(
 )
 
 enum class AdministratorMenu {
-    RoleManager, UserPanel, CleanStorage
+    PanelSupporting, RoleManager, UserPanel, CleanStorage
 }
 
 val administratorMenus = listOf(
+    StaticModel(
+        id = AdministratorMenu.PanelSupporting,
+        leadingContent = { Icon(ImageVector.vectorResource(R.drawable.support), null) },
+        contentTextResId = R.string.support,
+        supportingTextResId = R.string.item_role_manager_desc
+    ),
     StaticModel(
         id = AdministratorMenu.RoleManager,
         leadingContent = { Icon(Icons.Rounded.AdminPanelSettings, null) },
