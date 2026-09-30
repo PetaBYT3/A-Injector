@@ -75,7 +75,7 @@ class ApplicationRepositoryImpl(
             cachePath.listFiles()?.forEach { file ->
                 file.deleteRecursively()
             }
-            emit(Either.Right(TextResource.StringResource(R.string.action_cleared)))
+            emit(Either.Right(TextResource.StringResource(R.string.success_clean_cache)))
             updateCacheSize()
         }.catch { throwable ->
             emit(Either.Left(throwable.toMessage()))

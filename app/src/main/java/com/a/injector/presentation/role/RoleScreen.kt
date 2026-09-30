@@ -6,9 +6,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.OpenInNew
 import androidx.compose.material3.Icon
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -25,18 +25,18 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
+import com.a.injector.data.dto.Role
 import com.a.injector.domain.model.RoleModel
-import com.a.injector.presentation.component.CustomBottomSheet
 import com.a.injector.presentation.component.CustomCenterCircularWavyProgressIndicator
 import com.a.injector.presentation.component.CustomCenterTextMessage
 import com.a.injector.presentation.component.CustomFloatingActionButton
 import com.a.injector.presentation.component.CustomFloatingActionToolBar
-import com.a.injector.presentation.component.CustomIconButton
+import com.a.injector.presentation.component.CustomTextListTitle
 import com.a.injector.presentation.component.CustomTopAppBar
+import com.a.injector.presentation.component.DefaultClickableListItem
 import com.a.injector.presentation.component.DefaultListItem
+import com.a.injector.presentation.component.spacer
 import com.a.injector.presentation.mainnavigation.popBackStack
-import com.a.injector.presentation.role.RoleStatus.Current
-import com.a.injector.presentation.role.RoleStatus.Requested
 import com.a.injector.presentation.util.ScreenEffectLauncher
 import org.koin.androidx.compose.koinViewModel
 
@@ -108,15 +108,6 @@ private fun RoleScreen(
             )
         }
     )
-
-    CustomBottomSheet(
-        visible = state.isRoleBottomSheetVisible,
-        onDismiss = { onAction(RoleAction.UpsertRoleButton) },
-        title = stringResource(R.string.role),
-        content = {
-
-        }
-    )
 }
 
 @Composable
@@ -150,40 +141,55 @@ private fun Content(
             }
             return@LazyColumn
         }
-        itemsIndexed(
-            items = roleStatuses,
-            key = { _, static -> static.id.name }
-        ) { index, static ->
+
+        item("currentTitle") {
+            CustomTextListTitle(
+                modifier = Modifier
+                    .animateItem(),
+                text = stringResource(R.string.current)
+            )
+        }
+        item("currentItem") {
             DefaultListItem(
                 modifier = Modifier
                     .animateItem(),
+                content = { Text(text = state.profile.role.title.asString()) },
+                supportingContent = { Text(text = state.profile.role.desc.asString()) }
+            )
+        }
+        spacer()
+        item("requestedTitle") {
+            CustomTextListTitle(
+                modifier = Modifier
+                    .animateItem(),
+                text = stringResource(R.string.requested)
+            )
+        }
+        val allowedRole = Role.entries.filterNot { role ->
+            role == Role.Administrator || role == state.profile.role
+        }
+        itemsIndexed(
+            items = allowedRole
+        ) { index, role ->
+            DefaultClickableListItem(
+                modifier = Modifier
+                    .animateItem(),
                 index = index,
-                count = roleStatuses.size,
-                content = { Text(text = stringResource(static.content)) },
-                supportingContent = {
-                    val supportingText = when (static.id) {
-                        Current -> state.profile.role.title.asString()
-                        Requested -> {
-                            if (state.requestedRole == RoleModel.EMPTY) {
-                                stringResource(R.string.no_role_requested)
-                            } else {
-                                state.requestedRole.role.title.asString()
-                            }
-                        }
+                count = allowedRole.size,
+                onClick = { onAction(RoleAction.RoleButton(role)) },
+                leadingContent = {
+                    val isChecked = if (state.requestedRole != RoleModel.EMPTY) {
+                        false
+                    } else {
+                        state.requestedRole.role == role
                     }
-                    Text(text = supportingText)
+                    RadioButton(
+                        selected = isChecked,
+                        onClick = null
+                    )
                 },
-                trailingContent = {
-                    when (static.id) {
-                        Current -> {}
-                        Requested -> {
-                            CustomIconButton(
-                                onClick = { onAction(RoleAction.RoleBottomSheet) },
-                                content = { Icon(Icons.Rounded.Edit, null) }
-                            )
-                        }
-                    }
-                }
+                content = { Text(text = role.title.asString()) },
+                supportingContent = { Text(text = role.desc.asString()) }
             )
         }
     }

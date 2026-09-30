@@ -1,9 +1,9 @@
-package com.a.injector.presentation.managerole
+package com.a.injector.presentation.panelrole
 
 import com.a.injector.data.util.TextResource
 import com.a.injector.domain.model.RoleModel
 
-data class ManageRoleState(
+data class PanelRoleState(
     val isRequestDetailsLoading: Boolean = true,
     val isRequestDetailsError: TextResource? = null,
     val requestDetails: List<RoleModel> = emptyList(),

@@ -3,6 +3,7 @@ package com.a.injector.presentation.managehero
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a.injector.domain.repository.NavigationRepository
+import com.a.injector.domain.repository.ProfileRepository
 import com.a.injector.domain.repository.ScriptRepository
 import com.a.injector.presentation.util.ScreenEffect
 import kotlinx.coroutines.channels.Channel
@@ -20,6 +21,7 @@ import kotlin.uuid.Uuid
 @KoinViewModel
 class ManageHeroViewModel(
     @InjectedParam private val heroId: String,
+    private val profileRepository: ProfileRepository,
     private val scriptRepository: ScriptRepository,
     private val navigationRepository: NavigationRepository
 ): ViewModel() {
@@ -31,6 +33,23 @@ class ManageHeroViewModel(
 
     init {
         _state.update { it.copy(isOnEdit = heroId.isNotBlank()) }
+
+        viewModelScope.launch {
+            profileRepository.getCurrent().collect { either ->
+                either.onRight { profileModel ->
+                    _state.update { currentState ->
+                        currentState.copy(
+                            isDeleteEnabled = profileModel.role.deleteEnabled,
+                            isProfileLoading = false
+                        )
+                    }
+                }.onLeft { textResource ->
+                    _state.update { currentState ->
+                        currentState.copy(isProfileLoading = false)
+                    }
+                }
+            }
+        }
 
         viewModelScope.launch {
             if (heroId.isNotBlank()) {
@@ -84,9 +103,11 @@ class ManageHeroViewModel(
             scriptRepository.deleteHero(
                 heroModel = hero,
             ).onStart {
-                _state.update { it.copy(isDeleteButtonLoading = true) }
+                _state.update { currentState ->
+                    currentState.copy(isDeleteButtonLoading = true) }
             }.onCompletion {
-                _state.update { it.copy(isDeleteButtonLoading = false) }
+                _state.update { currentState ->
+                    currentState.copy(isDeleteButtonLoading = false) }
             }.collect { either ->
                 either.onRight {
                     navigationRepository.popBackStack()
@@ -105,9 +126,11 @@ class ManageHeroViewModel(
             scriptRepository.upsertHero(
                 heroModel = hero
             ).onStart {
-                _state.update { it.copy(isUpsertButtonLoading = true) }
+                _state.update { currentState ->
+                    currentState.copy(isUpsertButtonLoading = true) }
             }.onCompletion {
-                _state.update { it.copy(isUpsertButtonLoading = false) }
+                _state.update { currentState ->
+                    currentState.copy(isUpsertButtonLoading = false) }
             }.collect { either ->
                 either.onRight {
                     navigationRepository.popBackStack()

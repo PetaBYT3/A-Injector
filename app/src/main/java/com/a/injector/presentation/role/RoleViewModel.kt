@@ -2,8 +2,8 @@ package com.a.injector.presentation.role
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.a.injector.domain.repository.AccountRepository
 import com.a.injector.domain.repository.NavigationRepository
+import com.a.injector.domain.repository.ProfileRepository
 import com.a.injector.domain.repository.RoleRepository
 import com.a.injector.presentation.util.ScreenEffect
 import kotlinx.coroutines.channels.Channel
@@ -18,7 +18,7 @@ import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
 class RoleViewModel(
-    private val accountRepository: AccountRepository,
+    private val profileRepository: ProfileRepository,
     private val roleRepository: RoleRepository,
     private val navigationRepository: NavigationRepository
 ): ViewModel() {
@@ -30,12 +30,21 @@ class RoleViewModel(
 
     init {
         viewModelScope.launch {
-            accountRepository.currentProfile.collect { profileModel ->
-                _state.update { currentState ->
-                    currentState.copy(
-                        profile = profileModel,
-                        isProfileLoading = false
-                    )
+            profileRepository.getCurrent().collect { either ->
+                either.onRight { profileModel ->
+                    _state.update { currentState ->
+                        currentState.copy(
+                            profile = profileModel,
+                            isProfileLoading = false
+                        )
+                    }
+                }.onLeft { textResource ->
+                    _state.update { currentState ->
+                        currentState.copy(
+                            isProfileError = textResource,
+                            isProfileLoading = false
+                        )
+                    }
                 }
             }
         }
@@ -72,7 +81,10 @@ class RoleViewModel(
             }
             is RoleAction.RoleButton -> {
                 _state.update { currentState ->
-                    currentState.copy(requestedRole = currentState.requestedRole.copy(role = action.role))
+                    currentState.copy(requestedRole = currentState.requestedRole.copy(
+                        id = _state.value.profile.id,
+                        role = action.role)
+                    )
                 }
             }
             RoleAction.UpsertRoleButton -> {
@@ -84,9 +96,7 @@ class RoleViewModel(
     private fun upsertRoleButton() {
         viewModelScope.launch {
             roleRepository.upsert(
-                roleModel = _state.value.requestedRole.copy(
-                    id = _state.value.profile.id
-                )
+                roleModel = _state.value.requestedRole
             ).onStart {
                 _state.update { currentState ->
                     currentState.copy(isUpsertRoleButtonLoading = true)

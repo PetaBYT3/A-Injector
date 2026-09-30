@@ -48,7 +48,7 @@ class OptimizeDatabaseRepositoryImpl(
                     files = filesToDelete
                 )
             }
-            emit(Either.Right(TextResource.StringResource(R.string.title_success)))
+            emit(Either.Right(TextResource.StringResource(R.string.success_clean_cloud_storage)))
         }.catch { throwable ->
             emit(Either.Left(throwable.toMessage()))
         }.flowOn(Dispatchers.IO)

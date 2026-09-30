@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a.injector.domain.repository.ApplicationRepository
 import com.a.injector.domain.repository.NavigationRepository
+import com.a.injector.domain.repository.OptimizeDatabaseRepository
+import com.a.injector.domain.repository.ProfileRepository
 import com.a.injector.presentation.mainnavigation.MainNavigationRoute
 import com.a.injector.presentation.util.ScreenEffect
 import kotlinx.coroutines.channels.Channel
@@ -19,6 +21,8 @@ import java.util.Locale
 
 @KoinViewModel
 class SettingsViewModel(
+    private val profileRepository: ProfileRepository,
+    private val optimizeDatabaseRepository: OptimizeDatabaseRepository,
     private val applicationRepository: ApplicationRepository,
     private val navigationRepository: NavigationRepository
 ): ViewModel() {
@@ -29,6 +33,26 @@ class SettingsViewModel(
     val effect = _effect.receiveAsFlow()
 
     init {
+        viewModelScope.launch {
+            profileRepository.getCurrent().collect { either ->
+                either.onRight { profileModel ->
+                    _state.update { currentState ->
+                        currentState.copy(
+                            profile = profileModel,
+                            isProfileLoading = false
+                        )
+                    }
+                }.onLeft { textResource ->
+                    _state.update { currentState ->
+                        currentState.copy(
+                            isProfileError = textResource,
+                            isProfileLoading = false
+                        )
+                    }
+                }
+            }
+        }
+
         viewModelScope.launch {
             applicationRepository.language.collect { locale ->
                 _state.update { currentState ->
@@ -48,9 +72,21 @@ class SettingsViewModel(
 
     fun onAction(action: SettingsAction) {
         when (action) {
+            SettingsAction.CleanCloudStorageBottomSheet -> {
+                _state.update { currentState ->
+                    currentState.copy(
+                        isCleanCloudStorageBottomSheetVisible = !currentState.isCleanCloudStorageBottomSheetVisible
+                    )
+                }
+            }
+            SettingsAction.CleanCloudStorageButton -> {
+                cleanCloudStorageButton()
+            }
             SettingsAction.LanguageBottomSheet -> {
                 _state.update { currentState ->
-                    currentState.copy(isLanguageBottomSheetVisible = !currentState.isLanguageBottomSheetVisible)
+                    currentState.copy(
+                        isLanguageBottomSheetVisible = !currentState.isLanguageBottomSheetVisible
+                    )
                 }
             }
             is SettingsAction.SetLanguageButton -> {
@@ -58,11 +94,31 @@ class SettingsViewModel(
             }
             SettingsAction.CleanCacheBottomSheet -> {
                 _state.update { currentState ->
-                    currentState.copy(isClearCacheBottomSheetVisible = !currentState.isClearCacheBottomSheetVisible)
+                    currentState.copy(
+                        isCleanCacheBottomSheetVisible = !currentState.isCleanCacheBottomSheetVisible
+                    )
                 }
             }
             SettingsAction.CleanCacheButton -> {
                 cleanCacheButton()
+            }
+        }
+    }
+
+    private fun cleanCloudStorageButton() {
+        viewModelScope.launch {
+            optimizeDatabaseRepository.cleanStorage().onStart {
+                _state.update { currentState ->
+                    currentState.copy(isCleanCloudStorageButtonLoading = true) }
+            }.onCompletion {
+                _state.update { currentState ->
+                    currentState.copy(isCleanCloudStorageButtonLoading = false) }
+            }.collect { either ->
+                either.onRight { message ->
+                    _effect.send(ScreenEffect.ShowSnackBar(message))
+                }.onLeft { error ->
+                    _effect.send(ScreenEffect.ShowSnackBar(error))
+                }
             }
         }
     }
@@ -84,9 +140,11 @@ class SettingsViewModel(
     private fun cleanCacheButton() {
         viewModelScope.launch {
             applicationRepository.cleanCache().onStart {
-                _state.update { it.copy(isClearCacheButtonLoading = true) }
+                _state.update { currentState ->
+                    currentState.copy(isCleanCacheButtonLoading = true) }
             }.onCompletion {
-                _state.update { it.copy(isClearCacheButtonLoading = false) }
+                _state.update { currentState ->
+                    currentState.copy(isCleanCacheButtonLoading = false) }
             }.collect { either ->
                 either.onRight { textResource ->
                     _effect.send(ScreenEffect.ShowSnackBar(textResource))

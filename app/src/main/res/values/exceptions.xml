@@ -21,4 +21,6 @@
     <string name="exception_no_role">No role requested</string>
     <string name="exception_pick_role">Pick role</string>
     <string name="exception_no_image">No image file picked</string>
+
+    <string name="exception_no_handler">No installed app on your device can handle this action</string>
 </resources>

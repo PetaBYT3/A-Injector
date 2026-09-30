@@ -3,12 +3,11 @@ package com.a.injector.presentation.hero
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a.injector.R
-import com.a.injector.data.dto.Role
 import com.a.injector.data.util.TextResource
 import com.a.injector.domain.model.ReplaceModel
 import com.a.injector.domain.model.SkinModel
-import com.a.injector.domain.repository.AccountRepository
 import com.a.injector.domain.repository.InjectRepository
+import com.a.injector.domain.repository.ProfileRepository
 import com.a.injector.domain.repository.ScriptRepository
 import com.a.injector.presentation.util.ScreenEffect
 import kotlinx.coroutines.channels.Channel
@@ -25,7 +24,7 @@ import org.koin.core.annotation.InjectedParam
 @KoinViewModel
 class HeroViewModel(
     @InjectedParam private val heroId: String,
-    private val accountRepository: AccountRepository,
+    private val profileRepository: ProfileRepository,
     private val scriptRepository: ScriptRepository,
     private val injectRepository: InjectRepository
 ): ViewModel() {
@@ -37,11 +36,17 @@ class HeroViewModel(
 
     init {
         viewModelScope.launch {
-            accountRepository.currentProfile.collect { profileModel ->
-                _state.update { currentState ->
-                    currentState.copy(
-                        isModifyEnabled = profileModel.role != Role.User
-                    )
+            profileRepository.getCurrent().collect { either ->
+                either.onRight { profileModel ->
+                    _state.update { currentState ->
+                        currentState.copy(
+                            isModifyEnabled = profileModel.role.modifyEnabled
+                        )
+                    }
+                }.onLeft { textResource ->
+                    _state.update { currentState ->
+                        currentState.copy(isProfileLoading = false)
+                    }
                 }
             }
         }
@@ -111,7 +116,7 @@ class HeroViewModel(
                 }
                 _effect.send(
                     element = ScreenEffect.ShowSnackBar(
-                        message = TextResource.StringResource(R.string.success_install_script)
+                        message = TextResource.StringResource(R.string.success_script_install)
                     )
                 )
             }.collect { either ->

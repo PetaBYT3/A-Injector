@@ -2,6 +2,7 @@ package com.a.injector.presentation.home
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ContentCopy
+import androidx.compose.material.icons.rounded.Email
 import androidx.compose.material.icons.rounded.OpenInNew
 import androidx.compose.material3.Icon
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -10,7 +11,7 @@ import com.a.injector.R
 import com.a.injector.domain.model.StaticModel
 
 enum class AboutDeveloper {
-    Mlbb, Linkedin, Tiktok, Github, Support
+    Mlbb, Email, Linkedin, Tiktok, Github, Support
 }
 
 val AboutDevelopers = listOf(
@@ -20,6 +21,13 @@ val AboutDevelopers = listOf(
         content = R.string.mlbb,
         supportingContent = R.string.mlbb_desc,
         trailingContent = { Icon(Icons.Rounded.ContentCopy, null) }
+    ),
+    StaticModel(
+        id = AboutDeveloper.Email,
+        leadingContent = { Icon(Icons.Rounded.Email, null) },
+        content = R.string.dev_email,
+        supportingContent = R.string.dev_email_desc,
+        trailingContent = { Icon(Icons.Rounded.OpenInNew, null) }
     ),
     StaticModel(
         id = AboutDeveloper.Linkedin,

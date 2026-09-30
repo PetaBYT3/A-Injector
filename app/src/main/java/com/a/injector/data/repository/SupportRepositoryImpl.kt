@@ -4,14 +4,18 @@ package com.a.injector.data.repository
 
 import arrow.core.Either
 import com.a.injector.R
+import com.a.injector.data.dto.Bucket
 import com.a.injector.data.mapper.SupportMapper
 import com.a.injector.data.remote.AuthApi
 import com.a.injector.data.remote.ProfileApi
+import com.a.injector.data.remote.StorageApi
 import com.a.injector.data.remote.SupportingApi
 import com.a.injector.data.util.TextResource
 import com.a.injector.data.util.catchAndDispatch
+import com.a.injector.data.util.toWebpByteArray
 import com.a.injector.domain.model.SupportModel
 import com.a.injector.domain.repository.SupportRepository
+import io.github.vinceglb.filekit.PlatformFile
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
@@ -26,7 +30,8 @@ import org.koin.core.annotation.Single
 class SupportRepositoryImpl(
     private val authApi: AuthApi,
     private val profileApi: ProfileApi,
-    private val supportingApi: SupportingApi
+    private val supportingApi: SupportingApi,
+    private val storageApi: StorageApi
 ): SupportRepository {
     override fun getCurrent(): Flow<Either<TextResource, SupportModel>> {
         return flow<Either<TextResource, SupportModel>> {
@@ -72,10 +77,25 @@ class SupportRepositoryImpl(
         }.catchAndDispatch()
     }
 
-    override fun upsert(supportModel: SupportModel): Flow<Either<TextResource, Unit>> {
+    override fun upsert(
+        supportModel: SupportModel,
+        image: PlatformFile?
+    ): Flow<Either<TextResource, Unit>> {
         return flow<Either<TextResource, Unit>> {
+            if (image == null) {
+                emit(Either.Left(TextResource.StringResource(R.string.exception_no_image)))
+                return@flow
+            }
+
+            val imageUrl = storageApi.upload(
+                targetBucket = Bucket.IMAGE,
+                fileByte = image.toWebpByteArray(),
+                fileName = "${supportModel.id}.webp"
+            )
             supportingApi.upsert(
-                supportDto = SupportMapper.toDto(supportModel)
+                supportDto = SupportMapper.toDto(supportModel).copy(
+                    imageUrl = imageUrl
+                )
             )
             emit(Either.Right(Unit))
         }.catchAndDispatch()

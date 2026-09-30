@@ -6,6 +6,9 @@ import com.a.injector.domain.model.HeroModel
 data class ManageHeroState(
     val isOnEdit: Boolean = false,
 
+    val isProfileLoading: Boolean = true,
+    val isDeleteEnabled: Boolean = false,
+
     val isHeroLoading: Boolean = true,
     val isHeroError: TextResource? = null,
     val hero: HeroModel = HeroModel.EMPTY,
@@ -15,5 +18,7 @@ data class ManageHeroState(
 
     val isUpsertButtonLoading: Boolean = false
 ) {
-    val isContentLoading: Boolean get() = isHeroLoading
+    val isContentLoading: Boolean get() =
+        isProfileLoading &&
+        isHeroLoading
 }

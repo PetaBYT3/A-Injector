@@ -2,10 +2,7 @@ package com.a.injector.presentation.panelsupporting
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.a.injector.data.dto.Bucket
-import com.a.injector.domain.model.SupportModel
-import com.a.injector.domain.repository.OptimizeDatabaseRepository
-import com.a.injector.domain.repository.UserRepository
+import com.a.injector.domain.repository.SupportRepository
 import com.a.injector.presentation.util.ScreenEffect
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,8 +16,7 @@ import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
 class PanelSupportingViewModel(
-    private val userRepository: UserRepository,
-    private val optimizeDatabaseRepository: OptimizeDatabaseRepository
+    private val supportRepository: SupportRepository
 ): ViewModel() {
     private val _state = MutableStateFlow(PanelSupportingState())
     val state = _state.asStateFlow()
@@ -30,7 +26,7 @@ class PanelSupportingViewModel(
 
     init {
         viewModelScope.launch {
-            userRepository.getSupportingList().collect { either ->
+            supportRepository.getList().collect { either ->
                 either.onRight { supportingModels ->
                     _state.update { currentState ->
                         currentState.copy(
@@ -53,7 +49,12 @@ class PanelSupportingViewModel(
     fun onAction(action: PanelSupportingAction) {
         when (action) {
             is PanelSupportingAction.ShowSupportingBottomSheet -> {
-                showSupportingBottomSheet(supportModel = action.supportModel)
+                _state.update { currentState ->
+                    currentState.copy(
+                        supportingToAction = action.supportModel,
+                        isSupportingBottomSheetVisible = true
+                    )
+                }
             }
             PanelSupportingAction.DismissSupportingBottomSheet -> {
                 _state.update { currentState ->
@@ -69,32 +70,9 @@ class PanelSupportingViewModel(
         }
     }
 
-    private fun showSupportingBottomSheet(supportModel: SupportModel) {
-        _state.update { currentState ->
-            currentState.copy(
-                supportingToAction = supportModel,
-                isSupportingBottomSheetVisible = true
-            )
-        }
-        viewModelScope.launch {
-            optimizeDatabaseRepository.getFileUrl(
-                bucket = Bucket.IMAGE,
-                fileName = supportModel.imageUrl
-            ).collect { either ->
-                either.onRight { url ->
-                    _state.update { currentState ->
-                        currentState.copy(proofUrlToAction = url)
-                    }
-                }.onLeft { error ->
-                    _effect.send(ScreenEffect.ShowSnackBar(error))
-                }
-            }
-        }
-    }
-
     private fun denySupportingButton() {
         viewModelScope.launch {
-            userRepository.denySupporting(
+            supportRepository.confirm(
                 supportModel = _state.value.supportingToAction
             ).onStart {
                 _state.update { currentState ->
@@ -105,9 +83,7 @@ class PanelSupportingViewModel(
                     currentState.copy(isActionSupportingButtonLoading = false)
                 }
             }.collect { either ->
-                either.onRight { message ->
-                    _effect.send(ScreenEffect.ShowSnackBar(message))
-                }.onLeft { error ->
+                either.onLeft { error ->
                     _effect.send(ScreenEffect.ShowSnackBar(error))
                 }
             }
@@ -116,7 +92,7 @@ class PanelSupportingViewModel(
 
     private fun confirmSupportingButton() {
         viewModelScope.launch {
-            userRepository.confirmSupporting(
+            supportRepository.deny(
                 supportModel = _state.value.supportingToAction
             ).onStart {
                 _state.update { currentState ->
@@ -127,9 +103,7 @@ class PanelSupportingViewModel(
                     currentState.copy(isActionSupportingButtonLoading = false)
                 }
             }.collect { either ->
-                either.onRight { message ->
-                    _effect.send(ScreenEffect.ShowSnackBar(message))
-                }.onLeft { error ->
+                either.onLeft { error ->
                     _effect.send(ScreenEffect.ShowSnackBar(error))
                 }
             }

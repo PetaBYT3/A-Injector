@@ -2,10 +2,9 @@ package com.a.injector.presentation.support
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.a.injector.domain.model.ProfileModel
-import com.a.injector.domain.model.SupportModel
 import com.a.injector.domain.repository.NavigationRepository
-import com.a.injector.domain.repository.UserRepository
+import com.a.injector.domain.repository.ProfileRepository
+import com.a.injector.domain.repository.SupportRepository
 import com.a.injector.presentation.util.ScreenEffect
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,12 +15,11 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
-import org.koin.core.annotation.InjectedParam
 
 @KoinViewModel
 class SupportViewModel(
-    @InjectedParam private val profileId: String,
-    private val userRepository: UserRepository,
+    private val profileRepository: ProfileRepository,
+    private val supportRepository: SupportRepository,
     private val navigationRepository: NavigationRepository
 ): ViewModel() {
     private val _state = MutableStateFlow(SupportState())
@@ -30,16 +28,62 @@ class SupportViewModel(
     private val _effect = Channel<ScreenEffect>()
     val effect = _effect.receiveAsFlow()
 
+    init {
+        viewModelScope.launch {
+            profileRepository.getCurrent().collect { either ->
+                either.onRight { profileModel ->
+                    _state.update { currentState ->
+                        currentState.copy(
+                            profile = profileModel,
+                            isProfileLoading = false
+                        )
+                    }
+                }.onLeft { textResource ->
+                    _state.update { currentState ->
+                        currentState.copy(
+                            isProfileError = textResource,
+                            isProfileLoading = false
+                        )
+                    }
+                }
+            }
+        }
+
+        viewModelScope.launch {
+            supportRepository.getCurrent().collect { either ->
+                either.onRight { supportModel ->
+                    _state.update { currentState ->
+                        currentState.copy(
+                            requestedSupport = supportModel,
+                            isRequestedSupportLoading = false
+                        )
+                    }
+                }.onLeft { textResource ->
+                    _state.update { currentState ->
+                        currentState.copy(
+                            isRequestedSupportError = textResource,
+                            isRequestedSupportLoading = false
+                        )
+                    }
+                }
+            }
+        }
+    }
+
     fun onAction(action: SupportAction) {
         when (action) {
             is SupportAction.NominalTextField -> {
                 _state.update { currentState ->
-                    currentState.copy(nominalTextField = action.nominal)
+                    currentState.copy(
+                        requestedSupport = currentState.requestedSupport.copy(
+                            nominal = action.nominal.ifBlank { "0" }.toLong()
+                        )
+                    )
                 }
             }
             is SupportAction.ImagePicker -> {
                 _state.update { currentState ->
-                    currentState.copy(image = action.image)
+                    currentState.copy(imageToUpload = action.image)
                 }
             }
             SupportAction.UpsertSupportingButton -> {
@@ -50,15 +94,11 @@ class SupportViewModel(
 
     private fun upsertSupportingButton() {
         viewModelScope.launch {
-
-            userRepository.upsertSupporting(
-                supportModel = SupportModel(
-                    id = profileId,
-                    nominal = _state.value.nominalTextField.ifBlank { "0" }.toLong(),
-                    imageUrl = "",
-                    profile = ProfileModel.EMPTY
+            supportRepository.upsert(
+                supportModel = _state.value.requestedSupport.copy(
+                    id = _state.value.profile.id
                 ),
-                image = _state.value.image
+                image = _state.value.imageToUpload
             ).onStart {
                 _state.update { currentState ->
                     currentState.copy(isUpsertSupportButtonLoading = true)

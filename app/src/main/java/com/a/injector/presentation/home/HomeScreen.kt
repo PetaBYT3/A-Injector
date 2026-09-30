@@ -41,7 +41,9 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
 import com.a.injector.data.util.TextResource
 import com.a.injector.presentation.component.CustomBottomSheet
+import com.a.injector.presentation.component.CustomButton
 import com.a.injector.presentation.component.CustomCenterCircularWavyProgressIndicator
+import com.a.injector.presentation.component.CustomSurfaceText
 import com.a.injector.presentation.component.CustomTextListTitle
 import com.a.injector.presentation.component.CustomTopAppBar
 import com.a.injector.presentation.component.DefaultClickableListItem
@@ -49,6 +51,7 @@ import com.a.injector.presentation.component.DefaultListItem
 import com.a.injector.presentation.component.MessageListItem
 import com.a.injector.presentation.component.PrimaryListItem
 import com.a.injector.presentation.component.spacer
+import com.a.injector.presentation.home.AboutDeveloper.Email
 import com.a.injector.presentation.home.AboutDeveloper.Github
 import com.a.injector.presentation.home.AboutDeveloper.Linkedin
 import com.a.injector.presentation.home.AboutDeveloper.Mlbb
@@ -56,6 +59,7 @@ import com.a.injector.presentation.home.AboutDeveloper.Support
 import com.a.injector.presentation.home.AboutDeveloper.Tiktok
 import com.a.injector.presentation.util.openInBrowser
 import com.a.injector.presentation.util.openStoragePermissionSettings
+import com.a.injector.presentation.util.sendToEmail
 import com.a.injector.presentation.util.toIdr
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -92,6 +96,8 @@ private fun HomeScreen(
     state: HomeState,
     onAction: (HomeAction) -> Unit
 ) {
+    val uriHandler = LocalUriHandler.current
+
     Scaffold(
         contentWindowInsets = WindowInsets.statusBars,
         topBar = {
@@ -105,6 +111,47 @@ private fun HomeScreen(
                     .padding(innerPadding),
                 state = state,
                 onAction = onAction
+            )
+        }
+    )
+
+    CustomBottomSheet(
+        visible = state.isMaintenanceBottomSheetVisible,
+        onDismiss = { onAction(HomeAction.MaintenanceBottomSheet) },
+        title = stringResource(R.string.maintenance),
+        content = {
+            item {
+                CustomSurfaceText(text = stringResource(R.string.maintenance_desc))
+            }
+        },
+        bottomBar = {
+            CustomButton(
+                onClick = { onAction(HomeAction.MaintenanceBottomSheet) },
+                text = stringResource(R.string.dismiss)
+            )
+        }
+    )
+
+    CustomBottomSheet(
+        visible = state.isUpdateBottomSheetVisible,
+        onDismiss = { onAction(HomeAction.UpdateBottomSheet) },
+        title = stringResource(R.string.update),
+        content = {
+            item {
+                CustomSurfaceText(text = stringResource(R.string.update_desc))
+            }
+        },
+        bottomBar = {
+            CustomButton(
+                onClick = {
+                    onAction(HomeAction.UpdateBottomSheet)
+                    openInBrowser(
+                        uriHandler = uriHandler,
+                        url = "https://github.com/PetaBYT3/A-Injector/releases",
+                        onError = { onAction(HomeAction.ShowSnackBar(it)) }
+                    )
+                },
+                text = stringResource(R.string.confirm)
             )
         }
     )
@@ -201,11 +248,18 @@ private fun Content(
                                     )
                                 )
                             }
+                            Email -> {
+                                sendToEmail(
+                                    context = context,
+                                    email = supportingText.asString(context),
+                                    onError = { onAction(HomeAction.ShowSnackBar(it)) }
+                                )
+                            }
                             Linkedin, Tiktok, Github -> {
                                 openInBrowser(
-                                    context = context,
                                     uriHandler = uriHandler,
-                                    url = supportingText.asString(context)
+                                    url = supportingText.asString(context),
+                                    onError = { onAction(HomeAction.ShowSnackBar(it)) }
                                 )
                             }
                             Support -> {

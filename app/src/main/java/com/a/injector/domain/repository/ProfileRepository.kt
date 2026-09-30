@@ -7,6 +7,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface ProfileRepository {
     fun getCurrent(): Flow<Either<TextResource, ProfileModel>>
+    fun getSingle(profileId: String): Flow<Either<TextResource, ProfileModel>>
+    fun getList(): Flow<Either<TextResource, List<ProfileModel>>>
     fun getListBySupport(): Flow<Either<TextResource, List<ProfileModel>>>
     fun getListByContribution(): Flow<Either<TextResource, List<ProfileModel>>>
     fun upsert(profileModel: ProfileModel): Flow<Either<TextResource, Unit>>

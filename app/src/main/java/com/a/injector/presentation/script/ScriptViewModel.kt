@@ -2,8 +2,7 @@ package com.a.injector.presentation.script
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.a.injector.data.dto.Role
-import com.a.injector.domain.repository.AccountRepository
+import com.a.injector.domain.repository.ProfileRepository
 import com.a.injector.domain.repository.ScriptRepository
 import com.a.injector.presentation.util.ScreenEffect
 import kotlinx.coroutines.channels.Channel
@@ -16,7 +15,7 @@ import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
 class ScriptViewModel(
-    private val accountRepository: AccountRepository,
+    private val profileRepository: ProfileRepository,
     private val scriptRepository: ScriptRepository
 ): ViewModel() {
     private val _state = MutableStateFlow(ScriptState())
@@ -27,11 +26,18 @@ class ScriptViewModel(
 
     init {
         viewModelScope.launch {
-            accountRepository.currentProfile.collect { profileModel ->
-                _state.update { currentState ->
-                    currentState.copy(
-                        isModifyEnabled = profileModel.role != Role.User
-                    )
+            profileRepository.getCurrent().collect { either ->
+                either.onRight { profileModel ->
+                    _state.update { currentState ->
+                        currentState.copy(
+                            isModifyEnabled = profileModel.role.modifyEnabled,
+                            isProfileLoading = false
+                        )
+                    }
+                }.onLeft { textResource ->
+                    _state.update { currentState ->
+                        currentState.copy(isProfileLoading = false)
+                    }
                 }
             }
         }

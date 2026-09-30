@@ -3,6 +3,7 @@ package com.a.injector.presentation.manageskin
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a.injector.domain.repository.NavigationRepository
+import com.a.injector.domain.repository.ProfileRepository
 import com.a.injector.domain.repository.ScriptRepository
 import com.a.injector.presentation.util.ScreenEffect
 import kotlinx.coroutines.channels.Channel
@@ -21,6 +22,7 @@ import kotlin.uuid.Uuid
 class ManageSkinViewModel(
     @InjectedParam private val heroId: String,
     @InjectedParam private val skinId: String,
+    private val profileRepository: ProfileRepository,
     private val scriptRepository: ScriptRepository,
     private val navigationRepository: NavigationRepository
 ): ViewModel() {
@@ -32,6 +34,23 @@ class ManageSkinViewModel(
 
     init {
         _state.update { it.copy(isOnEdit = skinId.isNotBlank()) }
+
+        viewModelScope.launch {
+            profileRepository.getCurrent().collect { either ->
+                either.onRight { profileModel ->
+                    _state.update { currentState ->
+                        currentState.copy(
+                            isDeleteEnabled = profileModel.role.deleteEnabled,
+                            isProfileLoading = false
+                        )
+                    }
+                }.onLeft { textResource ->
+                    _state.update { currentState ->
+                        currentState.copy(isProfileLoading = false)
+                    }
+                }
+            }
+        }
 
         viewModelScope.launch {
             scriptRepository.getHero(

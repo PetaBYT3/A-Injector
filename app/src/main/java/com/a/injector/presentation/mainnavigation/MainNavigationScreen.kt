@@ -28,15 +28,17 @@ import com.a.injector.presentation.landing.LandingScreenRoot
 import com.a.injector.presentation.loading.LoadingScreenRoot
 import com.a.injector.presentation.managehero.ManageHeroScreenRoot
 import com.a.injector.presentation.managereplace.ManageReplaceScreenRoot
-import com.a.injector.presentation.managerole.ManageRoleScreenRoot
 import com.a.injector.presentation.manageskin.ManageSkinScreen
 import com.a.injector.presentation.manageuser.ManageUserScreenRoot
+import com.a.injector.presentation.panelrole.PanelRoleScreenRoot
 import com.a.injector.presentation.panelsupporting.PanelSupportingScreenRoot
 import com.a.injector.presentation.paneluser.PanelUserScreenRoot
+import com.a.injector.presentation.role.RoleScreenRoot
 import com.a.injector.presentation.signin.SignInScreenRoot
 import com.a.injector.presentation.signlink.SignLinkScreenRoot
 import com.a.injector.presentation.signup.SignUpScreenRoot
 import com.a.injector.presentation.support.SupportingScreenRoot
+import com.a.injector.presentation.username.UsernameScreenRoot
 import org.koin.compose.koinInject
 
 @Composable
@@ -154,11 +156,24 @@ fun NavigationScreen(
                         )
                     }
                 }
-                is MainNavigationRoute.SupportingScreen -> {
+                is MainNavigationRoute.UsernameScreen -> {
+                    NavEntry(navKey) {
+                        UsernameScreenRoot(
+                            navBackStack = navBackStack
+                        )
+                    }
+                }
+                is MainNavigationRoute.SupportScreen -> {
                     NavEntry(navKey) {
                         SupportingScreenRoot(
-                            navBackStack = navBackStack,
-                            profileId = navKey.profileId
+                            navBackStack = navBackStack
+                        )
+                    }
+                }
+                is MainNavigationRoute.RoleScreen -> {
+                    NavEntry(navKey) {
+                        RoleScreenRoot(
+                            navBackStack = navBackStack
                         )
                     }
                 }
@@ -171,7 +186,7 @@ fun NavigationScreen(
                 }
                 is MainNavigationRoute.ManageRoleScreen -> {
                     NavEntry(navKey) {
-                        ManageRoleScreenRoot(
+                        PanelRoleScreenRoot(
                             navBackStack = navBackStack
                         )
                     }

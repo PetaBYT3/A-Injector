@@ -2,10 +2,12 @@ package com.a.injector.presentation.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.a.injector.BuildConfig
 import com.a.injector.domain.model.state.CommandService
+import com.a.injector.domain.repository.ApplicationRepository
 import com.a.injector.domain.repository.InjectRepository
 import com.a.injector.domain.repository.PermissionRepository
-import com.a.injector.domain.repository.UserRepository
+import com.a.injector.domain.repository.ProfileRepository
 import com.a.injector.presentation.util.ScreenEffect
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,9 +19,10 @@ import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
 class HomeViewModel(
+    private val applicationRepository: ApplicationRepository,
     private val permissionRepository: PermissionRepository,
     private val injectRepository: InjectRepository,
-    private val userRepository: UserRepository
+    private val profileRepository: ProfileRepository
 ): ViewModel() {
     private val _state = MutableStateFlow(HomeState())
     val state = _state.asStateFlow()
@@ -29,6 +32,28 @@ class HomeViewModel(
 
     init {
         viewModelScope.launch {
+            applicationRepository.getVersion().collect { either ->
+                either.onRight { versionModel ->
+                    if (versionModel.maintenance) {
+                        _state.update { currentState ->
+                            currentState.copy(isMaintenanceBottomSheetVisible = true)
+                        }
+                        return@onRight
+                    }
+
+                    if (versionModel.version != BuildConfig.VERSION_CODE) {
+                        _state.update { currentState ->
+                            currentState.copy(isUpdateBottomSheetVisible = true)
+                        }
+                        return@onRight
+                    }
+                }.onLeft { error ->
+                    _effect.send(ScreenEffect.ShowToast(error))
+                }
+            }
+        }
+
+        viewModelScope.launch {
             permissionRepository.isManageExternalStorageGranted.collect { isGranted ->
                 _state.update { currentState ->
                     currentState.copy(isManageExternalStorageGranted = isGranted)
@@ -37,7 +62,7 @@ class HomeViewModel(
         }
 
         viewModelScope.launch {
-            userRepository.getTopSupporter().collect { either ->
+            profileRepository.getListBySupport().collect { either ->
                 either.onRight { profileModels ->
                     _state.update { currentState ->
                         currentState.copy(
@@ -57,7 +82,7 @@ class HomeViewModel(
         }
 
         viewModelScope.launch {
-            userRepository.getTopContributor().collect { either ->
+            profileRepository.getListByContribution().collect { either ->
                 either.onRight { profileModels ->
                     _state.update { currentState ->
                         currentState.copy(
@@ -79,12 +104,31 @@ class HomeViewModel(
 
     fun onAction(action: HomeAction) {
         when (action) {
+            HomeAction.MaintenanceBottomSheet -> {
+                _state.update { currentState ->
+                    currentState.copy(
+                        isMaintenanceBottomSheetVisible = !currentState.isMaintenanceBottomSheetVisible
+                    )
+                }
+            }
+            HomeAction.UpdateBottomSheet -> {
+                _state.update { currentState ->
+                    currentState.copy(
+                        isUpdateBottomSheetVisible = !currentState.isUpdateBottomSheetVisible
+                    )
+                }
+            }
             is HomeAction.SetCommandServiceButton -> {
                 setCommandServiceButton(commandService = action.commandService)
             }
             HomeAction.SupportBottomSheet -> {
                 _state.update { currentState ->
                     currentState.copy(isSupportBottomSheetVisible = !currentState.isSupportBottomSheetVisible)
+                }
+            }
+            is HomeAction.ShowSnackBar -> {
+                viewModelScope.launch {
+                    _effect.send(ScreenEffect.ShowSnackBar(action.textResource))
                 }
             }
         }

@@ -11,12 +11,18 @@
     <string name="sign_out">Sign Out</string>
     <string name="sign_out_desc">Are you sure you want to sign out ?</string>
 
+    <string name="maintenance">Maintenance</string>
+    <string name="maintenance_desc">This app is currently undergoing scheduled maintenance to improve our services. During this period, you may experience temporary system instability, minor bugs, or unexpected app crashes. We apologize for any inconvenience this may cause and are working to complete the maintenance as quickly as possible.</string>
+    <string name="update">Update</string>
+    <string name="update_desc">A new version is ready to download. We highly recommend updating your application to ensure optimal performance. Continuing to use this outdated version may result in unexpected bugs, feature instability, or app crashes.</string>
+
     <string name="add">Add</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
     <string name="decline">Decline</string>
     <string name="confirm">Confirm</string>
     <string name="send">Send</string>
+    <string name="dismiss">Dismiss</string>
     <string name="verify">Verify</string>
     <string name="action">Action</string>
     <string name="search_here">Search here…</string>
@@ -26,11 +32,14 @@
     <string name="label">Label</string>
     <string name="name">Name</string>
 
+    <string name="profile">Profile</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="username">Username</string>
     <string name="contribution">Contribution</string>
     <string name="support">Support</string>
+    <string name="nominal">Nominal</string>
+    <string name="proof">Proof</string>
     <string name="role">Role</string>
 
     <string name="eight_character">Has 8 character</string>
@@ -56,6 +65,8 @@
     <string name="about_developer">About Developer</string>
     <string name="mlbb">Mlbb</string>
     <string name="mlbb_desc">1879393654(2964)</string>
+    <string name="dev_email">Email</string>
+    <string name="dev_email_desc">andreahussanini.2103@gmail.com</string>
     <string name="linkedin">Linkedin</string>
     <string name="linkedin_desc">https://www.linkedin.com/in/andrea-hussanini-274223218/</string>
     <string name="tiktok">Tiktok</string>
@@ -74,16 +85,6 @@
 
     <string name="guest_account">Guest Account</string>
 
-    <string name="administrator_menu">Administrator Menu</string>
-    <string name="support_panel">Support Panel</string>
-    <string name="support_panel_desc">Manage and confirm support request from user</string>
-    <string name="role_panel">Role Panel</string>
-    <string name="role_panel_desc">Manage and confirm role request from user</string>
-    <string name="user_panel">User Panel</string>
-    <string name="user_panel_desc">Manage and modify all user profile data</string>
-    <string name="clean_cloud_storage">Clean Cloud Storage</string>
-    <string name="clean_cloud_storage_desc">Delete all orphan files from cloud storage</string>
-
     <string name="administrator">Administrator</string>
     <string name="administrator_desc">Manage user profile. Support and role request. Add, edit, delete all script data</string>
     <string name="manager">Manager</string>
@@ -97,9 +98,23 @@
     <string name="change_password">Change Password</string>
     <string name="change_password_desc">Change your password directly</string>
 
+    <string name="cloud_settings">CloudSettings</string>
+
+    <string name="support_panel">Support Panel</string>
+    <string name="support_panel_desc">Manage and confirm support request from user</string>
+    <string name="role_panel">Role Panel</string>
+    <string name="role_panel_desc">Manage and confirm role request from user</string>
+    <string name="user_panel">User Panel</string>
+    <string name="user_panel_desc">Manage and modify all user profile data</string>
+    <string name="clean_cloud_storage">Clean Cloud Storage</string>
+    <string name="clean_cloud_storage_desc">Delete all orphan files from cloud storage</string>
+
+    <string name="device_settings">Device Settings</string>
+
     <string name="language">Language</string>
     <string name="clean_cache">Clean Cache</string>
     <string name="clean_cache_desc">All downloaded and extracted script on cache will be deleted, once you\'re reinstalling the same script you will redownload it again</string>
 
+    <string name="no_support_requested">No support requested</string>
     <string name="no_role_requested">No role requested</string>
 </resources>

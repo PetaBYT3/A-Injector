@@ -29,20 +29,22 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
 import com.a.injector.data.dto.Role
 import com.a.injector.domain.model.ProfileModel
-import com.a.injector.domain.model.RoleModel
-import com.a.injector.presentation.account.AdministratorMenu.*
-import com.a.injector.presentation.account.ManageAccount.*
-import com.a.injector.presentation.account.Profile.*
+import com.a.injector.presentation.account.ManageAccount.ChangePassword
+import com.a.injector.presentation.account.Profile.Contribution
+import com.a.injector.presentation.account.Profile.Email
+import com.a.injector.presentation.account.Profile.ProfileRole
+import com.a.injector.presentation.account.Profile.Supporting
+import com.a.injector.presentation.account.Profile.Username
 import com.a.injector.presentation.component.CustomBottomSheet
 import com.a.injector.presentation.component.CustomButton
 import com.a.injector.presentation.component.CustomCenterCircularWavyProgressIndicator
 import com.a.injector.presentation.component.CustomIconButton
 import com.a.injector.presentation.component.CustomSurfaceText
-import com.a.injector.presentation.component.CustomTextListTitle
 import com.a.injector.presentation.component.CustomTopAppBar
 import com.a.injector.presentation.component.DefaultClickableListItem
 import com.a.injector.presentation.component.DefaultListItem
 import com.a.injector.presentation.component.spacer
+import com.a.injector.presentation.mainnavigation.MainNavigationRoute
 import com.a.injector.presentation.util.ScreenEffectLauncher
 import com.a.injector.presentation.util.toIdr
 import org.koin.compose.viewmodel.koinViewModel
@@ -78,8 +80,7 @@ private fun Preview() {
             isProfileLoading = false,
             profile = ProfileModel.EMPTY.copy(
                 role = Role.Administrator
-            ),
-            request = RoleModel.EMPTY.copy(role = Role.Contributor)
+            )
         ),
         onAction = {},
         snackBarHostState = SnackbarHostState()
@@ -110,26 +111,6 @@ private fun Screen(
             )
         },
         snackbarHost = { SnackbarHost(hostState = snackBarHostState) }
-    )
-
-    CustomBottomSheet(
-        visible = state.isCleanStorageBottomSheetVisible,
-        onDismiss = { onAction(AccountAction.CleanStorageBottomSheet) },
-        title = stringResource(R.string.clean_cloud_storage),
-        content = {
-            item {
-                CustomSurfaceText(text = stringResource(R.string.clean_cloud_storage_desc))
-            }
-        },
-        bottomBar = {
-            CustomButton(
-                onClick = {
-                    onAction(AccountAction.CleanStorageBottomSheet)
-                    onAction(AccountAction.CleanStorageButton)
-                },
-                text = stringResource(R.string.confirm)
-            )
-        }
     )
 
     CustomBottomSheet(
@@ -195,9 +176,7 @@ private fun Content(
                     index = index,
                     count = profiles.size,
                     leadingContent = staticModel.leadingContent,
-                    content = {
-                        Text(text = staticModel.content.asString())
-                    },
+                    content = { Text(text = stringResource(staticModel.content)) },
                     supportingContent = {
                         val supportingText = when (staticModel.id) {
                             Email -> state.userInfo?.email ?: stringResource(R.string.unknown)
@@ -205,94 +184,39 @@ private fun Content(
                             Contribution -> buildString {
                                 append(state.profile.contribution)
                                 append(" ")
-                                append(stringResource(R.string.contributor_desc))
+                                append(stringResource(R.string.top_contributor_desc))
                             }
                             Supporting -> state.profile.nominal.toIdr()
                             ProfileRole -> state.profile.role.title.asString()
                         }
                         Text(text = supportingText)
                     },
-                    trailingContent = when (staticModel.id) {
-                        Username -> {
-                            {
+                    trailingContent = {
+                        when (staticModel.id) {
+                            Username -> {
                                 CustomIconButton(
-                                    onClick = { },
+                                    onClick = { navBackStack.add(MainNavigationRoute.UsernameScreen) },
                                     content = { Icon(Icons.Rounded.Edit, null) }
                                 )
                             }
-                        }
-                        Supporting -> {
-                            {
+                            Supporting -> {
                                 CustomIconButton(
-                                    onClick = { },
+                                    onClick = { navBackStack.add(MainNavigationRoute.SupportScreen) },
                                     content = { Icon(Icons.Rounded.Edit, null) }
                                 )
                             }
-                        }
-                        ProfileRole -> {
-                            {
+                            ProfileRole -> {
                                 CustomIconButton(
-                                    onClick = { },
+                                    onClick = { navBackStack.add(MainNavigationRoute.RoleScreen) },
                                     content = { Icon(Icons.Rounded.Edit, null) }
                                 )
                             }
+                            else -> {}
                         }
-                        else -> null
                     }
                 )
             }
             spacer()
-            if (state.profile.role == Role.Administrator) {
-                item("administratorTitle") {
-                    CustomTextListTitle(
-                        modifier = Modifier
-                            .animateItem(),
-                        text = stringResource(R.string.administrator_menu)
-                    )
-                }
-                itemsIndexed(
-                    items = administratorMenus,
-                    key = { _, staticModel -> staticModel.id.name }
-                ) { index, staticModel ->
-                    DefaultClickableListItem(
-                        modifier = Modifier
-                            .animateItem(),
-                        index = index,
-                        count = administratorMenus.size,
-                        onClick = {
-                            when (staticModel.id) {
-                                PanelSupporting -> {
-
-                                }
-                                RoleManager -> {
-
-                                }
-                                UserPanel -> {
-
-                                }
-                                CleanStorage -> {
-
-                                }
-                            }
-                        },
-                        leadingContent = staticModel.leadingContent,
-                        content = { Text(text = staticModel.content.asString()) },
-                        supportingContent = if (staticModel.supportingContent != null) {
-                            {
-                                Text(text = staticModel.supportingContent.asString())
-                            }
-                        } else null
-                    )
-                }
-                spacer()
-            }
-            item("manageTitle") {
-                CustomTextListTitle(
-                    modifier = Modifier
-                        .animateItem(),
-                    text = stringResource(R.string.manage_account)
-                )
-            }
             itemsIndexed(
                 items = manageAccounts,
                 key = { _, staticModel -> staticModel.id.name }
@@ -310,11 +234,9 @@ private fun Content(
                         }
                     },
                     leadingContent = staticModel.leadingContent,
-                    content = { Text(text = staticModel.content.asString()) },
+                    content = { Text(text = stringResource(staticModel.content)) },
                     supportingContent = if (staticModel.supportingContent != null) {
-                        {
-                            Text(text = staticModel.supportingContent.asString())
-                        }
+                        { Text(text = stringResource(staticModel.supportingContent)) }
                     } else null
                 )
             }

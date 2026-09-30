@@ -9,6 +9,9 @@ import io.github.vinceglb.filekit.PlatformFile
 data class ManageReplaceState(
     val isOnEdit: Boolean = false,
 
+    val isProfileLoading: Boolean = true,
+    val isDeleteEnabled: Boolean = false,
+
     val isHeroLoading: Boolean = true,
     val isHeroError: TextResource? = null,
     val hero: HeroModel = HeroModel.EMPTY,
@@ -28,6 +31,7 @@ data class ManageReplaceState(
     val isUpsertButtonLoading: Boolean = false
 ) {
     val isContentLoading: Boolean get() =
+        isProfileLoading &&
         isHeroLoading &&
         isSkinLoading &&
         isReplaceLoading

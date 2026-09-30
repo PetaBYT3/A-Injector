@@ -42,6 +42,33 @@ class ProfileRepositoryImpl(
         }.catchAndDispatch()
     }
 
+    override fun getSingle(profileId: String): Flow<Either<TextResource, ProfileModel>> {
+        return flow<Either<TextResource, ProfileModel>> {
+            val result = profileApi.getSingle(
+                profileId = profileId
+            ).map { profileDto ->
+                if (profileDto != null) {
+                    Either.Right(ProfileMapper.toModel(profileDto))
+                } else {
+                    Either.Left(TextResource.StringResource(R.string.exception_no_data))
+                }
+            }
+            emitAll(result)
+        }.catchAndDispatch()
+    }
+
+    override fun getList(): Flow<Either<TextResource, List<ProfileModel>>> {
+        return flow<Either<TextResource, List<ProfileModel>>> {
+            val result = profileApi.getList().map { profileDtos ->
+                val profileModels = profileDtos.map { profileDto ->
+                    ProfileMapper.toModel(profileDto)
+                }
+                Either.Right(profileModels)
+            }
+            emitAll(result)
+        }.catchAndDispatch()
+    }
+
     override fun getListBySupport(): Flow<Either<TextResource, List<ProfileModel>>> {
         return flow<Either<TextResource, List<ProfileModel>>> {
             val result = profileApi.getListBySupporting().map { profileDtos ->

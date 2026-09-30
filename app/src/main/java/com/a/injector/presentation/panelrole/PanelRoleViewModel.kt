@@ -1,8 +1,8 @@
-package com.a.injector.presentation.managerole
+package com.a.injector.presentation.panelrole
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.a.injector.domain.repository.UserRepository
+import com.a.injector.domain.repository.RoleRepository
 import com.a.injector.presentation.util.ScreenEffect
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,10 +13,10 @@ import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
-class ManageRoleViewModel(
-    private val userRepository: UserRepository
+class PanelRoleViewModel(
+    private val roleRepository: RoleRepository
 ): ViewModel() {
-    private val _state = MutableStateFlow(ManageRoleState())
+    private val _state = MutableStateFlow(PanelRoleState())
     val state = _state.asStateFlow()
 
     private val _effect = Channel<ScreenEffect>()
@@ -24,7 +24,7 @@ class ManageRoleViewModel(
 
     init {
         viewModelScope.launch {
-            userRepository.getRequests().collect { either ->
+            roleRepository.getList().collect { either ->
                 either.onRight { requestDetailModels ->
                     _state.update { currentState ->
                         currentState.copy(
@@ -44,9 +44,9 @@ class ManageRoleViewModel(
         }
     }
 
-    fun onAction(action: ManageRoleAction) {
+    fun onAction(action: PanelRoleAction) {
         when (action) {
-            is ManageRoleAction.ShowGrantRequestBottomSheet -> {
+            is PanelRoleAction.ShowGrantRequestBottomSheet -> {
                 _state.update { currentState ->
                     currentState.copy(
                         requestToGrant = action.request,
@@ -54,12 +54,12 @@ class ManageRoleViewModel(
                     )
                 }
             }
-            ManageRoleAction.DismissGrantRequestBottomSheet -> {
+            PanelRoleAction.DismissGrantRequestBottomSheet -> {
                 _state.update { currentState ->
                     currentState.copy(isGrantRequestBottomSheetVisible = false)
                 }
             }
-            ManageRoleAction.GrantRequestButton -> {
+            PanelRoleAction.GrantRequestButton -> {
                 grantRequestButton()
             }
         }
@@ -67,12 +67,10 @@ class ManageRoleViewModel(
 
     private fun grantRequestButton() {
         viewModelScope.launch {
-            userRepository.grantRequest(
+            roleRepository.confirm(
                 roleModel = _state.value.requestToGrant
             ).collect { either ->
-                either.onRight { message ->
-                    _effect.send(ScreenEffect.ShowSnackBar(message))
-                }.onLeft { error ->
+                either.onLeft { error ->
                     _effect.send(ScreenEffect.ShowSnackBar(error))
                 }
             }

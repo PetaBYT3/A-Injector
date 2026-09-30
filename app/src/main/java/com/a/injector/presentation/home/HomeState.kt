@@ -4,8 +4,10 @@ import com.a.injector.data.util.TextResource
 import com.a.injector.domain.model.ProfileModel
 
 data class HomeState(
-    val isManageExternalStorageGranted: Boolean = false,
+    val isMaintenanceBottomSheetVisible: Boolean = false,
+    val isUpdateBottomSheetVisible: Boolean = false,
 
+    val isManageExternalStorageGranted: Boolean = false,
     val isSupportBottomSheetVisible: Boolean = false,
 
     val isTopSupporterLoading: Boolean = true,

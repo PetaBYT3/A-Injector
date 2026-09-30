@@ -46,7 +46,6 @@ import com.a.injector.presentation.component.CustomFloatingActionToolBar
 import com.a.injector.presentation.component.CustomIconButton
 import com.a.injector.presentation.component.CustomSlideUpAnimatedVisibility
 import com.a.injector.presentation.component.CustomSurfaceText
-import com.a.injector.presentation.component.CustomTextListTitle
 import com.a.injector.presentation.component.CustomTopAppBar
 import com.a.injector.presentation.component.CustomUndismissableBottomSheet
 import com.a.injector.presentation.component.DefaultClickableListItem
@@ -248,7 +247,7 @@ private fun Content(
     LazyColumn(
         modifier = modifier,
         contentPadding = PaddingValues(start = 10.dp, end = 10.dp, bottom = 100.dp),
-        verticalArrangement = Arrangement.spacedBy(2.5.dp)
+        verticalArrangement = Arrangement.spacedBy(15.dp)
     ) {
         if (state.isContentLoading) {
             item("isContentLoading") {
@@ -281,14 +280,6 @@ private fun Content(
                         style = MaterialTheme.typography.displaySmall
                     )
                 }
-            )
-        }
-        spacer()
-        item("skinTitle") {
-            CustomTextListTitle(
-                modifier = Modifier
-                    .animateItem(),
-                text = stringResource(R.string.skin)
             )
         }
         if (state.heroDetail.skins.isEmpty()) {

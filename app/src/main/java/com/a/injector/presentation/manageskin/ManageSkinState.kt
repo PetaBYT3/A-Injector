@@ -7,6 +7,9 @@ import com.a.injector.domain.model.SkinModel
 data class ManageSkinState(
     val isOnEdit: Boolean = false,
 
+    val isProfileLoading: Boolean = true,
+    val isDeleteEnabled: Boolean = false,
+
     val isHeroLoading: Boolean = true,
     val isHeroError: TextResource? = null,
     val hero: HeroModel = HeroModel.EMPTY,
@@ -21,6 +24,7 @@ data class ManageSkinState(
     val isUpsertButtonLoading: Boolean = false
 ) {
     val isContentLoading: Boolean get() =
+        isProfileLoading &&
         isHeroLoading &&
         isSkinLoading
 }

@@ -3,6 +3,7 @@ package com.a.injector.presentation.managereplace
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a.injector.domain.repository.NavigationRepository
+import com.a.injector.domain.repository.ProfileRepository
 import com.a.injector.domain.repository.ScriptRepository
 import com.a.injector.presentation.util.ScreenEffect
 import kotlinx.coroutines.channels.Channel
@@ -22,6 +23,7 @@ class ManageReplaceViewModel(
     @InjectedParam private val heroId: String,
     @InjectedParam private val skinId: String,
     @InjectedParam private val replaceId: String,
+    private val profileRepository: ProfileRepository,
     private val scriptRepository: ScriptRepository,
     private val navigationRepository: NavigationRepository
 ): ViewModel() {
@@ -33,6 +35,23 @@ class ManageReplaceViewModel(
 
     init {
         _state.update { it.copy(isOnEdit = replaceId.isNotBlank()) }
+
+        viewModelScope.launch {
+            profileRepository.getCurrent().collect { either ->
+                either.onRight { profileModel ->
+                    _state.update { currentState ->
+                        currentState.copy(
+                            isDeleteEnabled = profileModel.role.modifyEnabled,
+                            isProfileLoading = false
+                        )
+                    }
+                }.onLeft { textResource ->
+                    _state.update { currentState ->
+                        currentState.copy(isProfileLoading = false)
+                    }
+                }
+            }
+        }
 
         viewModelScope.launch {
             scriptRepository.getHero(

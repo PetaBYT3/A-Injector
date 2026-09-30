@@ -3,7 +3,7 @@ package com.a.injector.presentation.manageuser
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a.injector.domain.repository.NavigationRepository
-import com.a.injector.domain.repository.UserRepository
+import com.a.injector.domain.repository.ProfileRepository
 import com.a.injector.presentation.util.ScreenEffect
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +19,7 @@ import org.koin.core.annotation.InjectedParam
 @KoinViewModel
 class ManageUserViewModel(
     @InjectedParam private val profileId: String,
-    private val userRepository: UserRepository,
+    private val profileRepository: ProfileRepository,
     private val navigationRepository: NavigationRepository
 ): ViewModel() {
     private val _state = MutableStateFlow(ManageUserState())
@@ -30,7 +30,7 @@ class ManageUserViewModel(
 
     init {
         viewModelScope.launch {
-            userRepository.getProfile(
+            profileRepository.getSingle(
                 profileId = profileId
             ).collect { either ->
                 either.onRight { profileModel ->
@@ -81,7 +81,7 @@ class ManageUserViewModel(
         viewModelScope.launch {
             val nominalToAdd = _state.value.nominalToAddTextField.ifBlank { "0" }
             val finalNominal = _state.value.profile.nominal + nominalToAdd.toLong()
-            userRepository.upsertProfile(
+            profileRepository.upsert(
                 profileModel = _state.value.profile.copy(
                     nominal = finalNominal
                 )

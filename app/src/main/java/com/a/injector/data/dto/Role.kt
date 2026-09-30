@@ -24,5 +24,8 @@ enum class Role(
     User(
         TextResource.StringResource(R.string.user),
         TextResource.StringResource(R.string.user_desc)
-    )
+    );
+
+    val modifyEnabled: Boolean get() = this != User
+    val deleteEnabled: Boolean get() = this in setOf(Administrator, Manager)
 }

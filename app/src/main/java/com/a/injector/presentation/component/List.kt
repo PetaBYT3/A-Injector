@@ -8,16 +8,20 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.InsertDriveFile
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -122,11 +126,80 @@ fun DefaultListItem(
             index = index,
             count = count
         ),
-        leadingContent = leadingContent,
-        overlineContent = overlineContent,
-        content = content,
-        trailingContent = trailingContent,
-        supportingContent = supportingContent
+        leadingContent = null,
+        trailingContent = null,
+        overlineContent = null,
+        supportingContent = null,
+        content = {
+            Row(
+                modifier = Modifier.
+                fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (leadingContent != null) {
+                    CompositionLocalProvider(
+                        LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant
+                    ) {
+                        leadingContent()
+                    }
+                    Spacer(
+                        modifier = Modifier
+                            .width(12.5.dp)
+                    )
+                }
+                Column(
+                    modifier = Modifier
+                        .heightIn(min = 48.dp)
+                        .weight(1f),
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    if (overlineContent != null) {
+                        CompositionLocalProvider(
+                            LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant
+                        ) {
+                            ProvideTextStyle(
+                                value = MaterialTheme.typography.labelSmall
+                            ) {
+                                overlineContent()
+                            }
+                        }
+                    }
+                    ProvideTextStyle(
+                        value = MaterialTheme.typography.bodyLarge.copy(
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    ) {
+                        content()
+                    }
+                    if (supportingContent != null) {
+                        ProvideTextStyle(
+                            value = MaterialTheme.typography.bodyMedium.copy(
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        ) {
+                            supportingContent()
+                        }
+                    }
+                }
+                if (trailingContent != null) {
+                    Spacer(
+                        modifier = Modifier
+                            .width(12.5.dp)
+                    )
+                    ProvideTextStyle(
+                        value = MaterialTheme.typography.labelSmall.copy(
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    ) {
+                        CompositionLocalProvider(
+                            LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant
+                        ) {
+                            trailingContent()
+                        }
+                    }
+                }
+            }
+        }
     )
 }
 
@@ -152,11 +225,80 @@ fun DefaultClickableListItem(
             count = count
         ),
         onClick = onClick,
-        leadingContent = leadingContent,
-        overlineContent = overlineContent,
-        content = content,
-        trailingContent = trailingContent,
-        supportingContent = supportingContent
+        leadingContent = null,
+        trailingContent = null,
+        overlineContent = null,
+        supportingContent = null,
+        content = {
+            Row(
+                modifier = Modifier.
+                fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (leadingContent != null) {
+                    CompositionLocalProvider(
+                        LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant
+                    ) {
+                        leadingContent()
+                    }
+                    Spacer(
+                        modifier = Modifier
+                            .width(16.dp)
+                    )
+                }
+                Column(
+                    modifier = Modifier
+                        .heightIn(min = 48.dp)
+                        .weight(1f),
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    if (overlineContent != null) {
+                        CompositionLocalProvider(
+                            LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant
+                        ) {
+                            ProvideTextStyle(
+                                value = MaterialTheme.typography.labelSmall
+                            ) {
+                                overlineContent()
+                            }
+                        }
+                    }
+                    ProvideTextStyle(
+                        value = MaterialTheme.typography.bodyLarge.copy(
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    ) {
+                        content()
+                    }
+                    if (supportingContent != null) {
+                        ProvideTextStyle(
+                            value = MaterialTheme.typography.bodyMedium.copy(
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        ) {
+                            supportingContent()
+                        }
+                    }
+                }
+                if (trailingContent != null) {
+                    Spacer(
+                        modifier = Modifier
+                            .width(16.dp)
+                    )
+                    ProvideTextStyle(
+                        value = MaterialTheme.typography.labelSmall.copy(
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    ) {
+                        CompositionLocalProvider(
+                            LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant
+                        ) {
+                            trailingContent()
+                        }
+                    }
+                }
+            }
+        }
     )
 }
 
@@ -205,14 +347,9 @@ fun SkinDetailListItem(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(2.5.dp)
     ) {
-        SegmentedListItem(
-            colors = ListItemDefaults.colors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainer
-            ),
-            shapes = ListItemDefaults.segmentedShapes(
-                index = 0,
-                count = skinDetail.replaces.size + 1
-            ),
+        DefaultListItem(
+            index = 0,
+            count = skinDetail.replaces.size + 1,
             leadingContent = { Icon(ImageVector.vectorResource(R.drawable.skin), null) },
             content = { Text(text = skinDetail.label) },
             supportingContent = { Text(text = skinDetail.name) },
@@ -226,14 +363,9 @@ fun SkinDetailListItem(
             ) {
                 skinDetail.replaces.fastForEachIndexed { index, replace ->
                     val isFileExist = replace.lastUpdate != null || replace.fileSize != null
-                    SegmentedListItem(
-                        colors = ListItemDefaults.colors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainer
-                        ),
-                        shapes = ListItemDefaults.segmentedShapes(
-                            index = index + 1,
-                            count = skinDetail.replaces.size + 1
-                        ),
+                    DefaultListItem(
+                        index = index + 1,
+                        count = skinDetail.replaces.size + 1,
                         leadingContent = { Icon(Icons.Rounded.InsertDriveFile, null) },
                         overlineContent = {
                             val overlineText = when (isFileExist) {

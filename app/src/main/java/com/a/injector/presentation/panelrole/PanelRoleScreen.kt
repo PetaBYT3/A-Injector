@@ -1,4 +1,4 @@
-package com.a.injector.presentation.managerole
+package com.a.injector.presentation.panelrole
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -36,14 +36,14 @@ import com.a.injector.presentation.util.ScreenEffectLauncher
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun ManageRoleScreenRoot(
+fun PanelRoleScreenRoot(
     navBackStack: NavBackStack<NavKey>,
-    viewModel: ManageRoleViewModel = koinViewModel()
+    viewModel: PanelRoleViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackBarHostState = remember { SnackbarHostState() }
 
-    Screen(
+    PanelRoleScreen(
         navBackStack = navBackStack,
         state = state,
         onAction = viewModel::onAction,
@@ -59,9 +59,9 @@ fun ManageRoleScreenRoot(
 @Composable
 @Preview
 private fun Preview() {
-    Screen(
+    PanelRoleScreen(
         navBackStack = rememberNavBackStack(),
-        state = ManageRoleState(
+        state = PanelRoleState(
             isRequestDetailsLoading = false,
         ),
         onAction = {},
@@ -70,10 +70,10 @@ private fun Preview() {
 }
 
 @Composable
-private fun Screen(
+private fun PanelRoleScreen(
     navBackStack: NavBackStack<NavKey>,
-    state: ManageRoleState,
-    onAction: (ManageRoleAction) -> Unit,
+    state: PanelRoleState,
+    onAction: (PanelRoleAction) -> Unit,
     snackBarHostState: SnackbarHostState
 ) {
     Scaffold(
@@ -96,7 +96,7 @@ private fun Screen(
 
     CustomBottomSheet(
         visible = state.isGrantRequestBottomSheetVisible,
-        onDismiss = { onAction(ManageRoleAction.DismissGrantRequestBottomSheet) },
+        onDismiss = { onAction(PanelRoleAction.DismissGrantRequestBottomSheet) },
         title = stringResource(R.string.verify),
         content = {
             item {
@@ -109,8 +109,8 @@ private fun Screen(
         bottomBar = {
             CustomButton(
                 onClick = {
-                    onAction(ManageRoleAction.DismissGrantRequestBottomSheet)
-                    onAction(ManageRoleAction.GrantRequestButton)
+                    onAction(PanelRoleAction.DismissGrantRequestBottomSheet)
+                    onAction(PanelRoleAction.GrantRequestButton)
                 },
                 text = stringResource(R.string.confirm)
             )
@@ -121,8 +121,8 @@ private fun Screen(
 @Composable
 private fun Content(
     modifier: Modifier = Modifier,
-    state: ManageRoleState,
-    onAction: (ManageRoleAction) -> Unit
+    state: PanelRoleState,
+    onAction: (PanelRoleAction) -> Unit
 ) {
     LazyColumn(
         modifier = modifier,
@@ -162,7 +162,7 @@ private fun Content(
                 trailingContent = {
                     CustomIconButton(
                         onClick = {
-                            onAction(ManageRoleAction.ShowGrantRequestBottomSheet(requestDetail))
+                            onAction(PanelRoleAction.ShowGrantRequestBottomSheet(requestDetail))
                         },
                         content = { Icon(Icons.Rounded.Edit, null) }
                     )

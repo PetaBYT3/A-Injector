@@ -2,7 +2,7 @@ package com.a.injector.presentation.paneluser
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.a.injector.domain.repository.UserRepository
+import com.a.injector.domain.repository.ProfileRepository
 import com.a.injector.presentation.util.ScreenEffect
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +14,7 @@ import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
 class PanelUserViewModel(
-    private val userRepository: UserRepository
+    private val profileRepository: ProfileRepository
 ): ViewModel() {
     private val _state = MutableStateFlow(PanelUserState())
     val state = _state.asStateFlow()
@@ -24,7 +24,7 @@ class PanelUserViewModel(
 
     init {
         viewModelScope.launch {
-            userRepository.getProfiles().collect { either ->
+            profileRepository.getList().collect { either ->
                 either.onRight { profileModels ->
                     _state.update { currentState ->
                         currentState.copy(profiles = profileModels, isProfileLoading = false)

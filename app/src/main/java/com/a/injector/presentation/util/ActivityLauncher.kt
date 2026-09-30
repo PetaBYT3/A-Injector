@@ -3,11 +3,11 @@ package com.a.injector.presentation.util
 import android.content.Context
 import android.content.Intent
 import android.provider.Settings
-import android.widget.Toast
 import androidx.compose.ui.platform.UriHandler
 import androidx.core.net.toUri
 import com.a.injector.BuildConfig
 import com.a.injector.R
+import com.a.injector.data.util.TextResource
 
 fun openStoragePermissionSettings(context: Context) {
     val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION).apply {
@@ -17,10 +17,33 @@ fun openStoragePermissionSettings(context: Context) {
     context.startActivity(intent)
 }
 
-fun openInBrowser(context: Context, uriHandler: UriHandler, url: String) {
+fun openInBrowser(
+    uriHandler: UriHandler,
+    url: String,
+    onError: (TextResource) -> Unit
+) {
     try {
         uriHandler.openUri(url)
     } catch (e: Exception) {
-        Toast.makeText(context, context.getString(R.string.message_no_browser_installed), Toast.LENGTH_SHORT).show()
+        onError(TextResource.StringResource(R.string.exception_no_handler))
+    }
+}
+
+fun sendToEmail(
+    context: Context,
+    email: String,
+    onError: (TextResource) -> Unit
+) {
+    val cleanEmail = email.trim()
+    val mailUri = "mailto:$cleanEmail".toUri()
+
+    val intent = Intent(Intent.ACTION_SENDTO, mailUri).apply {
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+
+    try {
+        context.startActivity(intent)
+    } catch (e: Exception) {
+        onError(TextResource.StringResource(R.string.exception_no_handler))
     }
 }

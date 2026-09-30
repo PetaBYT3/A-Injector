@@ -75,7 +75,7 @@ class InjectRepositoryImpl(
             userDataStoreApi.setCommandService(
                 commandService = commandService
             )
-            emit(Either.Right(TextResource.StringResource(R.string.success_install_script)))
+            emit(Either.Right(TextResource.StringResource(R.string.success_script_install)))
         }.catch { throwable ->
             emit(Either.Left(throwable.toMessage()))
         }.flowOn(Dispatchers.IO)
@@ -106,7 +106,7 @@ class InjectRepositoryImpl(
             }
 
             extractedDir.deleteRecursively()
-            emit(Either.Right(TextResource.StringResource(R.string.success_install_script)))
+            emit(Either.Right(TextResource.StringResource(R.string.success_script_install)))
         }.catch { throwable ->
             emit(Either.Left(throwable.toMessage()))
         }.flowOn(Dispatchers.IO)
@@ -127,7 +127,7 @@ class InjectRepositoryImpl(
             emit(Either.Right(TextResource.DynamicString("Copying")))
             copyAssets(extractedReplace)
 
-            emit(Either.Right(TextResource.StringResource(R.string.success_install_script)))
+            emit(Either.Right(TextResource.StringResource(R.string.success_script_install)))
         }.catch { throwable ->
             emit(Either.Left(throwable.toMessage()))
         }.flowOn(Dispatchers.IO)

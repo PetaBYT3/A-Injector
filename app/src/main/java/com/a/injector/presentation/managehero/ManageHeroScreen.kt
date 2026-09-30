@@ -119,7 +119,7 @@ private fun ManageHeroScreen(
                             isLoading = state.isUpsertButtonLoading
                         )
                     },
-                    content = if (state.isOnEdit) {
+                    content = if (state.isOnEdit && state.isDeleteEnabled) {
                         {
                             CustomIconButton(
                                 onClick = { onAction(ManageHeroAction.DeleteBottomSheet) },
