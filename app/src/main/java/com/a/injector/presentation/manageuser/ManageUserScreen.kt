@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Save
@@ -19,8 +18,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -35,7 +32,6 @@ import com.a.injector.presentation.component.CustomFloatingActionButton
 import com.a.injector.presentation.component.CustomFloatingActionToolBar
 import com.a.injector.presentation.component.CustomIconButton
 import com.a.injector.presentation.component.CustomTextField
-import com.a.injector.presentation.component.CustomTextListTitle
 import com.a.injector.presentation.component.CustomTopAppBar
 import com.a.injector.presentation.component.DefaultClickableListItem
 import com.a.injector.presentation.component.MessageListItem
@@ -95,7 +91,7 @@ private fun ManageUserScreen(
         topBar = {
             CustomTopAppBar(
                 navigationClick = { navBackStack.popBackStack() },
-                title = stringResource(R.string.title_edit)
+                title = stringResource(R.string.user_panel)
             )
         },
         content = { innerPadding ->
@@ -124,7 +120,7 @@ private fun ManageUserScreen(
     CustomBottomSheet(
         visible = state.isSelectRoleBottomSheetVisible,
         onDismiss = { onAction(ManageUserAction.SelectRoleBottomSheet) },
-        title = stringResource(R.string.item_role),
+        title = stringResource(R.string.verify),
         content = {
             val allowedRole = Role.entries.filterNot { role ->
                 role == Role.Administrator || role == state.profile.role
@@ -178,16 +174,11 @@ private fun Content(
             }
             return@LazyColumn
         }
-        item("profileTitle") {
-            CustomTextListTitle(
-                text = stringResource(R.string.item_profile)
-            )
-        }
         item("userNameTextField") {
             CustomTextField(
                 modifier = Modifier
                     .animateItem(),
-                label = stringResource(R.string.item_username),
+                label = stringResource(R.string.username),
                 value = state.profile.username,
                 onValueChange = {},
                 readOnly = true
@@ -198,7 +189,7 @@ private fun Content(
             CustomTextField(
                 modifier = Modifier
                     .animateItem(),
-                label = stringResource(R.string.item_support_nominal),
+                label = stringResource(R.string.support),
                 value = state.profile.nominal.toString(),
                 onValueChange = {},
                 trailingIcon = { Text(text = "IDR") },
@@ -206,29 +197,12 @@ private fun Content(
             )
         }
         spacer()
-        item("nominalToAddTextField") {
-            CustomTextField(
-                modifier = Modifier
-                    .animateItem(),
-                label = stringResource(R.string.item_nominal_to_add),
-                value = state.nominalToAddTextField,
-                onValueChange = { userInput ->
-                    val filteredInput = userInput.filter { it.isDigit() }
-                    onAction(ManageUserAction.NominalToAddTextField(filteredInput))
-                },
-                trailingIcon = { Text(text = "IDR") },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Done
-                )
-            )
-        }
         spacer()
         item {
             CustomTextField(
                 modifier = Modifier
                     .animateItem(),
-                label = stringResource(R.string.item_role),
+                label = stringResource(R.string.role),
                 value = state.profile.role.name,
                 onValueChange = {},
                 trailingIcon = {

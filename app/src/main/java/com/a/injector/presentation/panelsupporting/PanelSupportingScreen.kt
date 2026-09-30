@@ -26,16 +26,15 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
+import com.a.injector.presentation.component.CustomAsyncImage
 import com.a.injector.presentation.component.CustomBottomSheet
 import com.a.injector.presentation.component.CustomButton
 import com.a.injector.presentation.component.CustomCenterCircularWavyProgressIndicator
 import com.a.injector.presentation.component.CustomCenterTextMessage
 import com.a.injector.presentation.component.CustomIconButton
 import com.a.injector.presentation.component.CustomTopAppBar
-import com.a.injector.presentation.component.DefaultClickableListItem
 import com.a.injector.presentation.component.DefaultListItem
 import com.a.injector.presentation.component.spacer
-import com.a.injector.presentation.mainnavigation.MainNavigationRoute
 import com.a.injector.presentation.mainnavigation.popBackStack
 import com.a.injector.presentation.util.ScreenEffectLauncher
 import com.a.injector.presentation.util.toIdr
@@ -86,7 +85,7 @@ private fun PanelSupportingScreen(
         topBar = {
             CustomTopAppBar(
                 navigationClick = { navBackStack.popBackStack() },
-                title = stringResource(R.string.support)
+                title = stringResource(R.string.support_panel)
             )
         },
         content = { innerPadding ->
@@ -104,7 +103,7 @@ private fun PanelSupportingScreen(
     CustomBottomSheet(
         visible = state.isSupportingBottomSheetVisible,
         onDismiss = { onAction(PanelSupportingAction.DismissSupportingBottomSheet) },
-        title = stringResource(R.string.title_action),
+        title = stringResource(R.string.verify),
         content = {
             item("supportingItem") {
                 DefaultListItem(
@@ -122,16 +121,8 @@ private fun PanelSupportingScreen(
             }
             spacer()
             item("proofImage") {
-                DefaultClickableListItem(
-                    modifier = Modifier
-                        .animateItem(),
-                    onClick = {
-                        val targetScreen = MainNavigationRoute.ImagePreviewScreen(
-                            imageUrl = state.supportingToAction.imageUrl
-                        )
-                        navBackStack.add(targetScreen)
-                    },
-                    content = { Text(text = "Proof") }
+                CustomAsyncImage(
+                    imageUrl = state.supportingToAction.imageUrl
                 )
             }
         },
@@ -141,7 +132,7 @@ private fun PanelSupportingScreen(
                     onAction(PanelSupportingAction.DismissSupportingBottomSheet)
                     onAction(PanelSupportingAction.DenySupportingButton)
                 },
-                text = "Deny",
+                text = stringResource(R.string.decline),
                 isError = true
             )
             CustomButton(
@@ -149,7 +140,7 @@ private fun PanelSupportingScreen(
                     onAction(PanelSupportingAction.DismissSupportingBottomSheet)
                     onAction(PanelSupportingAction.ConfirmSupportingButton)
                 },
-                text = stringResource(R.string.action_confirm),
+                text = stringResource(R.string.confirm),
             )
         }
     )
@@ -184,6 +175,17 @@ private fun Content(
                     text = state.isSupportingListError.asString()
                 )
             }
+            return@LazyColumn
+        }
+        if (state.supportingList.isEmpty()) {
+            item("isSupportingListEmpty") {
+                CustomCenterTextMessage(
+                    modifier = Modifier
+                        .animateItem(),
+                    text = stringResource(R.string.empty)
+                )
+            }
+            return@LazyColumn
         }
         itemsIndexed(
             items = state.supportingList,

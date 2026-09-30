@@ -61,10 +61,10 @@ class ProfileApiImpl(
         return supabaseClient.from(SupabaseElement.PROFILE_TABLE).selectAsFlow(
             primaryKey = ProfileDto::id,
             filter = {
-                gt("supporting", 0)
+                gt("support", 0)
             }
         ).map { profileDtos ->
-            profileDtos.sortedByDescending { it.supporting }.take(10)
+            profileDtos.sortedByDescending { it.support }.take(10)
         }
     }
 

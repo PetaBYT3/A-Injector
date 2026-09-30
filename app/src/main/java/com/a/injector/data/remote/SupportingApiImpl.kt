@@ -2,7 +2,7 @@
 
 package com.a.injector.data.remote
 
-import com.a.injector.data.dto.SupportingDto
+import com.a.injector.data.dto.SupportDto
 import com.a.injector.data.util.SupabaseElement
 import com.a.injector.data.util.postgrestActionToUnit
 import io.github.jan.supabase.SupabaseClient
@@ -29,12 +29,12 @@ import kotlin.uuid.Uuid
 class SupportingApiImpl(
     private val supabaseClient: SupabaseClient
 ): SupportingApi {
-    override fun getList(): Flow<List<SupportingDto>> {
+    override fun getList(): Flow<List<SupportDto>> {
         val channel = supabaseClient.channel("getList:${Uuid.random()}")
         return merge(
             channel.postgresChangeFlow<PostgresAction>(
                 schema = SupabaseElement.SCHEMA,
-                filter = { table = SupabaseElement.SUPPORTING_TABLE }
+                filter = { table = SupabaseElement.SUPPORT_TABLE }
             ),
             channel.postgresChangeFlow<PostgresAction>(
                 schema = SupabaseElement.SCHEMA,
@@ -46,21 +46,21 @@ class SupportingApiImpl(
         }.onCompletion {
             supabaseClient.realtime.removeChannel(channel)
         }.flatMapLatest {
-            val data = supabaseClient.from(SupabaseElement.SUPPORTING_TABLE).select(
+            val data = supabaseClient.from(SupabaseElement.SUPPORT_TABLE).select(
                 columns = Columns.raw(
                     "*, ${SupabaseElement.PROFILE_TABLE}(*)"
                 )
-            ).decodeList<SupportingDto>()
+            ).decodeList<SupportDto>()
             flowOf(data)
         }
     }
 
-    override fun getSingle(profileId: String): Flow<SupportingDto?> {
+    override fun getSingle(profileId: String): Flow<SupportDto?> {
         val channel = supabaseClient.channel("getSingle:${Uuid.random()}")
         return merge(
             channel.postgresChangeFlow<PostgresAction>(
                 schema = SupabaseElement.SCHEMA,
-                filter = { table = SupabaseElement.SUPPORTING_TABLE }
+                filter = { table = SupabaseElement.SUPPORT_TABLE }
             ),
             channel.postgresChangeFlow<PostgresAction>(
                 schema = SupabaseElement.SCHEMA,
@@ -72,22 +72,22 @@ class SupportingApiImpl(
         }.onCompletion {
             supabaseClient.realtime.removeChannel(channel)
         }.map {
-            supabaseClient.from(SupabaseElement.SUPPORTING_TABLE).select(
+            supabaseClient.from(SupabaseElement.SUPPORT_TABLE).select(
                 request = { filter { eq("id", profileId) } },
                 columns = Columns.raw(
                     "*, ${SupabaseElement.PROFILE_TABLE}(*)"
                 )
-            ).decodeSingleOrNull<SupportingDto>()
+            ).decodeSingleOrNull<SupportDto>()
         }
     }
 
-    override suspend fun upsert(supportingDto: SupportingDto) {
-        supabaseClient.from(SupabaseElement.SUPPORTING_TABLE).upsert(supportingDto)
+    override suspend fun upsert(supportDto: SupportDto) {
+        supabaseClient.from(SupabaseElement.SUPPORT_TABLE).upsert(supportDto)
     }
 
-    override suspend fun delete(supportingDto: SupportingDto) {
-        supabaseClient.from(SupabaseElement.SUPPORTING_TABLE).delete(
-            request = { filter { eq("id", supportingDto.id) } }
+    override suspend fun delete(supportDto: SupportDto) {
+        supabaseClient.from(SupabaseElement.SUPPORT_TABLE).delete(
+            request = { filter { eq("id", supportDto.id) } }
         )
     }
 }

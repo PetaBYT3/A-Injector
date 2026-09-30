@@ -17,5 +17,8 @@
     <string name="exception_no_data">Data has been does not exist or has been deleted</string>
 
     <string name="exception_fail_to_read_image">Fail to read image</string>
+    <string name="exception_no_script">No script file picked</string>
+    <string name="exception_no_role">No role requested</string>
+    <string name="exception_pick_role">Pick role</string>
     <string name="exception_no_image">No image file picked</string>
 </resources>

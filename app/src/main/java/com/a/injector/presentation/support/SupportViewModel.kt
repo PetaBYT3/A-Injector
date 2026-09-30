@@ -1,9 +1,9 @@
-package com.a.injector.presentation.supporting
+package com.a.injector.presentation.support
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a.injector.domain.model.ProfileModel
-import com.a.injector.domain.model.SupportingModel
+import com.a.injector.domain.model.SupportModel
 import com.a.injector.domain.repository.NavigationRepository
 import com.a.injector.domain.repository.UserRepository
 import com.a.injector.presentation.util.ScreenEffect
@@ -19,30 +19,30 @@ import org.koin.android.annotation.KoinViewModel
 import org.koin.core.annotation.InjectedParam
 
 @KoinViewModel
-class SupportingViewModel(
+class SupportViewModel(
     @InjectedParam private val profileId: String,
     private val userRepository: UserRepository,
     private val navigationRepository: NavigationRepository
 ): ViewModel() {
-    private val _state = MutableStateFlow(SupportingState())
+    private val _state = MutableStateFlow(SupportState())
     val state = _state.asStateFlow()
 
     private val _effect = Channel<ScreenEffect>()
     val effect = _effect.receiveAsFlow()
 
-    fun onAction(action: SupportingAction) {
+    fun onAction(action: SupportAction) {
         when (action) {
-            is SupportingAction.NominalTextField -> {
+            is SupportAction.NominalTextField -> {
                 _state.update { currentState ->
                     currentState.copy(nominalTextField = action.nominal)
                 }
             }
-            is SupportingAction.ImagePicker -> {
+            is SupportAction.ImagePicker -> {
                 _state.update { currentState ->
                     currentState.copy(image = action.image)
                 }
             }
-            SupportingAction.UpsertSupportingButton -> {
+            SupportAction.UpsertSupportingButton -> {
                 upsertSupportingButton()
             }
         }
@@ -52,7 +52,7 @@ class SupportingViewModel(
         viewModelScope.launch {
 
             userRepository.upsertSupporting(
-                supportingModel = SupportingModel(
+                supportModel = SupportModel(
                     id = profileId,
                     nominal = _state.value.nominalTextField.ifBlank { "0" }.toLong(),
                     imageUrl = "",
@@ -61,11 +61,11 @@ class SupportingViewModel(
                 image = _state.value.image
             ).onStart {
                 _state.update { currentState ->
-                    currentState.copy(isUpsertSupportingButtonLoading = true)
+                    currentState.copy(isUpsertSupportButtonLoading = true)
                 }
             }.onCompletion {
                 _state.update { currentState ->
-                    currentState.copy(isUpsertSupportingButtonLoading = false)
+                    currentState.copy(isUpsertSupportButtonLoading = false)
                 }
             }.collect { either ->
                 either.onRight {

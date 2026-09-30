@@ -10,14 +10,14 @@ enum class SignOption {
 val signOptions = listOf(
     StaticModel(
         id = SignOption.SignIn,
-        contentTextResId = R.string.action_sign_in
+        content = R.string.sign_in
     ),
     StaticModel(
         id = SignOption.SignUp,
-        contentTextResId = R.string.action_sign_up
+        content = R.string.sign_up
     ),
     StaticModel(
         id = SignOption.Guest,
-        contentTextResId = R.string.action_sign_guest
+        content = R.string.sign_guest
     )
 )

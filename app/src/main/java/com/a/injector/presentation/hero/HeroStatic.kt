@@ -15,11 +15,11 @@ val skinActions = listOf(
     StaticModel(
         id = SkinAction.Edit,
         leadingContent = { Icon(Icons.Rounded.Edit, null) },
-        contentTextResId = R.string.action_edit
+        content = R.string.action_edit
     ),
     StaticModel(
         id = SkinAction.AddReplace,
         leadingContent = { Icon(Icons.Rounded.Add, null) },
-        contentTextResId = R.string.action_add
+        content = R.string.action_add
     )
 )

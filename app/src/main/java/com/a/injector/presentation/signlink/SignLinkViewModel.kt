@@ -41,7 +41,7 @@ class SignLinkViewModel(
 
     private fun sendOtpButton() {
         viewModelScope.launch {
-            accountRepository.signOtp(
+            accountRepository.signLink(
                 email = _state.value.emailTextField
             ).onStart {
                 _state.update { it.copy(isSendOtpButtonLoading = true) }

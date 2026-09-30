@@ -141,11 +141,11 @@ private fun Content(
                         ) {
                             when (staticModel.id) {
                                 SignOption.SignIn, SignOption.SignUp -> {
-                                    Text(text = stringResource(staticModel.contentTextResId))
+                                    Text(text = stringResource(staticModel.content))
                                 }
                                 SignOption.Guest -> {
                                     if (!state.isGuestButtonLoading) {
-                                        Text(text = stringResource(staticModel.contentTextResId))
+                                        Text(text = stringResource(staticModel.content))
                                     } else {
                                         CircularWavyProgressIndicator(
                                             modifier = Modifier

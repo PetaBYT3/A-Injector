@@ -89,7 +89,7 @@ private fun SignInScreen(
         topBar = {
             CustomTopAppBar(
                 navigationClick = { navBackStack.popBackStack() },
-                title = stringResource(R.string.title_sign_in)
+                title = stringResource(R.string.sign_in)
             )
         },
         content = { innerPadding ->
@@ -125,7 +125,7 @@ private fun Content(
             CustomSurfaceText(
                 modifier = Modifier
                     .animateItem(),
-                text = stringResource(R.string.message_sign_in)
+                text = stringResource(R.string.sign_in_desc)
             )
         }
         spacer()
@@ -133,7 +133,7 @@ private fun Content(
             CustomTextField(
                 modifier = Modifier
                     .animateItem(),
-                placeholder = stringResource(R.string.item_email),
+                placeholder = stringResource(R.string.email),
                 value = state.emailTextField,
                 onValueChange = { onAction(SignInAction.EmailTextField(it)) }
             )
@@ -143,7 +143,7 @@ private fun Content(
             CustomTextField(
                 modifier = Modifier
                     .animateItem(),
-                placeholder = stringResource(R.string.item_password),
+                placeholder = stringResource(R.string.password),
                 value = state.passwordTextField,
                 onValueChange = { onAction(SignInAction.PasswordTextField(it)) },
                 trailingIcon = {
@@ -176,14 +176,14 @@ private fun Content(
                     modifier = Modifier
                         .align(Alignment.TopStart),
                     onClick = { navBackStack.add(MainNavigationRoute.SignLinkScreen) },
-                    content = { Text(text = "Forget Password") }
+                    content = { Text(text = stringResource(R.string.forget_password)) }
                 )
                 CustomButton(
                     modifier = Modifier
                         .height(ButtonDefaults.MediumContainerHeight)
                         .align(Alignment.TopEnd),
                     onClick = { onAction(SignInAction.SignInButton) },
-                    text = stringResource(R.string.action_sign_in),
+                    text = stringResource(R.string.sign_in),
                     isLoading = state.isSingInButtonLoading,
                     enabled = state.isDataValid
                 )

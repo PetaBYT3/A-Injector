@@ -10,18 +10,18 @@ enum class BottomNavigationId {
 val bottomNavigationItems = listOf(
     StaticModel(
         id = BottomNavigationId.Home,
-        contentTextResId = R.string.title_home
+        content = R.string.title_home
     ),
     StaticModel(
         id = BottomNavigationId.Script,
-        contentTextResId = R.string.title_script
+        content = R.string.title_script
     ),
     StaticModel(
         id = BottomNavigationId.Account,
-        contentTextResId = R.string.title_account
+        content = R.string.title_account
     ),
     StaticModel(
         id = BottomNavigationId.Settings,
-        contentTextResId = R.string.title_settings
+        content = R.string.title_settings
     )
 )

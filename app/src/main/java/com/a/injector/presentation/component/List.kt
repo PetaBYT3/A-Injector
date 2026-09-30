@@ -236,13 +236,16 @@ fun SkinDetailListItem(
                         ),
                         leadingContent = { Icon(Icons.Rounded.InsertDriveFile, null) },
                         overlineContent = {
-                            val dateAndSize = if (isFileExist) {
-                                "${replace.lastUpdate?.toDateTime()} | ${replace.fileSize?.toMegaBytes()}"
-                            } else {
-                                stringResource(R.string.item_no_file)
+                            val overlineText = when (isFileExist) {
+                                true -> buildString {
+                                    append(replace.lastUpdate?.toDateTime())
+                                    append(" | ")
+                                    append(replace.fileSize?.toMegaBytes())
+                                }
+                                false -> stringResource(R.string.exception_no_script)
                             }
                             Text(
-                                text = dateAndSize,
+                                text = overlineText,
                                 style = MaterialTheme.typography.labelSmall
                             )
                         },

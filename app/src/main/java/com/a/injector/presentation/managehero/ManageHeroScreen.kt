@@ -89,8 +89,8 @@ private fun ManageHeroScreen(
     Scaffold(
         topBar = {
             val title = when (state.isOnEdit) {
-                true -> stringResource(R.string.action_edit)
-                false -> stringResource(R.string.action_add)
+                true -> stringResource(R.string.edit)
+                false -> stringResource(R.string.add)
             }
             CustomTopAppBar(
                 navigationClick = { navBackStack.popBackStack() },
@@ -136,10 +136,10 @@ private fun ManageHeroScreen(
     CustomBottomSheet(
         visible = state.isDeleteBottomSheetVisible,
         onDismiss = { onAction(ManageHeroAction.DeleteBottomSheet) },
-        title = stringResource(R.string.title_delete),
+        title = stringResource(R.string.delete),
         content = {
             item {
-                CustomSurfaceText(text = stringResource(R.string.message_delete_hero))
+                CustomSurfaceText(text = stringResource(R.string.hero_delete))
             }
         },
         bottomBar = {
@@ -148,7 +148,7 @@ private fun ManageHeroScreen(
                     onAction(ManageHeroAction.DeleteBottomSheet)
                     onAction(ManageHeroAction.DeleteButton)
                 },
-                text = stringResource(R.string.action_confirm),
+                text = stringResource(R.string.confirm),
                 isError = true
             )
         }
@@ -180,14 +180,14 @@ private fun Content(
             CustomTextListTitle(
                 modifier = Modifier
                     .animateItem(),
-                text = stringResource(R.string.item_hero)
+                text = stringResource(R.string.hero)
             )
         }
         item("heroItem") {
             CustomTextField(
                 modifier = Modifier
                     .animateItem(),
-                label = stringResource(R.string.item_name),
+                label = stringResource(R.string.name),
                 value = state.hero.name,
                 onValueChange = { onAction(ManageHeroAction.HeroNameTextField(it)) }
             )

@@ -96,7 +96,7 @@ private fun HomeScreen(
         contentWindowInsets = WindowInsets.statusBars,
         topBar = {
             CustomTopAppBar(
-                title = stringResource(R.string.title_home)
+                title = stringResource(R.string.home)
             )
         },
         content = { innerPadding ->
@@ -154,11 +154,11 @@ private fun Content(
                 modifier = Modifier
                     .animateItem(),
                 leadingContent = { Icon(Icons.Rounded.Storage, null) },
-                content = { Text(text = stringResource(R.string.item_storage_permission)) },
+                content = { Text(text = stringResource(R.string.storage_permission)) },
                 supportingContent = {
                     val text = when (state.isManageExternalStorageGranted) {
-                        true -> stringResource(R.string.title_granted)
-                        false -> stringResource(R.string.title_denied)
+                        true -> stringResource(R.string.granted)
+                        false -> stringResource(R.string.denied)
                     }
                     Text(text = text)
                 },
@@ -167,7 +167,7 @@ private fun Content(
                     if (!state.isManageExternalStorageGranted) {
                         Button(
                             onClick = { openStoragePermissionSettings(context) },
-                            content = { Text(text = stringResource(R.string.item_settings)) }
+                            content = { Text(text = stringResource(R.string.settings)) }
                         )
                     }
                 }
@@ -178,7 +178,7 @@ private fun Content(
             CustomTextListTitle(
                 modifier = Modifier
                     .animateItem(),
-                text = stringResource(R.string.item_about_developer)
+                text = stringResource(R.string.about_developer)
             )
         }
         itemsIndexed(
@@ -191,8 +191,8 @@ private fun Content(
                 index = index,
                 count = AboutDevelopers.size,
                 onClick = {
-                    if (staticModel.supportingTextResId != null) {
-                        val supportingText = TextResource.StringResource(staticModel.supportingTextResId)
+                    if (staticModel.supportingContent != null) {
+                        val supportingText = TextResource.StringResource(staticModel.supportingContent)
                         when (staticModel.id) {
                             Mlbb -> {
                                 clipboardManager.setText(
@@ -215,7 +215,7 @@ private fun Content(
                     }
                 },
                 leadingContent = staticModel.leadingContent,
-                content = { Text(text = stringResource(staticModel.contentTextResId)) },
+                content = { Text(text = stringResource(staticModel.content)) },
                 trailingContent = staticModel.trailingContent
             )
         }
@@ -224,7 +224,7 @@ private fun Content(
             CustomTextListTitle(
                 modifier = Modifier
                     .animateItem(),
-                text = stringResource(R.string.item_top_supporter)
+                text = stringResource(R.string.top_support)
             )
         }
         when {
@@ -250,7 +250,7 @@ private fun Content(
                     MessageListItem(
                         modifier = Modifier
                             .animateItem(),
-                        text = stringResource(R.string.item_empty)
+                        text = stringResource(R.string.empty)
                     )
                 }
             }
@@ -284,7 +284,7 @@ private fun Content(
             CustomTextListTitle(
                 modifier = Modifier
                     .animateItem(),
-                text = stringResource(R.string.item_top_contributor)
+                text = stringResource(R.string.top_contributor)
             )
         }
         when {
@@ -311,7 +311,7 @@ private fun Content(
                     MessageListItem(
                         modifier = Modifier
                             .animateItem(),
-                        text = stringResource(R.string.item_empty)
+                        text = stringResource(R.string.empty)
                     )
                 }
             }
@@ -334,8 +334,12 @@ private fun Content(
                             )
                         },
                         trailingContent = {
-                            val text = "${profileModel.contribution} ${stringResource(R.string.item_files_uploaded)}"
-                            Text(text = text)
+                            val trailingText = buildString {
+                                append(profileModel.contribution)
+                                append(" ")
+                                append(stringResource(R.string.top_contributor_desc))
+                            }
+                            Text(text = trailingText)
                         }
                     )
                 }

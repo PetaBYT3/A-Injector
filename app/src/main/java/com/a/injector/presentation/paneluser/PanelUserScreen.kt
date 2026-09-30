@@ -83,7 +83,7 @@ private fun PanelUserScreen(
         topBar = {
             CustomTopAppBar(
                 navigationClick = { navBackStack.popBackStack() },
-                title = stringResource(R.string.title_user_panel)
+                title = stringResource(R.string.user_panel)
             )
         },
         content = { innerPadding ->
@@ -105,7 +105,7 @@ private fun PanelUserScreen(
                         TransparentTextField(
                             modifier = Modifier
                                 .width(250.dp),
-                            placeholder = stringResource(R.string.action_search),
+                            placeholder = stringResource(R.string.search_here),
                             value = state.searchTextField,
                             onValueChange = { onAction(PanelUserAction.SearchTextField(it)) },
                             trailingIcon = {
@@ -166,9 +166,10 @@ private fun Content(
                 MessageListItem(
                     modifier = Modifier
                         .animateItem(),
-                    text = stringResource(R.string.item_empty)
+                    text = stringResource(R.string.empty)
                 )
             }
+            return@LazyColumn
         }
         itemsIndexed(
             items = state.filteredProfiles,

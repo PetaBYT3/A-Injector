@@ -11,5 +11,5 @@ data class ProfileDto(
     val username: String = "",
     val role: Role = Role.User,
     val contribution: Int = 0,
-    val supporting: Long = 0L
+    val support: Long = 0L
 )

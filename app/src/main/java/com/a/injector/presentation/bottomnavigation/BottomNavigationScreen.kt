@@ -129,7 +129,7 @@ private fun BottomNavigationScreen(
                                 }
                                 Icon(imageVector, null)
                             },
-                            label = { Text(text = stringResource(staticModel.contentTextResId)) }
+                            label = { Text(text = stringResource(staticModel.content)) }
                         )
                     }
                 }

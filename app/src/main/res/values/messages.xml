@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="message_maintenance">
+        This app is currently undergoing scheduled maintenance to improve our services. During this period,
+        you may experience temporary system instability, minor bugs, or unexpected app crashes.
+        We apologize for any inconvenience this may cause and are working to complete the maintenance as quickly as possible.
+    </string>
+
+    <string name="message_update">
+        A new version is ready to download. We highly recommend updating your application to ensure optimal performance.
+        Continuing to use this outdated version may result in unexpected bugs, feature instability, or app crashes.
+    </string>
+</resources>

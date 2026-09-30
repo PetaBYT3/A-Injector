@@ -76,7 +76,7 @@ private fun SettingsScreen(
         contentWindowInsets = WindowInsets.statusBars,
         topBar = {
             CustomTopAppBar(
-                title = stringResource(R.string.title_settings)
+                title = stringResource(R.string.settings)
             )
         },
         content = { innerPadding ->
@@ -94,7 +94,7 @@ private fun SettingsScreen(
     CustomBottomSheet(
         visible = state.isLanguageBottomSheetVisible,
         onDismiss = { onAction(SettingsAction.LanguageBottomSheet) },
-        title = stringResource(R.string.item_language),
+        title = stringResource(R.string.language),
         content = {
             itemsIndexed(
                 items = settingsSupportedLanguage,
@@ -127,10 +127,10 @@ private fun SettingsScreen(
     CustomBottomSheet(
         visible = state.isClearCacheBottomSheetVisible,
         onDismiss = { onAction(SettingsAction.CleanCacheBottomSheet) },
-        title = stringResource(R.string.action_clear),
+        title = stringResource(R.string.clean_cache),
         content = {
             item {
-                CustomSurfaceText(text = stringResource(R.string.lorem_ipsum))
+                CustomSurfaceText(text = stringResource(R.string.clean_cache_desc))
             }
         },
         bottomBar = {
@@ -139,7 +139,7 @@ private fun SettingsScreen(
                     onAction(SettingsAction.CleanCacheBottomSheet)
                     onAction(SettingsAction.CleanCacheButton)
                 },
-                text = stringResource(R.string.action_clean)
+                text = stringResource(R.string.confirm)
             )
         }
     )
@@ -177,7 +177,7 @@ private fun Content(
                     }
                 },
                 leadingContent = staticModel.leadingContent,
-                content = { Text(text = stringResource(staticModel.contentTextResId)) },
+                content = { Text(text = stringResource(staticModel.content)) },
                 supportingContent = {
                     val text = when (staticModel.id) {
                         SettingsMenuId.Language -> {

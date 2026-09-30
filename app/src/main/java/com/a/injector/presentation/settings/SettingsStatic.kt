@@ -20,12 +20,11 @@ val settingsMenuItem = listOf(
     StaticModel(
         id = SettingsMenuId.Language,
         leadingContent = { Icon(Icons.Rounded.Language, null) },
-        contentTextResId = R.string.item_language
+        content = R.string.language
     ),
     StaticModel(
         id = SettingsMenuId.CleanCache,
         leadingContent = { Icon(Icons.Rounded.CleaningServices, null) },
-        contentTextResId = R.string.item_clean_cache,
-        supportingTextResId = R.string.item_clean_cache_desc
+        content = R.string.clean_cache
     )
 )

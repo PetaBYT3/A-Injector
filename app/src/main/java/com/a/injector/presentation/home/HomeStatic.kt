@@ -17,36 +17,36 @@ val AboutDevelopers = listOf(
     StaticModel(
         id = AboutDeveloper.Mlbb,
         leadingContent = { Icon(ImageVector.vectorResource(R.drawable.mlbb), null) },
-        contentTextResId = R.string.mlbb,
-        supportingTextResId = R.string.mlbb_desc,
+        content = R.string.mlbb,
+        supportingContent = R.string.mlbb_desc,
         trailingContent = { Icon(Icons.Rounded.ContentCopy, null) }
     ),
     StaticModel(
         id = AboutDeveloper.Linkedin,
         leadingContent = { Icon(ImageVector.vectorResource(R.drawable.linkedin), null) },
-        contentTextResId = R.string.linkedin,
-        supportingTextResId = R.string.linkedin_desc,
+        content = R.string.linkedin,
+        supportingContent = R.string.linkedin_desc,
         trailingContent = { Icon(Icons.Rounded.OpenInNew, null) }
     ),
     StaticModel(
         id = AboutDeveloper.Tiktok,
         leadingContent = { Icon(ImageVector.vectorResource(R.drawable.tiktok), null) },
-        contentTextResId = R.string.tiktok,
-        supportingTextResId = R.string.tiktok_desc,
+        content = R.string.tiktok,
+        supportingContent = R.string.tiktok_desc,
         trailingContent = { Icon(Icons.Rounded.OpenInNew, null) }
     ),
     StaticModel(
         id = AboutDeveloper.Github,
         leadingContent = { Icon(ImageVector.vectorResource(R.drawable.github), null) },
-        contentTextResId = R.string.github,
-        supportingTextResId = R.string.github_desc,
+        content = R.string.github,
+        supportingContent = R.string.github_desc,
         trailingContent = { Icon(Icons.Rounded.OpenInNew, null) }
     ),
     StaticModel(
         id = AboutDeveloper.Support,
         leadingContent = { Icon(ImageVector.vectorResource(R.drawable.support), null) },
-        contentTextResId = R.string.support,
-        supportingTextResId = R.string.support_desc,
+        content = R.string.support_developer,
+        supportingContent = R.string.support_developer_desc,
         trailingContent = { Icon(Icons.Rounded.OpenInNew, null) }
     )
 )

@@ -3,7 +3,7 @@ package com.a.injector.presentation.panelsupporting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a.injector.data.dto.Bucket
-import com.a.injector.domain.model.SupportingModel
+import com.a.injector.domain.model.SupportModel
 import com.a.injector.domain.repository.OptimizeDatabaseRepository
 import com.a.injector.domain.repository.UserRepository
 import com.a.injector.presentation.util.ScreenEffect
@@ -53,7 +53,7 @@ class PanelSupportingViewModel(
     fun onAction(action: PanelSupportingAction) {
         when (action) {
             is PanelSupportingAction.ShowSupportingBottomSheet -> {
-                showSupportingBottomSheet(supportingModel = action.supportingModel)
+                showSupportingBottomSheet(supportModel = action.supportModel)
             }
             PanelSupportingAction.DismissSupportingBottomSheet -> {
                 _state.update { currentState ->
@@ -69,17 +69,17 @@ class PanelSupportingViewModel(
         }
     }
 
-    private fun showSupportingBottomSheet(supportingModel: SupportingModel) {
+    private fun showSupportingBottomSheet(supportModel: SupportModel) {
         _state.update { currentState ->
             currentState.copy(
-                supportingToAction = supportingModel,
+                supportingToAction = supportModel,
                 isSupportingBottomSheetVisible = true
             )
         }
         viewModelScope.launch {
             optimizeDatabaseRepository.getFileUrl(
                 bucket = Bucket.IMAGE,
-                fileName = supportingModel.imageUrl
+                fileName = supportModel.imageUrl
             ).collect { either ->
                 either.onRight { url ->
                     _state.update { currentState ->
@@ -95,7 +95,7 @@ class PanelSupportingViewModel(
     private fun denySupportingButton() {
         viewModelScope.launch {
             userRepository.denySupporting(
-                supportingModel = _state.value.supportingToAction
+                supportModel = _state.value.supportingToAction
             ).onStart {
                 _state.update { currentState ->
                     currentState.copy(isActionSupportingButtonLoading = true)
@@ -117,7 +117,7 @@ class PanelSupportingViewModel(
     private fun confirmSupportingButton() {
         viewModelScope.launch {
             userRepository.confirmSupporting(
-                supportingModel = _state.value.supportingToAction
+                supportModel = _state.value.supportingToAction
             ).onStart {
                 _state.update { currentState ->
                     currentState.copy(isActionSupportingButtonLoading = true)

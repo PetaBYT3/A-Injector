@@ -5,6 +5,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -25,7 +28,7 @@ import com.a.injector.presentation.component.CustomBottomSheet
 import com.a.injector.presentation.component.CustomButton
 import com.a.injector.presentation.component.CustomCenterCircularWavyProgressIndicator
 import com.a.injector.presentation.component.CustomCenterTextMessage
-import com.a.injector.presentation.component.CustomTonalButton
+import com.a.injector.presentation.component.CustomIconButton
 import com.a.injector.presentation.component.CustomTopAppBar
 import com.a.injector.presentation.component.DefaultListItem
 import com.a.injector.presentation.mainnavigation.popBackStack
@@ -77,7 +80,7 @@ private fun Screen(
         topBar = {
             CustomTopAppBar(
                 navigationClick = { navBackStack.popBackStack() },
-                title = stringResource(R.string.title_panel)
+                title = stringResource(R.string.role_panel)
             )
         },
         content = { innerPadding ->
@@ -94,7 +97,7 @@ private fun Screen(
     CustomBottomSheet(
         visible = state.isGrantRequestBottomSheetVisible,
         onDismiss = { onAction(ManageRoleAction.DismissGrantRequestBottomSheet) },
-        title = stringResource(R.string.action_grant_permission),
+        title = stringResource(R.string.verify),
         content = {
             item {
                 DefaultListItem(
@@ -109,7 +112,7 @@ private fun Screen(
                     onAction(ManageRoleAction.DismissGrantRequestBottomSheet)
                     onAction(ManageRoleAction.GrantRequestButton)
                 },
-                text = stringResource(R.string.action_confirm)
+                text = stringResource(R.string.confirm)
             )
         }
     )
@@ -135,39 +138,36 @@ private fun Content(
             }
             return@LazyColumn
         }
-        when {
-            state.requestDetails.isEmpty() -> {
-                item("isRequestDetailsEmpty") {
-                    CustomCenterTextMessage(
-                        modifier = Modifier
-                            .animateItem(),
-                        text = stringResource(R.string.item_empty)
+        if (state.requestDetails.isEmpty()) {
+            item("isRequestDetailsEmpty") {
+                CustomCenterTextMessage(
+                    modifier = Modifier
+                        .animateItem(),
+                    text = stringResource(R.string.empty)
+                )
+            }
+            return@LazyColumn
+        }
+        itemsIndexed(
+            items = state.requestDetails,
+            key = { _, requestDetail -> requestDetail.id }
+        ) { index, requestDetail ->
+            DefaultListItem(
+                modifier = Modifier
+                    .animateItem(),
+                index = index,
+                count = state.requestDetails.size,
+                content = { Text(text = requestDetail.profile.username) },
+                supportingContent = { Text(text = requestDetail.role.name) },
+                trailingContent = {
+                    CustomIconButton(
+                        onClick = {
+                            onAction(ManageRoleAction.ShowGrantRequestBottomSheet(requestDetail))
+                        },
+                        content = { Icon(Icons.Rounded.Edit, null) }
                     )
                 }
-            }
-            else -> {
-                itemsIndexed(
-                    items = state.requestDetails,
-                    key = { _, requestDetail -> requestDetail.id }
-                ) { index, requestDetail ->
-                    DefaultListItem(
-                        modifier = Modifier
-                            .animateItem(),
-                        index = index,
-                        count = state.requestDetails.size,
-                        content = { Text(text = requestDetail.profile.username) },
-                        supportingContent = { Text(text = requestDetail.role.name) },
-                        trailingContent = {
-                            CustomTonalButton(
-                                onClick = {
-                                    onAction(ManageRoleAction.ShowGrantRequestBottomSheet(requestDetail))
-                                },
-                                text = stringResource(R.string.action_grant_permission)
-                            )
-                        }
-                    )
-                }
-            }
+            )
         }
     }
 }

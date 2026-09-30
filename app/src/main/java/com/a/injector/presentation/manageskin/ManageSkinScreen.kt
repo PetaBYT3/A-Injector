@@ -98,11 +98,10 @@ private fun Screen(
         topBar = {
             CustomTopAppBar(
                 navigationClick = { navBackStack.popBackStack() },
-                title = if (state.isOnEdit) {
-                    stringResource(R.string.action_edit)
-                } else {
-                    stringResource(R.string.action_add)
-                },
+                title = when (state.isOnEdit) {
+                    true -> stringResource(R.string.edit)
+                    false -> stringResource(R.string.add)
+                }
             )
         },
         content = { innerPadding ->
@@ -142,10 +141,10 @@ private fun Screen(
     CustomBottomSheet(
         visible = state.isDeleteBottomSheetVisible,
         onDismiss = { onAction(ManageSkinAction.DeleteBottomSheet) },
-        title = stringResource(R.string.action_delete),
+        title = stringResource(R.string.delete),
         content = {
             item {
-                CustomSurfaceText(text = stringResource(R.string.message_delete_skin))
+                CustomSurfaceText(text = stringResource(R.string.skin_delete))
             }
         },
         bottomBar = {
@@ -154,7 +153,7 @@ private fun Screen(
                     onAction(ManageSkinAction.DeleteBottomSheet)
                     onAction(ManageSkinAction.DeleteButton)
                 },
-                text = stringResource(R.string.action_confirm),
+                text = stringResource(R.string.confirm),
                 isError = true
             )
         }
@@ -197,7 +196,7 @@ private fun Content(
             CustomTextListTitle(
                 modifier = Modifier
                     .animateItem(),
-                text = stringResource(R.string.item_skin)
+                text = stringResource(R.string.skin)
             )
         }
         item("skinItem") {
@@ -207,12 +206,12 @@ private fun Content(
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 CustomTextField(
-                    label = stringResource(R.string.item_label),
+                    label = stringResource(R.string.label),
                     value = state.skin.label,
                     onValueChange = { onAction(ManageSkinAction.SkinLabelTextField(it)) }
                 )
                 CustomTextField(
-                    label = stringResource(R.string.item_name),
+                    label = stringResource(R.string.name),
                     value = state.skin.name,
                     onValueChange = { onAction(ManageSkinAction.SkinNameTextField(it)) }
                 )

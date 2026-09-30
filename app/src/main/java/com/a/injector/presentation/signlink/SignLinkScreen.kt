@@ -76,7 +76,7 @@ private fun SignLinkScreen(
         topBar = {
             CustomTopAppBar(
                 navigationClick = { navBackStack.popBackStack() },
-                title = "Preview"
+                title = stringResource(R.string.sign_link)
             )
         },
         content = { innerPadding ->
@@ -108,7 +108,7 @@ private fun Content(
             CustomSurfaceText(
                 modifier = Modifier
                     .animateItem(),
-                text = "Message preview"
+                text = stringResource(R.string.sign_link_desc)
             )
         }
         spacer()
@@ -116,7 +116,7 @@ private fun Content(
             CustomTextField(
                 modifier = Modifier
                     .animateItem(),
-                label = stringResource(R.string.item_email),
+                label = stringResource(R.string.email),
                 value = state.emailTextField,
                 onValueChange = { onAction(SignLinkAction.EmailTextField(it)) }
             )
@@ -133,7 +133,7 @@ private fun Content(
                     modifier = Modifier
                         .height(ButtonDefaults.MediumContainerHeight),
                     onClick = { onAction(SignLinkAction.SendOtpButton) },
-                    text = stringResource(R.string.action_send),
+                    text = stringResource(R.string.send),
                     isLoading = state.isSendOtpButtonLoading
                 )
             }

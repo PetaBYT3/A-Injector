@@ -94,7 +94,7 @@ private fun SignUpScreen(
         topBar = {
             CustomTopAppBar(
                 navigationClick = { navBackStack.popBackStack() },
-                title = stringResource(R.string.title_sign_up)
+                title = stringResource(R.string.sign_up)
             )
         },
         content = { innerPadding ->
@@ -128,7 +128,7 @@ private fun Content(
             CustomSurfaceText(
                 modifier = Modifier
                     .animateItem(),
-                text = stringResource(R.string.message_sign_up)
+                text = stringResource(R.string.sign_up_desc)
             )
         }
         spacer()
@@ -136,7 +136,7 @@ private fun Content(
             CustomTextField(
                 modifier = Modifier
                     .animateItem(),
-                placeholder = stringResource(R.string.item_email),
+                placeholder = stringResource(R.string.email),
                 value = state.emailTextField,
                 onValueChange = { onAction(SignUpAction.EmailTextField(it)) }
             )
@@ -146,7 +146,7 @@ private fun Content(
             CustomTextField(
                 modifier = Modifier
                     .animateItem(),
-                placeholder = stringResource(R.string.item_password),
+                placeholder = stringResource(R.string.password),
                 value = state.passwordTextField,
                 onValueChange = { onAction(SignUpAction.PasswordTextField(it)) },
                 trailingIcon = {
@@ -185,7 +185,7 @@ private fun Content(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             val isRequirementMet = when (staticModel.id) {
-                                PasswordRequirement.MoreThanEightCharacter -> state.isPasswordMoreThan8Character
+                                PasswordRequirement.HasEightCharacter -> state.isPasswordMoreThan8Character
                                 PasswordRequirement.ContainUppercase -> state.isPasswordContainUppercase
                                 PasswordRequirement.ContainNumber -> state.isPasswordContainNumber
                             }
@@ -205,7 +205,7 @@ private fun Content(
                                 contentDescription = null
                             )
                             Text(
-                                text = stringResource(staticModel.contentTextResId),
+                                text = stringResource(staticModel.content),
                                 style = MaterialTheme.typography.bodySmall
                             )
                         }
@@ -216,7 +216,7 @@ private fun Content(
                         .height(ButtonDefaults.MediumContainerHeight)
                         .align(Alignment.TopEnd),
                     onClick = { onAction(SignUpAction.SignUpButton) },
-                    text = stringResource(R.string.action_sign_in),
+                    text = stringResource(R.string.sign_up),
                     isLoading = state.isSignUpButtonLoading,
                     enabled = state.isDataValid
                 )

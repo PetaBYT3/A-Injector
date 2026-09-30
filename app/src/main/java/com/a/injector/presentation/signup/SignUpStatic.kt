@@ -4,20 +4,20 @@ import com.a.injector.R
 import com.a.injector.domain.model.StaticModel
 
 enum class PasswordRequirement {
-    MoreThanEightCharacter, ContainUppercase, ContainNumber
+    HasEightCharacter, ContainUppercase, ContainNumber
 }
 
 val passwordRequirements = listOf(
     StaticModel(
-        id = PasswordRequirement.MoreThanEightCharacter,
-        contentTextResId = R.string.item_eight_character
+        id = PasswordRequirement.HasEightCharacter,
+        content = R.string.eight_character
     ),
     StaticModel(
         id = PasswordRequirement.ContainUppercase,
-        contentTextResId = R.string.item_uppercase
+        content = R.string.capital
     ),
     StaticModel(
         id = PasswordRequirement.ContainNumber,
-        contentTextResId = R.string.item_number
+        content = R.string.number
     )
 )

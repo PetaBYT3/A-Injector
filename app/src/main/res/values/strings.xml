@@ -1,23 +1,4 @@
 <resources>
     <string name="app_name" translatable="false">A Injector</string>
     <string name="developer_name" translatable="false">Andrea Hussanini</string>
-
-    <string name="mlbb" translatable="false">MLBB</string>
-    <string name="mlbb_desc" translatable="false">187939654</string>
-
-    <string name="linkedin" translatable="false">Linkedin</string>
-    <string name="linkedin_desc" translatable="false">https://www.linkedin.com/in/andrea-hussanini-274223218/</string>
-
-    <string name="tiktok" translatable="false">Tiktok</string>
-    <string name="tiktok_desc" translatable="false">https://www.tiktok.com/@user5817652151748</string>
-
-    <string name="github" translatable="false">Github</string>
-    <string name="github_desc" translatable="false">https://github.com/PetaBYT3</string>
-
-    <string name="support">Support</string>
-    <string name="support_desc" translatable="false"></string>
-
-    <string name="lorem_ipsum" translatable="false">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas facilisis erat sapien, a suscipit dolor commodo nec. Proin iaculis accumsan diam, in posuere dui tincidunt et. Vestibulum nec metus dignissim, rhoncus sem vitae, imperdiet justo.
-    </string>
 </resources>

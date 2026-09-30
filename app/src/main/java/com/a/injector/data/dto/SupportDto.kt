@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
 @Serializable
-data class SupportingDto(
+data class SupportDto(
     val id: String = Uuid.random().toString(),
     val nominal: Long = 0,
     @SerialName("image_url")

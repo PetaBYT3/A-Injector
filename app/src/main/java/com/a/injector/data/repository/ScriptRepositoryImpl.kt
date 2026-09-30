@@ -13,7 +13,7 @@ import com.a.injector.data.remote.ReplaceApi
 import com.a.injector.data.remote.SkinApi
 import com.a.injector.data.remote.StorageApi
 import com.a.injector.data.util.TextResource
-import com.a.injector.data.util.toMessage
+import com.a.injector.data.util.catchAndDispatch
 import com.a.injector.domain.model.HeroModel
 import com.a.injector.domain.model.ReplaceModel
 import com.a.injector.domain.model.SkinModel
@@ -21,12 +21,11 @@ import com.a.injector.domain.repository.ScriptRepository
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.readBytes
 import io.github.vinceglb.filekit.size
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import org.koin.core.annotation.Single
 import kotlin.time.Clock
@@ -41,26 +40,30 @@ class ScriptRepositoryImpl(
     private val storageApi: StorageApi
 ): ScriptRepository {
     override fun getHeroes(): Flow<Either<TextResource, List<HeroModel>>> {
-        return heroApi.getList().map { heroDtos ->
-            val heroModels = heroDtos.map { HeroMapper.toModel(it) }
-            Either.Right(heroModels) as Either<TextResource, List<HeroModel>>
-        }.catch { throwable ->
-            emit(Either.Left(throwable.toMessage()))
-        }.flowOn(Dispatchers.IO)
+        return flow<Either<TextResource, List<HeroModel>>> {
+            val result = heroApi.getList().map { heroDtos ->
+                val heroModels = heroDtos.map { heroDto ->
+                    HeroMapper.toModel(heroDto)
+                }
+                Either.Right(heroModels)
+            }
+            emitAll(result)
+        }.catchAndDispatch()
     }
 
     override fun getHero(heroId: String): Flow<Either<TextResource, HeroModel>> {
-        return heroApi.getSingle(
-            heroId = heroId
-        ).map { heroDto ->
-            if (heroDto != null) {
-                Either.Right(HeroMapper.toModel(heroDto)) as Either<TextResource, HeroModel>
-            } else {
-                Either.Left(TextResource.StringResource(R.string.exception_no_data))
+        return flow<Either<TextResource, HeroModel>> {
+            val result = heroApi.getSingle(
+                heroId = heroId
+            ).map { heroDto ->
+                if (heroDto != null) {
+                    Either.Right(HeroMapper.toModel(heroDto))
+                } else {
+                    Either.Left(TextResource.StringResource(R.string.exception_no_data))
+                }
             }
-        }.catch { throwable ->
-            emit(Either.Left(throwable.toMessage()))
-        }.flowOn(Dispatchers.IO)
+            emitAll(result)
+        }.catchAndDispatch()
     }
 
     override fun upsertHero(heroModel: HeroModel): Flow<Either<TextResource, Unit>> {
@@ -69,9 +72,7 @@ class ScriptRepositoryImpl(
                 hero = HeroMapper.toDto(heroModel)
             )
             emit(Either.Right(Unit))
-        }.catch { throwable ->
-            emit(Either.Left(throwable.toMessage()))
-        }.flowOn(Dispatchers.IO)
+        }.catchAndDispatch()
     }
 
     override fun deleteHero(heroModel: HeroModel): Flow<Either<TextResource, Unit>> {
@@ -80,23 +81,22 @@ class ScriptRepositoryImpl(
                 hero = HeroMapper.toDto(heroModel)
             )
             emit(Either.Right(Unit))
-        }.catch { throwable ->
-            emit(Either.Left(throwable.toMessage()))
-        }.flowOn(Dispatchers.IO)
+        }.catchAndDispatch()
     }
 
     override fun getSkin(skinId: String): Flow<Either<TextResource, SkinModel>> {
-        return skinApi.getSingle(
-            skinId = skinId
-        ).map { skinDto ->
-            if (skinDto != null) {
-                Either.Right(SkinMapper.toModel(skinDto)) as Either<TextResource, SkinModel>
-            } else {
-                Either.Left(TextResource.StringResource(R.string.exception_no_data))
+        return flow<Either<TextResource, SkinModel>> {
+            val result = skinApi.getSingle(
+                skinId = skinId
+            ).map { skinDto ->
+                if (skinDto != null) {
+                    Either.Right(SkinMapper.toModel(skinDto))
+                } else {
+                    Either.Left(TextResource.StringResource(R.string.exception_no_data))
+                }
             }
-        }.catch { throwable ->
-            emit(Either.Left(throwable.toMessage()))
-        }.flowOn(Dispatchers.IO)
+            emitAll(result)
+        }.catchAndDispatch()
     }
 
     override fun upsertSkin(skinModel: SkinModel): Flow<Either<TextResource, Unit>> {
@@ -105,9 +105,7 @@ class ScriptRepositoryImpl(
                 skin = SkinMapper.toDto(skinModel)
             )
             emit(Either.Right(Unit))
-        }.catch { throwable ->
-            emit(Either.Left(throwable.toMessage()))
-        }.flowOn(Dispatchers.IO)
+        }.catchAndDispatch()
     }
 
     override fun deleteSkin(skinModel: SkinModel): Flow<Either<TextResource, Unit>> {
@@ -116,23 +114,22 @@ class ScriptRepositoryImpl(
                 skin = SkinMapper.toDto(skinModel)
             )
             emit(Either.Right(Unit))
-        }.catch { throwable ->
-            emit(Either.Left(throwable.toMessage()))
-        }.flowOn(Dispatchers.IO)
+        }.catchAndDispatch()
     }
 
     override fun getReplace(replaceId: String): Flow<Either<TextResource, ReplaceModel>> {
-        return replaceApi.getSingle(
-            replaceId = replaceId
-        ).map { replaceDto ->
-            if (replaceDto != null) {
-                Either.Right(ReplaceMapper.toModel(replaceDto)) as Either<TextResource, ReplaceModel>
-            } else {
-                Either.Left(TextResource.StringResource(R.string.exception_no_data))
+        return flow<Either<TextResource, ReplaceModel>> {
+            val result = replaceApi.getSingle(
+                replaceId = replaceId
+            ).map { replaceDto ->
+                if (replaceDto != null) {
+                    Either.Right(ReplaceMapper.toModel(replaceDto))
+                } else {
+                    Either.Left(TextResource.StringResource(R.string.exception_no_data))
+                }
             }
-        }.catch { throwable ->
-            emit(Either.Left(throwable.toMessage()))
-        }.flowOn(Dispatchers.IO)
+            emitAll(result)
+        }.catchAndDispatch()
     }
 
     override fun upsertReplace(
@@ -141,29 +138,30 @@ class ScriptRepositoryImpl(
     ): Flow<Either<TextResource, Unit>> {
         return flow<Either<TextResource, Unit>> {
             if (replaceFile != null) {
-                replaceApi.upsert(
-                    replace = ReplaceMapper.toDto(replaceModel).copy(
-                        lastUpdate = Clock.System.now().toEpochMilliseconds(),
-                        fileSize = replaceFile.size()
-                    )
-                )
                 storageApi.upload(
                     targetBucket = Bucket.SCRIPT,
                     fileByte = replaceFile.readBytes(),
                     fileName = "${replaceModel.id}.zip"
                 )
                 profileApi.incrementContribution(
-                    id = authApi.getAuthState().first()?.id!!
-                )
-            } else {
-                replaceApi.upsert(
-                    replace = ReplaceMapper.toDto(replaceModel)
+                    id = authApi.getAuthState().filterNotNull().first().id
                 )
             }
+
+            val lastUpdate = when {
+                replaceFile != null -> Clock.System.now().toEpochMilliseconds()
+                else -> replaceModel.lastUpdate
+            }
+            val fileSize = replaceFile?.size() ?: replaceModel.fileSize
+
+            replaceApi.upsert(
+                replace = ReplaceMapper.toDto(replaceModel).copy(
+                    lastUpdate = lastUpdate,
+                    fileSize = fileSize
+                )
+            )
             emit(Either.Right(Unit))
-        }.catch { throwable ->
-            emit(Either.Left(throwable.toMessage()))
-        }.flowOn(Dispatchers.IO)
+        }.catchAndDispatch()
     }
 
     override fun deleteReplace(replaceModel: ReplaceModel): Flow<Either<TextResource, Unit>> {
@@ -176,8 +174,6 @@ class ScriptRepositoryImpl(
                 files = listOf("${replaceModel.id}.zip")
             )
             emit(Either.Right(Unit))
-        }.catch { throwable ->
-            emit(Either.Left(throwable.toMessage()))
-        }.flowOn(Dispatchers.IO)
+        }.catchAndDispatch()
     }
 }

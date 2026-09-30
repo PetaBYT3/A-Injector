@@ -117,8 +117,8 @@ private fun ManageReplaceScreen(
     Scaffold(
         topBar = {
             val title = when (state.isOnEdit) {
-                true -> stringResource(R.string.action_edit)
-                false -> stringResource(R.string.action_add)
+                true -> stringResource(R.string.edit)
+                false -> stringResource(R.string.add)
             }
             CustomTopAppBar(
                 navigationClick = { navBackStack.popBackStack() },
@@ -165,10 +165,10 @@ private fun ManageReplaceScreen(
     CustomBottomSheet(
         visible = state.isDeleteBottomSheetVisible,
         onDismiss = { onAction(ManageReplaceAction.DeleteBottomSheet) },
-        title = stringResource(R.string.action_delete),
+        title = stringResource(R.string.delete),
         content = {
             item {
-                CustomSurfaceText(text = stringResource(R.string.message_delete_replace))
+                CustomSurfaceText(text = stringResource(R.string.replace_delete))
             }
         },
         bottomBar = {
@@ -177,7 +177,7 @@ private fun ManageReplaceScreen(
                     onAction(ManageReplaceAction.DeleteBottomSheet)
                     onAction(ManageReplaceAction.DeleteButton)
                 },
-                text = stringResource(R.string.action_confirm),
+                text = stringResource(R.string.confirm),
                 isError = true
             )
         }
@@ -232,7 +232,7 @@ private fun Content(
             CustomTextListTitle(
                 modifier = Modifier
                     .animateItem(),
-                text = stringResource(R.string.title_replace)
+                text = stringResource(R.string.replace)
             )
         }
         item("replaceItem") {
@@ -242,21 +242,23 @@ private fun Content(
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 CustomTextField(
-                    label = stringResource(R.string.item_label),
+                    label = stringResource(R.string.label),
                     value = state.replace.label,
                     onValueChange = { onAction(ManageReplaceAction.LabelTextField(it)) }
                 )
                 CustomTextField(
-                    label = stringResource(R.string.item_name),
+                    label = stringResource(R.string.name),
                     value = state.replace.name,
                     onValueChange = { onAction(ManageReplaceAction.NameTextField(it)) }
                 )
                 DefaultClickableListItem(
                     onClick = { filePicker.launch() },
                     leadingContent = { Icon(Icons.Rounded.InsertDriveFile, null) },
-                    content = {
-                        val text = state.replaceFile?.name ?: stringResource(R.string.message_no_file)
-                        Text(text = text)
+                    content = { Text(text = stringResource(R.string.script)) },
+                    supportingContent = {
+                        Text(
+                            text = state.replaceFile?.name ?: stringResource(R.string.exception_no_script)
+                        )
                     },
                     trailingContent = {
                         if (state.replaceFile != null) {

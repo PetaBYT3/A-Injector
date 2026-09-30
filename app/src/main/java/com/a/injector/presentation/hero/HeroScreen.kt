@@ -111,7 +111,7 @@ private fun HeroScreen(
         topBar = {
             CustomTopAppBar(
                 navigationClick = { navBackStack.popBackStack() },
-                title = stringResource(R.string.title_hero)
+                title = stringResource(R.string.hero)
             )
         },
         content = { innerPadding ->
@@ -151,7 +151,7 @@ private fun HeroScreen(
     CustomBottomSheet(
         visible = state.isActionSkinBottomSheetVisible,
         onDismiss = { onAction(HeroAction.DismissSkinActionBottomSheet) },
-        title = stringResource(R.string.title_action),
+        title = stringResource(R.string.action),
         content = {
             item {
                 DefaultListItem(
@@ -190,7 +190,7 @@ private fun HeroScreen(
                         }
                     },
                     leadingContent = staticModel.leadingContent,
-                    content = { Text(text = stringResource(staticModel.contentTextResId)) }
+                    content = { Text(text = stringResource(staticModel.content)) }
                 )
             }
         }
@@ -288,7 +288,7 @@ private fun Content(
             CustomTextListTitle(
                 modifier = Modifier
                     .animateItem(),
-                text = stringResource(R.string.item_skin)
+                text = stringResource(R.string.skin)
             )
         }
         if (state.heroDetail.skins.isEmpty()) {
@@ -296,7 +296,7 @@ private fun Content(
                 CustomCenterTextMessage(
                     modifier = Modifier
                         .animateItem(),
-                    text = stringResource(R.string.title_empty)
+                    text = stringResource(R.string.empty)
                 )
             }
             return@LazyColumn

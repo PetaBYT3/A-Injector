@@ -146,7 +146,8 @@ fun CustomBottomSheet(
                 )
                 LazyColumn(
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .weight(1f, false),
                     contentPadding = PaddingValues(horizontal = 10.dp),
                     verticalArrangement = Arrangement.spacedBy(2.5.dp)
                 ) {

@@ -1,11 +1,12 @@
-package com.a.injector.presentation.supporting
+package com.a.injector.presentation.role
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AttachFile
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.OpenInNew
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -24,36 +25,30 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
+import com.a.injector.domain.model.RoleModel
+import com.a.injector.presentation.component.CustomBottomSheet
+import com.a.injector.presentation.component.CustomCenterCircularWavyProgressIndicator
+import com.a.injector.presentation.component.CustomCenterTextMessage
 import com.a.injector.presentation.component.CustomFloatingActionButton
 import com.a.injector.presentation.component.CustomFloatingActionToolBar
 import com.a.injector.presentation.component.CustomIconButton
-import com.a.injector.presentation.component.CustomTextField
 import com.a.injector.presentation.component.CustomTopAppBar
-import com.a.injector.presentation.component.DefaultClickableListItem
-import com.a.injector.presentation.component.spacer
+import com.a.injector.presentation.component.DefaultListItem
 import com.a.injector.presentation.mainnavigation.popBackStack
+import com.a.injector.presentation.role.RoleStatus.Current
+import com.a.injector.presentation.role.RoleStatus.Requested
 import com.a.injector.presentation.util.ScreenEffectLauncher
-import io.github.vinceglb.filekit.dialogs.FileKitMode
-import io.github.vinceglb.filekit.dialogs.FileKitType
-import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
-import io.github.vinceglb.filekit.name
-import org.koin.compose.viewmodel.koinViewModel
-import org.koin.core.parameter.parametersOf
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun SupportingScreenRoot(
+fun RoleScreenRoot(
     navBackStack: NavBackStack<NavKey>,
-    profileId: String,
-    viewModel: SupportingViewModel = koinViewModel(
-        parameters = {
-            parametersOf(profileId)
-        }
-    )
+    viewModel: RoleViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackBarHostState = remember { SnackbarHostState() }
 
-    SupportingScreen(
+    RoleScreen(
         navBackStack = navBackStack,
         state = state,
         onAction = viewModel::onAction,
@@ -69,26 +64,26 @@ fun SupportingScreenRoot(
 @Composable
 @Preview
 private fun Preview() {
-    SupportingScreen(
+    RoleScreen(
         navBackStack = rememberNavBackStack(),
-        state = SupportingState(),
+        state = RoleState(),
         onAction = {},
         snackBarHostState = SnackbarHostState()
     )
 }
 
 @Composable
-private fun SupportingScreen(
+private fun RoleScreen(
     navBackStack: NavBackStack<NavKey>,
-    state: SupportingState,
-    onAction: (SupportingAction) -> Unit,
+    state: RoleState,
+    onAction: (RoleAction) -> Unit,
     snackBarHostState: SnackbarHostState
 ) {
     Scaffold(
         topBar = {
             CustomTopAppBar(
                 navigationClick = { navBackStack.popBackStack() },
-                title = stringResource(R.string.support)
+                title = stringResource(R.string.role)
             )
         },
         content = { innerPadding ->
@@ -105,12 +100,21 @@ private fun SupportingScreen(
             CustomFloatingActionToolBar(
                 floatingActionButton = {
                     CustomFloatingActionButton(
-                        onClick = { onAction(SupportingAction.UpsertSupportingButton) },
+                        onClick = { onAction(RoleAction.UpsertRoleButton) },
                         content = { Icon(Icons.Rounded.OpenInNew, null) },
-                        isLoading = state.isUpsertSupportingButtonLoading
+                        isLoading = state.isUpsertRoleButtonLoading
                     )
                 }
             )
+        }
+    )
+
+    CustomBottomSheet(
+        visible = state.isRoleBottomSheetVisible,
+        onDismiss = { onAction(RoleAction.UpsertRoleButton) },
+        title = stringResource(R.string.role),
+        content = {
+
         }
     )
 }
@@ -119,54 +123,66 @@ private fun SupportingScreen(
 private fun Content(
     modifier: Modifier = Modifier,
     navBackStack: NavBackStack<NavKey>,
-    state: SupportingState,
-    onAction: (SupportingAction) -> Unit,
+    state: RoleState,
+    onAction: (RoleAction) -> Unit,
 ) {
-    val filePicker = rememberFilePickerLauncher(
-        type = FileKitType.Image,
-        mode = FileKitMode.Single,
-        onResult = { platformFile ->
-            if (platformFile != null) {
-                onAction(SupportingAction.ImagePicker(platformFile))
-            }
-        }
-    )
-
     LazyColumn(
         modifier = modifier,
         contentPadding = PaddingValues(start = 10.dp, end = 10.dp, bottom = 100.dp),
         verticalArrangement = Arrangement.spacedBy(2.5.dp)
     ) {
-        item("nominalTextField") {
-            CustomTextField(
-                label = stringResource(R.string.item_support_nominal),
-                value = state.nominalTextField,
-                onValueChange = { userInput ->
-                    val filteredInput = userInput.filter { it.isDigit() }
-                    onAction(SupportingAction.NominalTextField(filteredInput))
-                }
-            )
+        if (state.isContentLoading) {
+            item("isContentLoading") {
+                CustomCenterCircularWavyProgressIndicator(
+                    modifier = Modifier
+                        .animateItem()
+                )
+            }
+            return@LazyColumn
         }
-        spacer()
-        item("image") {
-            DefaultClickableListItem(
-                onClick = {
-
-                },
-                content = { Text(text = "Proof") },
+        if (state.isProfileError != null) {
+            item("isContentError") {
+                CustomCenterTextMessage(
+                    modifier = Modifier
+                        .animateItem(),
+                    text = state.isProfileError.asString()
+                )
+            }
+            return@LazyColumn
+        }
+        itemsIndexed(
+            items = roleStatuses,
+            key = { _, static -> static.id.name }
+        ) { index, static ->
+            DefaultListItem(
+                modifier = Modifier
+                    .animateItem(),
+                index = index,
+                count = roleStatuses.size,
+                content = { Text(text = stringResource(static.content)) },
                 supportingContent = {
-                    val supportingText = if (state.image != null) {
-                        state.image.name
-                    } else {
-                        stringResource(R.string.exception_no_image)
+                    val supportingText = when (static.id) {
+                        Current -> state.profile.role.title.asString()
+                        Requested -> {
+                            if (state.requestedRole == RoleModel.EMPTY) {
+                                stringResource(R.string.no_role_requested)
+                            } else {
+                                state.requestedRole.role.title.asString()
+                            }
+                        }
                     }
                     Text(text = supportingText)
                 },
                 trailingContent = {
-                    CustomIconButton(
-                        onClick = { filePicker.launch() },
-                        content = { Icon(Icons.Rounded.AttachFile, null) }
-                    )
+                    when (static.id) {
+                        Current -> {}
+                        Requested -> {
+                            CustomIconButton(
+                                onClick = { onAction(RoleAction.RoleBottomSheet) },
+                                content = { Icon(Icons.Rounded.Edit, null) }
+                            )
+                        }
+                    }
                 }
             )
         }

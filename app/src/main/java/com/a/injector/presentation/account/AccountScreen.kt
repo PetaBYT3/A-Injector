@@ -2,40 +2,24 @@ package com.a.injector.presentation.account
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material.icons.rounded.OpenInNew
-import androidx.compose.material.icons.rounded.Visibility
-import androidx.compose.material.icons.rounded.VisibilityOff
-import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconToggleButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -46,21 +30,19 @@ import com.a.injector.R
 import com.a.injector.data.dto.Role
 import com.a.injector.domain.model.ProfileModel
 import com.a.injector.domain.model.RoleModel
+import com.a.injector.presentation.account.AdministratorMenu.*
+import com.a.injector.presentation.account.ManageAccount.*
+import com.a.injector.presentation.account.Profile.*
 import com.a.injector.presentation.component.CustomBottomSheet
 import com.a.injector.presentation.component.CustomButton
 import com.a.injector.presentation.component.CustomCenterCircularWavyProgressIndicator
-import com.a.injector.presentation.component.CustomFadeAnimatedVisibility
 import com.a.injector.presentation.component.CustomIconButton
 import com.a.injector.presentation.component.CustomSurfaceText
-import com.a.injector.presentation.component.CustomTextField
 import com.a.injector.presentation.component.CustomTextListTitle
 import com.a.injector.presentation.component.CustomTopAppBar
 import com.a.injector.presentation.component.DefaultClickableListItem
 import com.a.injector.presentation.component.DefaultListItem
 import com.a.injector.presentation.component.spacer
-import com.a.injector.presentation.mainnavigation.MainNavigationRoute
-import com.a.injector.presentation.signup.PasswordRequirement
-import com.a.injector.presentation.signup.passwordRequirements
 import com.a.injector.presentation.util.ScreenEffectLauncher
 import com.a.injector.presentation.util.toIdr
 import org.koin.compose.viewmodel.koinViewModel
@@ -115,7 +97,7 @@ private fun Screen(
         contentWindowInsets = WindowInsets.statusBars,
         topBar = {
             CustomTopAppBar(
-                title = stringResource(R.string.title_account)
+                title = stringResource(R.string.account)
             )
         },
         content = { innerPadding ->
@@ -131,60 +113,12 @@ private fun Screen(
     )
 
     CustomBottomSheet(
-        visible = state.isUpsertProfileBottomSheetVisible,
-        onDismiss = { onAction(AccountAction.DismissUpsertProfileBottomSheet) },
-        title = stringResource(R.string.title_profile),
-        content = {
-            item {
-                CustomTextField(
-                    label = stringResource(R.string.item_username),
-                    value = state.profileToUpsert.username,
-                    onValueChange = { onAction(AccountAction.UsernameTextField(it)) }
-                )
-            }
-        },
-        bottomBar = {
-            CustomButton(
-                onClick = {
-                    onAction(AccountAction.DismissUpsertProfileBottomSheet)
-                    onAction(AccountAction.UpsertProfileButton)
-                },
-                text = stringResource(R.string.action_confirm)
-            )
-        }
-    )
-
-    CustomBottomSheet(
-        visible = state.isRequestRoleBottomSheetVisible,
-        onDismiss = { onAction(AccountAction.RequestRoleBottomSheet) },
-        title = stringResource(R.string.item_role),
-        content = {
-            val allowedRole = Role.entries.filterNot { role ->
-                role == Role.Administrator || role == state.profile.role
-            }
-            itemsIndexed(
-                items = allowedRole
-            ) { index, role ->
-                DefaultClickableListItem(
-                    index = index,
-                    count = allowedRole.size,
-                    onClick = {
-                        onAction(AccountAction.RequestRoleBottomSheet)
-                        onAction(AccountAction.RequestRoleButton(role))
-                    },
-                    content = { Text(text = role.name) }
-                )
-            }
-        }
-    )
-
-    CustomBottomSheet(
         visible = state.isCleanStorageBottomSheetVisible,
         onDismiss = { onAction(AccountAction.CleanStorageBottomSheet) },
-        title = stringResource(R.string.action_clean),
+        title = stringResource(R.string.clean_cloud_storage),
         content = {
             item {
-                CustomSurfaceText(text = stringResource(R.string.message_clean))
+                CustomSurfaceText(text = stringResource(R.string.clean_cloud_storage_desc))
             }
         },
         bottomBar = {
@@ -193,86 +127,7 @@ private fun Screen(
                     onAction(AccountAction.CleanStorageBottomSheet)
                     onAction(AccountAction.CleanStorageButton)
                 },
-                text = stringResource(R.string.action_confirm)
-            )
-        }
-    )
-
-    CustomBottomSheet(
-        visible = state.isChangePasswordBottomSheetVisible,
-        onDismiss = { onAction(AccountAction.ChangePasswordBottomSheet) },
-        title = stringResource(R.string.item_manage),
-        content = {
-            item {
-                var isPasswordVisible by remember {
-                    mutableStateOf(false)
-                }
-                CustomTextField(
-                    label = "New Password",
-                    value = state.newPasswordTextField,
-                    onValueChange = { onAction(AccountAction.NewPasswordTextField(it)) },
-                    trailingIcon = {
-                        IconToggleButton(
-                            checked = isPasswordVisible,
-                            onCheckedChange = { isPasswordVisible = it },
-                            content = {
-                                val imageVector = when (isPasswordVisible) {
-                                    true -> Icons.Rounded.VisibilityOff
-                                    false -> Icons.Rounded.Visibility
-                                }
-                                Icon(imageVector, null)
-                            }
-                        )
-                    },
-                    visualTransformation = when (isPasswordVisible) {
-                        true -> VisualTransformation.None
-                        false -> PasswordVisualTransformation()
-                    }
-                )
-            }
-            spacer(5.dp)
-            itemsIndexed(
-                items = passwordRequirements
-            ) { _, staticModel ->
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(5.dp)
-                ) {
-                    val isRequirementMet = when (staticModel.id) {
-                        PasswordRequirement.MoreThanEightCharacter -> state.isPasswordMoreThan8Character
-                        PasswordRequirement.ContainUppercase -> state.isPasswordContainUppercase
-                        PasswordRequirement.ContainNumber -> state.isPasswordContainNumber
-                    }
-                    val tint = when (isRequirementMet) {
-                        true -> MaterialTheme.colorScheme.primary
-                        false -> MaterialTheme.colorScheme.onSurfaceVariant
-                    }
-                    val imageVector = when (isRequirementMet) {
-                        true -> Icons.Rounded.Check
-                        false -> Icons.Rounded.Close
-                    }
-                    Icon(
-                        modifier = Modifier
-                            .size(20.dp),
-                        tint = tint,
-                        imageVector = imageVector,
-                        contentDescription = null
-                    )
-                    Text(
-                        text = stringResource(staticModel.contentTextResId),
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-            }
-        },
-        bottomBar = {
-            CustomButton(
-                onClick = {
-                    onAction(AccountAction.ChangePasswordBottomSheet)
-                    onAction(AccountAction.ChangePasswordButton)
-                },
-                text = stringResource(R.string.action_confirm),
-                enabled = state.isPasswordValid
+                text = stringResource(R.string.confirm)
             )
         }
     )
@@ -280,10 +135,10 @@ private fun Screen(
     CustomBottomSheet(
         visible = state.isSignOutBottomSheetVisible,
         onDismiss = { onAction(AccountAction.SignOutBottomSheet) },
-        title = stringResource(R.string.action_sign_out),
+        title = stringResource(R.string.sign_out),
         content = {
             item {
-                CustomSurfaceText(text = stringResource(R.string.message_sign_out))
+                CustomSurfaceText(text = stringResource(R.string.sign_out_desc))
             }
         },
         bottomBar = {
@@ -292,7 +147,7 @@ private fun Screen(
                     onAction(AccountAction.SignOutBottomSheet)
                     onAction(AccountAction.SignOutButton)
                 },
-                text = stringResource(R.string.action_confirm),
+                text = stringResource(R.string.confirm),
                 isError = true
             )
         }
@@ -325,188 +180,144 @@ private fun Content(
                 DefaultListItem(
                     modifier = Modifier
                         .animateItem(),
-                    content = { Text(text = "Guest Account") }
-                )
-            }
-            spacer()
-            item("signOutButton") {
-                CustomButton(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    onClick = { onAction(AccountAction.SignOutBottomSheet) },
-                    text = "Sign Out",
-                    isError = true
+                    content = { Text(text = stringResource(R.string.guest_account)) }
                 )
             }
             return@LazyColumn
-        }
-        itemsIndexed(
-            items = profiles,
-            key = { _, staticModel -> staticModel.id.name }
-        ) { index, staticModel ->
-            DefaultListItem(
-                modifier = Modifier
-                    .animateItem(),
-                index = index,
-                count = profiles.size,
-                leadingContent = staticModel.leadingContent,
-                content = { Text(text = stringResource(staticModel.contentTextResId)) },
-                supportingContent = {
-                    val supportingText = when (staticModel.id) {
-                        Profile.Email -> {
-                            state.userInfo?.email ?: stringResource(R.string.title_unknown)
+        } else {
+            itemsIndexed(
+                items = profiles,
+                key = { _, staticModel -> staticModel.id.name }
+            ) { index, staticModel ->
+                DefaultListItem(
+                    modifier = Modifier
+                        .animateItem(),
+                    index = index,
+                    count = profiles.size,
+                    leadingContent = staticModel.leadingContent,
+                    content = {
+                        Text(text = staticModel.content.asString())
+                    },
+                    supportingContent = {
+                        val supportingText = when (staticModel.id) {
+                            Email -> state.userInfo?.email ?: stringResource(R.string.unknown)
+                            Username -> state.profile.username
+                            Contribution -> buildString {
+                                append(state.profile.contribution)
+                                append(" ")
+                                append(stringResource(R.string.contributor_desc))
+                            }
+                            Supporting -> state.profile.nominal.toIdr()
+                            ProfileRole -> state.profile.role.title.asString()
                         }
-                        Profile.Username -> {
-                            state.profile.username
-                        }
-                        Profile.Contribution -> {
-                            "${state.profile.contribution} ${stringResource(R.string.item_files_uploaded)}"
-                        }
-                        Profile.Supporting -> {
-                            state.profile.nominal.toIdr()
-                        }
-                        Profile.Role -> {
-                            "Current: ${state.profile.role.name} | Pending: ${state.request.role.name}"
-                        }
-                    }
-                    Text(
-                        text = supportingText,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                },
-                trailingContent = {
-                    when (staticModel.id) {
-                        Profile.Username -> {
-                            CustomIconButton(
-                                onClick = {
-                                    onAction(AccountAction.ShowUpsertProfileBottomSheet(state.profile))
-                                },
-                                content = { Icon(Icons.Rounded.Edit, null) },
-                                isLoading = state.isUpsertProfileButtonLoading
-                            )
-                        }
-                        Profile.Supporting -> {
-                            CustomIconButton(
-                                onClick = {
-                                    val targetScreen = MainNavigationRoute.SupportingScreen(
-                                        profileId = state.profile.id
-                                    )
-                                    navBackStack.add(targetScreen)
-                                },
-                                content = { Icon(Icons.Rounded.OpenInNew, null) }
-                            )
-                        }
-                        Profile.Role -> {
-                            CustomFadeAnimatedVisibility(
-                                visible = state.request == RoleModel.EMPTY
-                            ) {
+                        Text(text = supportingText)
+                    },
+                    trailingContent = when (staticModel.id) {
+                        Username -> {
+                            {
                                 CustomIconButton(
-                                    onClick = { onAction(AccountAction.RequestRoleBottomSheet) },
-                                    content = { Icon(Icons.Rounded.OpenInNew, null) }
+                                    onClick = { },
+                                    content = { Icon(Icons.Rounded.Edit, null) }
                                 )
                             }
                         }
-                        else -> {}
+                        Supporting -> {
+                            {
+                                CustomIconButton(
+                                    onClick = { },
+                                    content = { Icon(Icons.Rounded.Edit, null) }
+                                )
+                            }
+                        }
+                        ProfileRole -> {
+                            {
+                                CustomIconButton(
+                                    onClick = { },
+                                    content = { Icon(Icons.Rounded.Edit, null) }
+                                )
+                            }
+                        }
+                        else -> null
                     }
+                )
+            }
+            spacer()
+            if (state.profile.role == Role.Administrator) {
+                item("administratorTitle") {
+                    CustomTextListTitle(
+                        modifier = Modifier
+                            .animateItem(),
+                        text = stringResource(R.string.administrator_menu)
+                    )
                 }
-            )
-        }
-        spacer()
-        if (state.profile.role == Role.Administrator) {
-            item("administratorTitle") {
+                itemsIndexed(
+                    items = administratorMenus,
+                    key = { _, staticModel -> staticModel.id.name }
+                ) { index, staticModel ->
+                    DefaultClickableListItem(
+                        modifier = Modifier
+                            .animateItem(),
+                        index = index,
+                        count = administratorMenus.size,
+                        onClick = {
+                            when (staticModel.id) {
+                                PanelSupporting -> {
+
+                                }
+                                RoleManager -> {
+
+                                }
+                                UserPanel -> {
+
+                                }
+                                CleanStorage -> {
+
+                                }
+                            }
+                        },
+                        leadingContent = staticModel.leadingContent,
+                        content = { Text(text = staticModel.content.asString()) },
+                        supportingContent = if (staticModel.supportingContent != null) {
+                            {
+                                Text(text = staticModel.supportingContent.asString())
+                            }
+                        } else null
+                    )
+                }
+                spacer()
+            }
+            item("manageTitle") {
                 CustomTextListTitle(
                     modifier = Modifier
                         .animateItem(),
-                    text = stringResource(R.string.item_admin_menu)
+                    text = stringResource(R.string.manage_account)
                 )
             }
             itemsIndexed(
-                items = administratorMenus,
+                items = manageAccounts,
                 key = { _, staticModel -> staticModel.id.name }
             ) { index, staticModel ->
                 DefaultClickableListItem(
                     modifier = Modifier
                         .animateItem(),
                     index = index,
-                    count = administratorMenus.size,
+                    count = manageAccounts.size,
                     onClick = {
                         when (staticModel.id) {
-                            AdministratorMenu.PanelSupporting -> {
-                                navBackStack.add(MainNavigationRoute.PanelSupportingScreen)
-                            }
-                            AdministratorMenu.RoleManager -> {
-                                navBackStack.add(MainNavigationRoute.ManageRoleScreen)
-                            }
-                            AdministratorMenu.UserPanel -> {
-                                navBackStack.add(MainNavigationRoute.PanelUserScreen)
-                            }
-                            AdministratorMenu.CleanStorage -> {
-                                onAction(AccountAction.CleanStorageBottomSheet)
+                            ChangePassword -> {
+
                             }
                         }
                     },
                     leadingContent = staticModel.leadingContent,
-                    content = { Text(text = stringResource(staticModel.contentTextResId)) },
-                    supportingContent = { Text(text = stringResource(staticModel.supportingTextResId!!)) },
-                    trailingContent = {
-                        when (staticModel.id) {
-                            AdministratorMenu.CleanStorage -> {
-                                CustomFadeAnimatedVisibility(
-                                    visible = state.isCleanStorageButtonLoading
-                                ) {
-                                    CircularWavyProgressIndicator(
-                                        modifier = Modifier
-                                            .size(24.dp)
-                                    )
-                                }
-                            }
-                            else -> {}
+                    content = { Text(text = staticModel.content.asString()) },
+                    supportingContent = if (staticModel.supportingContent != null) {
+                        {
+                            Text(text = staticModel.supportingContent.asString())
                         }
-                    }
+                    } else null
                 )
             }
-            spacer()
-        }
-        item("manageTitle") {
-            CustomTextListTitle(
-                modifier = Modifier
-                    .animateItem(),
-                text = stringResource(R.string.item_manage)
-            )
-        }
-        itemsIndexed(
-            items = manageAccounts,
-            key = { _, staticModel -> staticModel.id.name }
-        ) { index, staticModel ->
-            DefaultClickableListItem(
-                modifier = Modifier
-                    .animateItem(),
-                index = index,
-                count = manageAccounts.size,
-                onClick = {
-                    when (staticModel.id) {
-                        ManageAccount.ChangePassword -> {
-                            onAction(AccountAction.ChangePasswordBottomSheet)
-                        }
-                    }
-                },
-                leadingContent = staticModel.leadingContent,
-                content = { Text(text = stringResource(staticModel.contentTextResId)) },
-                supportingContent = { Text(text = stringResource(staticModel.supportingTextResId!!)) },
-                trailingContent = {
-                    when (staticModel.id) {
-                        ManageAccount.ChangePassword -> {
-                            if (state.isChangePasswordButtonLoading) {
-                                CircularWavyProgressIndicator(
-                                    modifier = Modifier
-                                        .size(24.dp)
-                                )
-                            }
-                        }
-                    }
-                }
-            )
         }
         spacer()
         item("signOutButton") {
@@ -514,7 +325,7 @@ private fun Content(
                 modifier = Modifier
                     .fillMaxWidth(),
                 onClick = { onAction(AccountAction.SignOutBottomSheet) },
-                text = "Sign Out",
+                text = stringResource(R.string.sign_out),
                 isError = true
             )
         }

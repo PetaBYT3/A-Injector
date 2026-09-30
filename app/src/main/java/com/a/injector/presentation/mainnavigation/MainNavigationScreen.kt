@@ -36,7 +36,7 @@ import com.a.injector.presentation.paneluser.PanelUserScreenRoot
 import com.a.injector.presentation.signin.SignInScreenRoot
 import com.a.injector.presentation.signlink.SignLinkScreenRoot
 import com.a.injector.presentation.signup.SignUpScreenRoot
-import com.a.injector.presentation.supporting.SupportingScreenRoot
+import com.a.injector.presentation.support.SupportingScreenRoot
 import org.koin.compose.koinInject
 
 @Composable

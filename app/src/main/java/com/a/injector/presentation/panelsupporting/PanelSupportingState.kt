@@ -1,15 +1,15 @@
 package com.a.injector.presentation.panelsupporting
 
 import com.a.injector.data.util.TextResource
-import com.a.injector.domain.model.SupportingModel
+import com.a.injector.domain.model.SupportModel
 
 data class PanelSupportingState(
     val isSupportingListLoading: Boolean = true,
     val isSupportingListError: TextResource? = null,
-    val supportingList: List<SupportingModel> = emptyList(),
+    val supportingList: List<SupportModel> = emptyList(),
 
     val isSupportingBottomSheetVisible: Boolean = false,
-    val supportingToAction: SupportingModel = SupportingModel.EMPTY,
+    val supportingToAction: SupportModel = SupportModel.EMPTY,
     val proofUrlToAction: String? = null,
     val isActionSupportingButtonLoading: Boolean = false,
 ) {

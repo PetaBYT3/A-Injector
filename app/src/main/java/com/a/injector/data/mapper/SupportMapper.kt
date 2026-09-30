@@ -1,12 +1,12 @@
 package com.a.injector.data.mapper
 
-import com.a.injector.data.dto.SupportingDto
+import com.a.injector.data.dto.SupportDto
 import com.a.injector.domain.model.ProfileModel
-import com.a.injector.domain.model.SupportingModel
+import com.a.injector.domain.model.SupportModel
 
-object SupportingMapper: Mapper<SupportingDto, SupportingModel> {
-    override fun toModel(dto: SupportingDto): SupportingModel {
-        return SupportingModel(
+object SupportMapper: Mapper<SupportDto, SupportModel> {
+    override fun toModel(dto: SupportDto): SupportModel {
+        return SupportModel(
             id = dto.id,
             nominal = dto.nominal,
             imageUrl = dto.imageUrl,
@@ -18,8 +18,8 @@ object SupportingMapper: Mapper<SupportingDto, SupportingModel> {
         )
     }
 
-    override fun toDto(model: SupportingModel): SupportingDto {
-        return SupportingDto(
+    override fun toDto(model: SupportModel): SupportDto {
+        return SupportDto(
             id = model.id,
             nominal = model.nominal,
             imageUrl = model.imageUrl,
