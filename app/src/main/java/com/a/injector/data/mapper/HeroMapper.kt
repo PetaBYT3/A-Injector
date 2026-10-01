@@ -1,6 +1,6 @@
 package com.a.injector.data.mapper
 
-import com.a.injector.data.dto.HeroDto
+import com.a.injector.data.remote.hero.HeroDto
 import com.a.injector.domain.model.HeroModel
 
 object HeroMapper: Mapper<HeroDto, HeroModel> {

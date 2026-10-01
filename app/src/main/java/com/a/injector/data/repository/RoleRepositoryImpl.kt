@@ -5,12 +5,12 @@ package com.a.injector.data.repository
 import arrow.core.Either
 import com.a.injector.R
 import com.a.injector.data.mapper.RoleMapper
-import com.a.injector.data.remote.AuthApi
-import com.a.injector.data.remote.ProfileApi
-import com.a.injector.data.remote.RoleApi
-import com.a.injector.data.util.TextResource
+import com.a.injector.data.remote.auth.AuthApi
+import com.a.injector.data.remote.profile.ProfileApi
+import com.a.injector.data.remote.role.RoleApi
 import com.a.injector.data.util.catchAndDispatch
 import com.a.injector.domain.model.RoleModel
+import com.a.injector.domain.model.Text
 import com.a.injector.domain.repository.RoleRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -28,8 +28,8 @@ class RoleRepositoryImpl(
     private val profileApi: ProfileApi,
     private val roleApi: RoleApi
 ): RoleRepository {
-    override fun getCurrent(): Flow<Either<TextResource, RoleModel>> {
-        return flow<Either<TextResource, RoleModel>> {
+    override fun getCurrent(): Flow<Either<Text, RoleModel>> {
+        return flow<Either<Text, RoleModel>> {
             val result = authApi.getAuthState().filterNotNull().flatMapLatest { userInfo ->
                 roleApi.getSingle(
                     profileId = userInfo.id
@@ -37,7 +37,7 @@ class RoleRepositoryImpl(
                     if (roleDto != null) {
                         Either.Right(RoleMapper.toModel(roleDto))
                     } else {
-                        Either.Left(TextResource.StringResource(R.string.exception_no_data))
+                        Either.Left(Text.Resource(R.string.exception_no_data))
                     }
                 }
             }
@@ -45,23 +45,23 @@ class RoleRepositoryImpl(
         }.catchAndDispatch()
     }
 
-    override fun getSingle(profileId: String): Flow<Either<TextResource, RoleModel>> {
-        return flow<Either<TextResource, RoleModel>> {
+    override fun getSingle(profileId: String): Flow<Either<Text, RoleModel>> {
+        return flow<Either<Text, RoleModel>> {
             val result = roleApi.getSingle(
                 profileId = profileId
             ).map { roleDto ->
                 if (roleDto != null) {
                     Either.Right(RoleMapper.toModel(roleDto))
                 } else {
-                    Either.Left(TextResource.StringResource(R.string.exception_no_data))
+                    Either.Left(Text.Resource(R.string.exception_no_data))
                 }
             }
             emitAll(result)
         }.catchAndDispatch()
     }
 
-    override fun getList(): Flow<Either<TextResource, List<RoleModel>>> {
-        return flow<Either<TextResource, List<RoleModel>>> {
+    override fun getList(): Flow<Either<Text, List<RoleModel>>> {
+        return flow<Either<Text, List<RoleModel>>> {
             val result = roleApi.getList().map { roleDtos ->
                 val profileModels = roleDtos.map { roleDto ->
                     RoleMapper.toModel(roleDto)
@@ -72,8 +72,8 @@ class RoleRepositoryImpl(
         }.catchAndDispatch()
     }
 
-    override fun upsert(roleModel: RoleModel): Flow<Either<TextResource, Unit>> {
-        return flow<Either<TextResource, Unit>> {
+    override fun upsert(roleModel: RoleModel): Flow<Either<Text, Unit>> {
+        return flow<Either<Text, Unit>> {
             roleApi.upsert(
                 roleDto = RoleMapper.toDto(roleModel)
             )
@@ -81,13 +81,13 @@ class RoleRepositoryImpl(
         }.catchAndDispatch()
     }
 
-    override fun confirm(roleModel: RoleModel): Flow<Either<TextResource, Unit>> {
-        return flow<Either<TextResource, Unit>> {
+    override fun confirm(roleModel: RoleModel): Flow<Either<Text, Unit>> {
+        return flow<Either<Text, Unit>> {
             val profileDto = profileApi.getSingle(
                 profileId = roleModel.id
             ).first()
             if (profileDto == null) {
-                emit(Either.Left(TextResource.StringResource(R.string.exception_no_data)))
+                emit(Either.Left(Text.Resource(R.string.exception_no_data)))
                 return@flow
             }
             profileApi.upsert(
@@ -102,8 +102,8 @@ class RoleRepositoryImpl(
         }.catchAndDispatch()
     }
 
-    override fun deny(roleModel: RoleModel): Flow<Either<TextResource, Unit>> {
-        return flow<Either<TextResource, Unit>> {
+    override fun deny(roleModel: RoleModel): Flow<Either<Text, Unit>> {
+        return flow<Either<Text, Unit>> {
             roleApi.delete(
                 roleDto = RoleMapper.toDto(roleModel)
             )

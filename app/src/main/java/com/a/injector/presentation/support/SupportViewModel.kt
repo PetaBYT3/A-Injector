@@ -76,7 +76,7 @@ class SupportViewModel(
                 _state.update { currentState ->
                     currentState.copy(
                         requestedSupport = currentState.requestedSupport.copy(
-                            nominal = action.nominal.ifBlank { "0" }.toLong()
+                            support = action.nominal.ifBlank { "0" }.toLong()
                         )
                     )
                 }

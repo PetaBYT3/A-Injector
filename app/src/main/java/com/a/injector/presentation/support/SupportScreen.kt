@@ -193,7 +193,7 @@ private fun Content(
         item("requestedNominal") {
             CustomTextField(
                 label = stringResource(R.string.nominal),
-                value = state.requestedSupport.nominal.toString(),
+                value = state.requestedSupport.support.toString(),
                 onValueChange = { userInput ->
                     val filteredInput = userInput.filter { it.isDigit() }
                     onAction(SupportAction.NominalTextField(filteredInput))

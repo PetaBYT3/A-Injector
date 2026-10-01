@@ -1,7 +1,7 @@
 package com.a.injector.presentation.account
 
-import com.a.injector.data.util.TextResource
 import com.a.injector.domain.model.ProfileModel
+import com.a.injector.domain.model.Text
 import com.a.injector.domain.model.state.AuthResult
 import io.github.jan.supabase.auth.user.UserInfo
 
@@ -10,11 +10,11 @@ data class AccountState(
     val authState: AuthResult = AuthResult.Unauthenticated,
 
     val isUserInfoLoading: Boolean = true,
-    val isUserInfoError: TextResource? = null,
+    val isUserInfoError: Text? = null,
     val userInfo: UserInfo? = null,
 
     val isProfileLoading: Boolean = true,
-    val isProfileError: TextResource? = null,
+    val isProfileError: Text? = null,
     val profile: ProfileModel = ProfileModel.EMPTY,
 
     val isCleanStorageBottomSheetVisible: Boolean = false,

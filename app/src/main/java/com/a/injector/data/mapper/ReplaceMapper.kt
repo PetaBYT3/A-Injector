@@ -1,6 +1,6 @@
 package com.a.injector.data.mapper
 
-import com.a.injector.data.dto.ReplaceDto
+import com.a.injector.data.remote.replace.ReplaceDto
 import com.a.injector.domain.model.ReplaceModel
 
 object ReplaceMapper: Mapper<ReplaceDto, ReplaceModel> {

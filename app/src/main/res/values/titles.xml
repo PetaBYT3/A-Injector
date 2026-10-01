@@ -24,7 +24,7 @@
     <string name="seabank_desc">901223053319</string>
 
     <string name="validate_support_step">Validate Support Step</string>
-    <string name="validate_supp_1">Go to the Account menu</string>
+    <string name="validate_supp_1">Go to the Account menu at the main screen after script navigation bar</string>
     <string name="validate_supp_2">Tap the edit icon on the left of the Support section</string>
     <string name="validate_supp_3">Enter the amount you previously contributed</string>
     <string name="validate_supp_4">Select an image as proof of your support</string>
@@ -141,5 +141,10 @@
     <string name="no_support_requested">No support requested</string>
     <string name="no_role_requested">No role requested</string>
 
+    <string name="checking">Checking</string>
     <string name="waiting">Waiting</string>
+    <string name="downloading">Downloading</string>
+    <string name="extracting">Extracting</string>
+    <string name="copying">Copying</string>
+    <string name="deleting">Deleting</string>
 </resources>

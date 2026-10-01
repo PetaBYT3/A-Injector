@@ -4,11 +4,11 @@ import android.content.Context
 import android.os.Environment
 import arrow.core.Either
 import com.a.injector.R
-import com.a.injector.data.local.UserDataStoreApi
+import com.a.injector.data.local.settings.SettingsApi
 import com.a.injector.data.mapper.VersionMapper
-import com.a.injector.data.remote.VersionApi
-import com.a.injector.data.util.TextResource
+import com.a.injector.data.remote.version.VersionApi
 import com.a.injector.data.util.toMessage
+import com.a.injector.domain.model.Text
 import com.a.injector.domain.model.VersionModel
 import com.a.injector.domain.repository.ApplicationRepository
 import kotlinx.coroutines.CoroutineScope
@@ -30,7 +30,7 @@ import java.util.Locale
 class ApplicationRepositoryImpl(
     private val context: Context,
     private val versionApi: VersionApi,
-    private val userDataStoreApi: UserDataStoreApi
+    private val settingsApi: SettingsApi
 ): ApplicationRepository {
     private val repositoryScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
@@ -40,23 +40,23 @@ class ApplicationRepositoryImpl(
         }
     }
 
-    override fun getVersion(): Flow<Either<TextResource, VersionModel>> {
+    override fun getVersion(): Flow<Either<Text, VersionModel>> {
         return versionApi.getSingle().map { versionDto ->
             if (versionDto != null) {
-                Either.Right(VersionMapper.toModel(versionDto)) as Either<TextResource, VersionModel>
+                Either.Right(VersionMapper.toModel(versionDto)) as Either<Text, VersionModel>
             } else {
-                Either.Left(TextResource.StringResource(R.string.exception_no_data))
+                Either.Left(Text.Resource(R.string.exception_no_data))
             }
         }.catch { throwable ->
             emit(Either.Left(throwable.toMessage()))
         }.flowOn(Dispatchers.IO)
     }
 
-    override val language: Flow<Locale> = userDataStoreApi.language
+    override val language: Flow<Locale> = settingsApi.language
 
-    override fun setLanguage(locale: Locale): Flow<Either<TextResource, Unit>> {
-        return flow<Either<TextResource, Unit>> {
-            userDataStoreApi.setLanguage(
+    override fun setLanguage(locale: Locale): Flow<Either<Text, Unit>> {
+        return flow<Either<Text, Unit>> {
+            settingsApi.setLanguage(
                 locale = locale
             )
             emit(Either.Right(Unit))
@@ -68,14 +68,14 @@ class ApplicationRepositoryImpl(
     private val _cacheSize = MutableStateFlow(0L)
     override val cacheSize: Flow<Long> = _cacheSize
 
-    override fun cleanCache(): Flow<Either<TextResource, TextResource>> {
-        return flow<Either<TextResource, TextResource>> {
+    override fun cleanCache(): Flow<Either<Text, Text>> {
+        return flow<Either<Text, Text>> {
             val publicDownloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
             val cachePath = File(publicDownloadDir, context.getString(R.string.app_name))
             cachePath.listFiles()?.forEach { file ->
                 file.deleteRecursively()
             }
-            emit(Either.Right(TextResource.StringResource(R.string.success_clean_cache)))
+            emit(Either.Right(Text.Resource(R.string.success_clean_cache)))
             updateCacheSize()
         }.catch { throwable ->
             emit(Either.Left(throwable.toMessage()))

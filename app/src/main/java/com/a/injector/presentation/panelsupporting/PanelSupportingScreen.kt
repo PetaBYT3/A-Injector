@@ -119,7 +119,7 @@ private fun PanelSupportingScreen(
                             overflow = TextOverflow.Ellipsis
                         )
                     },
-                    supportingContent = { Text(text = state.supportingToAction.nominal.toIdr()) }
+                    supportingContent = { Text(text = state.supportingToAction.support.toIdr()) }
                 )
             }
             spacer()
@@ -213,7 +213,7 @@ private fun Content(
                         overflow = TextOverflow.Ellipsis
                     )
                 },
-                supportingContent = { Text(text = supportingModel.nominal.toIdr()) },
+                supportingContent = { Text(text = supportingModel.support.toIdr()) },
                 trailingContent = {
                     CustomIconButton(
                         onClick = {

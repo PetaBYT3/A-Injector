@@ -1,6 +1,6 @@
 package com.a.injector.presentation.role
 
-import com.a.injector.data.dto.Role
+import com.a.injector.domain.model.state.Role
 
 sealed interface RoleAction {
     data object RoleBottomSheet: RoleAction

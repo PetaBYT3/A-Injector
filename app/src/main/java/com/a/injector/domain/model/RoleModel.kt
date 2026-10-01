@@ -1,6 +1,6 @@
 package com.a.injector.domain.model
 
-import com.a.injector.data.dto.Role
+import com.a.injector.domain.model.state.Role
 
 data class RoleModel(
     val id: String,

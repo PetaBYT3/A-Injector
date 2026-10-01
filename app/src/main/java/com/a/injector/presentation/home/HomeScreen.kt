@@ -2,13 +2,9 @@
 
 package com.a.injector.presentation.home
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
@@ -23,11 +19,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,7 +31,7 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
-import com.a.injector.data.util.TextResource
+import com.a.injector.domain.model.Text
 import com.a.injector.presentation.component.CustomBottomSheet
 import com.a.injector.presentation.component.CustomButton
 import com.a.injector.presentation.component.CustomCenterCircularWavyProgressIndicator
@@ -156,30 +150,6 @@ private fun HomeScreen(
             )
         }
     )
-
-    CustomBottomSheet(
-        visible = state.isSupportBottomSheetVisible,
-        onDismiss = { onAction(HomeAction.SupportBottomSheet) },
-        title = stringResource(R.string.support),
-        content = {
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        modifier = Modifier
-                            .fillMaxWidth(0.65f)
-                            .aspectRatio(1f),
-                        painter = painterResource(R.drawable.qris),
-                        contentDescription = null
-                    )
-                }
-            }
-            spacer()
-        }
-    )
 }
 
 @Composable
@@ -240,7 +210,7 @@ private fun Content(
                 count = AboutDevelopers.size,
                 onClick = {
                     if (staticModel.supportingContent != null) {
-                        val supportingText = TextResource.StringResource(staticModel.supportingContent)
+                        val supportingText = Text.Resource(staticModel.supportingContent)
                         when (staticModel.id) {
                             Mlbb -> {
                                 copyToClipboard(

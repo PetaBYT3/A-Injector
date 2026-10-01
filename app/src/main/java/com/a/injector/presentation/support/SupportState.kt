@@ -1,17 +1,17 @@
 package com.a.injector.presentation.support
 
-import com.a.injector.data.util.TextResource
 import com.a.injector.domain.model.ProfileModel
 import com.a.injector.domain.model.SupportModel
+import com.a.injector.domain.model.Text
 import io.github.vinceglb.filekit.PlatformFile
 
 data class SupportState(
     val isProfileLoading: Boolean = true,
-    val isProfileError: TextResource? = null,
+    val isProfileError: Text? = null,
     val profile: ProfileModel = ProfileModel.EMPTY,
 
     val isRequestedSupportLoading: Boolean = true,
-    val isRequestedSupportError: TextResource? = null,
+    val isRequestedSupportError: Text? = null,
     val requestedSupport: SupportModel = SupportModel.EMPTY,
 
     val imageToUpload: PlatformFile? = null,

@@ -6,131 +6,49 @@ import android.content.Context
 import android.os.Environment
 import arrow.core.Either
 import com.a.injector.R
-import com.a.injector.data.dto.Bucket
-import com.a.injector.data.local.UserDataStoreApi
-import com.a.injector.data.remote.StorageApi
-import com.a.injector.data.system.ShizukuCommandService
-import com.a.injector.data.system.SuperuserCommandService
-import com.a.injector.data.util.TextResource
-import com.a.injector.data.util.toMessage
-import com.a.injector.domain.model.CommandServiceModel
+import com.a.injector.data.remote.storage.StorageApi
+import com.a.injector.data.util.catchAndDispatch
 import com.a.injector.domain.model.ReplaceModel
-import com.a.injector.domain.model.state.CommandService
-import com.a.injector.domain.repository.DirectoryRepository
+import com.a.injector.domain.model.Text
+import com.a.injector.domain.model.state.Bucket
 import com.a.injector.domain.repository.InjectRepository
-import kotlinx.coroutines.Dispatchers
+import com.a.injector.domain.repository.PermissionRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import org.koin.core.annotation.Single
 import java.io.File
+import java.io.IOException
 import java.util.zip.ZipFile
 
 @Single
 class InjectRepositoryImpl(
     private val context: Context,
-    private val userDataStoreApi: UserDataStoreApi,
-    private val storageApi: StorageApi,
-    private val shizukuCommandService: ShizukuCommandService,
-    private val superuserCommandService: SuperuserCommandService,
-    private val directoryRepository: DirectoryRepository
+    private val permissionRepository: PermissionRepository,
+    private val storageApi: StorageApi
 ): InjectRepository {
-    private companion object {
-        private const val TARGET_PATH =
-            "/storage/emulated/0/Android/data/com.mobile.legends/files/dragon2017/assets"
-    }
-
-    override val commandService: Flow<CommandServiceModel> = combine(
-        userDataStoreApi.commandService,
-        shizukuCommandService.isAuthorized,
-        superuserCommandService.isGranted
-    ) { commandService, isAuthorized, isGranted ->
-        when (commandService) {
-            CommandService.Shizuku -> {
-                CommandServiceModel(
-                    name = commandService,
-                    isRunning = isAuthorized
-                )
-            }
-            CommandService.Superuser -> {
-                CommandServiceModel(
-                    name = commandService,
-                    isRunning = isGranted
-                )
-            }
-            CommandService.StoragePermission -> {
-                CommandServiceModel(
-                    name = commandService,
-                    isRunning = false
-                )
-            }
-        }
-    }
-
-    override fun setCommandService(commandService: CommandService): Flow<Either<TextResource, TextResource>> {
-        return flow<Either<TextResource, TextResource>> {
-            userDataStoreApi.setCommandService(
-                commandService = commandService
-            )
-            emit(Either.Right(TextResource.StringResource(R.string.success_script_install)))
-        }.catch { throwable ->
-            emit(Either.Left(throwable.toMessage()))
-        }.flowOn(Dispatchers.IO)
-    }
-
-    override fun start(replaceModel: ReplaceModel): Flow<Either<TextResource, TextResource>> {
-        return flow<Either<TextResource, TextResource>> {
-            val fileName = "${replaceModel.id}.zip"
-
-            validateReplace(fileName, replaceModel.fileSize)
-            val extractedDir = extractAssets(File(fileName))
-            val currentService = userDataStoreApi.commandService.first()
-
-            extractedDir.listFiles()?.forEach { file ->
-                if (file.isDirectory) {
-                    when (currentService) {
-                        CommandService.Shizuku -> {
-                            shizukuCommandService.copy(file.absolutePath, TARGET_PATH)
-                        }
-                        CommandService.Superuser -> {
-                            superuserCommandService.copy(file.absolutePath, TARGET_PATH)
-                        }
-                        CommandService.StoragePermission -> {
-
-                        }
-                    }
-                }
-            }
-
-            extractedDir.deleteRecursively()
-            emit(Either.Right(TextResource.StringResource(R.string.success_script_install)))
-        }.catch { throwable ->
-            emit(Either.Left(throwable.toMessage()))
-        }.flowOn(Dispatchers.IO)
-    }
-
     override fun execute(
         replaceModel: ReplaceModel
-    ): Flow<Either<TextResource, TextResource>> {
-        return flow<Either<TextResource, TextResource>> {
+    ): Flow<Either<Text, Text>> {
+        return flow<Either<Text, Text>> {
             val fileName = "${replaceModel.id}.zip"
 
-            emit(Either.Right(TextResource.DynamicString("Downloading")))
+            if (!permissionRepository.isManageExternalStorageGranted.first()) {
+                emit(Either.Left(Text.Resource(R.string.exception_manage_storage_permission_denied)))
+                return@flow
+            }
+
+            emit(Either.Right(Text.Resource(R.string.downloading)))
             val replaceFile = validateReplace(fileName, replaceModel.fileSize)
 
-            emit(Either.Right(TextResource.DynamicString("Extracting")))
+            emit(Either.Right(Text.Resource(R.string.extracting)))
             val extractedReplace = extractAssets(replaceFile)
 
-            emit(Either.Right(TextResource.DynamicString("Copying")))
+            emit(Either.Right(Text.Resource(R.string.copying)))
             copyAssets(extractedReplace)
 
-            emit(Either.Right(TextResource.StringResource(R.string.success_script_install)))
-        }.catch { throwable ->
-            emit(Either.Left(throwable.toMessage()))
-        }.flowOn(Dispatchers.IO)
+            emit(Either.Right(Text.Resource(R.string.success_script_install)))
+        }.catchAndDispatch()
     }
 
     private suspend fun validateReplace(fileName: String, expectedSize: Long?): File {
@@ -149,7 +67,6 @@ class InjectRepositoryImpl(
                 outputPath = downloadedFile
             )
         }
-
         return downloadedFile
     }
 
@@ -161,37 +78,29 @@ class InjectRepositoryImpl(
 
         ZipFile(targetFile).use { zipFile ->
             val entries = zipFile.entries().asSequence().toList()
-
-            // 1. Cari prefix berdasarkan letak folder "Art"
             val assetsPrefix = entries.firstNotNullOfOrNull { zipEntry ->
                 val segments = zipEntry.name.split('/')
                 val artIndex = segments.indexOf("Art")
 
                 if (artIndex != -1) {
                     if (artIndex == 0) {
-                        // Jika "Art" ada di root ZIP (misal: "Art/UI/..."), prefix kosong ("")
                         ""
                     } else {
-                        // Ambil semua folder SEBELUM "Art" sebagai root
-                        // Misal: "base/assets/Art/..." -> prefix menjadi "base/assets/"
                         segments.take(artIndex).joinToString("/") + "/"
                     }
                 } else {
                     null
                 }
-            } ?: return targetPath // Jika tidak ada folder "Art" sama sekali, kembalikan folder kosong
+            } ?: return targetPath
 
             for (entry in entries) {
-                // Jika assetsPrefix "", startsWith("") akan selalu true
                 if (!entry.name.startsWith(assetsPrefix) || entry.name == assetsPrefix) {
                     continue
                 }
 
-                // Hapus prefix parent-nya (jika ada)
                 val relativePath = entry.name.removePrefix(assetsPrefix)
                 val outputFile = File(targetPath, relativePath)
 
-                // Validasi Zip Slip Protection
                 if (!outputFile.canonicalPath.startsWith(canonicalTargetPath)) {
                     continue
                 }
@@ -216,45 +125,44 @@ class InjectRepositoryImpl(
         val actualData = File(androidDir, "data")
         val tempData = File(androidDir, "data1")
 
-        val isBypassed = actualData.renameTo(tempData)
-        if (!isBypassed) {
-            throw Exception("Gagal me-rename Android/data. Pastikan izin MANAGE_EXTERNAL_STORAGE diberikan.")
+        val isRenamed = actualData.renameTo(tempData)
+        if (!isRenamed && !tempData.exists()) {
+            throw IOException("Gagal mengubah nama folder Android/data ke Android/data1.")
         }
 
         try {
-            // 2. Operasi Copy
             val targetAssetsTemp = File(tempData, "com.mobile.legends/files/dragon2017/assets")
             if (!targetAssetsTemp.exists()) {
-                targetAssetsTemp.mkdirs()
+                val created = targetAssetsTemp.mkdirs()
+                if (!created && !targetAssetsTemp.exists()) {
+                    throw IOException("Gagal membuat direktori target assets.")
+                }
             }
 
-            val isCopySuccess = targetPath.copyRecursively(targetAssetsTemp, overwrite = true)
+            val isCopySuccess = targetPath.copyRecursively(
+                target = targetAssetsTemp,
+                overwrite = true,
+                onError = { file, exception ->
+                    throw IOException("Gagal menyalin file ${file.name}: ${exception.message}", exception)
+                }
+            )
+
             if (!isCopySuccess) {
-                throw Exception("Gagal menyalin file aset ke direktori target.")
+                throw IOException("Proses penyalinan file tidak lengkap.")
             }
-
         } finally {
-            // 3. Restorasi Super Cepat (Race Condition Handling)
             synchronized(this) {
                 if (actualData.exists()) {
-                    // Cari nama yang kosong (data2, data3, dst) agar tidak bentrok dengan sisa error masa lalu
                     var counter = 2
                     var osGeneratedData = File(androidDir, "data$counter")
                     while (osGeneratedData.exists()) {
                         counter++
                         osGeneratedData = File(androidDir, "data$counter")
                     }
-
-                    // Pindahkan folder buatan OS secara INSTAN dari "data" menjadi "data2/3/.."
                     actualData.renameTo(osGeneratedData)
                 }
-
-                // Kembalikan data1 ke data dengan aman karena slot nama "data" sudah pasti kosong
                 tempData.renameTo(actualData)
             }
-
-            // 4. Proses Cleanup (Pembersihan Sisa Folder)
-            // Dilakukan di luar blok synchronized karena ini operasi lambat dan tidak lagi berpacu dengan OS
             cleanUpLeftoverDataFolders(androidDir)
         }
     }
@@ -264,12 +172,7 @@ class InjectRepositoryImpl(
 
         androidDir.listFiles()?.forEach { file ->
             if (file.isDirectory && file.name.matches(dataRegex)) {
-                try {
-                    file.deleteRecursively()
-                } catch (e: Exception) {
-                    // Abaikan jika ada file yang nyangkut, akan dibersihkan di eksekusi berikutnya
-                    e.printStackTrace()
-                }
+                file.deleteRecursively()
             }
         }
     }

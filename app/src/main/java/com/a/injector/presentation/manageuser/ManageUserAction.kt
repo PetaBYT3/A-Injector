@@ -1,6 +1,6 @@
 package com.a.injector.presentation.manageuser
 
-import com.a.injector.data.dto.Role
+import com.a.injector.domain.model.state.Role
 
 sealed interface ManageUserAction {
     data class UsernameTextField(val username: String): ManageUserAction

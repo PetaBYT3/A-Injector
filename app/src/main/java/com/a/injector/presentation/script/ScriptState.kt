@@ -1,14 +1,14 @@
 package com.a.injector.presentation.script
 
-import com.a.injector.data.util.TextResource
 import com.a.injector.domain.model.HeroModel
+import com.a.injector.domain.model.Text
 
 data class ScriptState(
     val isProfileLoading: Boolean = true,
     val isModifyEnabled: Boolean = false,
 
     val isHeroesLoading: Boolean = true,
-    val isHeroesError: TextResource? = null,
+    val isHeroesError: Text? = null,
     val heroes: List<HeroModel> = emptyList(),
     val filteredHeroes: List<HeroModel> = emptyList(),
 

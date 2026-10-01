@@ -1,6 +1,6 @@
 package com.a.injector.data.mapper
 
-import com.a.injector.data.dto.ProfileDto
+import com.a.injector.data.remote.profile.ProfileDto
 import com.a.injector.domain.model.ProfileModel
 
 object ProfileMapper: Mapper<ProfileDto, ProfileModel> {

@@ -2,11 +2,11 @@ package com.a.injector.data.repository
 
 import arrow.core.Either
 import com.a.injector.R
-import com.a.injector.data.dto.Bucket
-import com.a.injector.data.remote.ReplaceApi
-import com.a.injector.data.remote.StorageApi
-import com.a.injector.data.util.TextResource
+import com.a.injector.data.remote.replace.ReplaceApi
+import com.a.injector.data.remote.storage.StorageApi
 import com.a.injector.data.util.toMessage
+import com.a.injector.domain.model.Text
+import com.a.injector.domain.model.state.Bucket
 import com.a.injector.domain.repository.OptimizeDatabaseRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -24,8 +24,8 @@ class OptimizeDatabaseRepositoryImpl(
     override fun getFileUrl(
         bucket: Bucket,
         fileName: String
-    ): Flow<Either<TextResource, String>> {
-        return flow<Either<TextResource, String>> {
+    ): Flow<Either<Text, String>> {
+        return flow<Either<Text, String>> {
             val url = storageApi.getFileUrl(
                 fromBucket = bucket,
                 fileName = fileName
@@ -36,8 +36,8 @@ class OptimizeDatabaseRepositoryImpl(
         }.flowOn(Dispatchers.IO)
     }
 
-    override fun cleanStorage(): Flow<Either<TextResource, TextResource>> {
-        return flow<Either<TextResource, TextResource>> {
+    override fun cleanStorage(): Flow<Either<Text, Text>> {
+        return flow<Either<Text, Text>> {
             val filesInPostgrest = replaceApi.getList().first().map { "${it.id}.zip" }
             val filesInStorage = storageApi.getFileNames(Bucket.SCRIPT)
             val filesToDelete = filesInStorage.filter { it !in filesInPostgrest }
@@ -48,7 +48,7 @@ class OptimizeDatabaseRepositoryImpl(
                     files = filesToDelete
                 )
             }
-            emit(Either.Right(TextResource.StringResource(R.string.success_clean_cloud_storage)))
+            emit(Either.Right(Text.Resource(R.string.success_clean_cloud_storage)))
         }.catch { throwable ->
             emit(Either.Left(throwable.toMessage()))
         }.flowOn(Dispatchers.IO)

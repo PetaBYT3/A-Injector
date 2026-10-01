@@ -1,15 +1,16 @@
 package com.a.injector.data.util
 
 import arrow.core.Either
+import com.a.injector.domain.model.Text
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 
-fun <T> Flow<Either<TextResource, T>>.catchAndDispatch(
+fun <T> Flow<Either<Text, T>>.catchAndDispatch(
     dispatcher: CoroutineDispatcher = Dispatchers.IO
-): Flow<Either<TextResource, T>> {
+): Flow<Either<Text, T>> {
     return this.catch { throwable ->
         emit(Either.Left(throwable.toMessage()))
     }.flowOn(dispatcher)

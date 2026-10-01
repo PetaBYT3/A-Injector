@@ -1,11 +1,11 @@
 package com.a.injector.presentation.panelsupporting
 
-import com.a.injector.data.util.TextResource
 import com.a.injector.domain.model.SupportModel
+import com.a.injector.domain.model.Text
 
 data class PanelSupportingState(
     val isSupportingListLoading: Boolean = true,
-    val isSupportingListError: TextResource? = null,
+    val isSupportingListError: Text? = null,
     val supportingList: List<SupportModel> = emptyList(),
 
     val isSupportingBottomSheetVisible: Boolean = false,

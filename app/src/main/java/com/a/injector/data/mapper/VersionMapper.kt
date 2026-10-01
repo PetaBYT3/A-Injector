@@ -1,6 +1,6 @@
 package com.a.injector.data.mapper
 
-import com.a.injector.data.dto.VersionDto
+import com.a.injector.data.remote.version.VersionDto
 import com.a.injector.domain.model.VersionModel
 
 object VersionMapper: Mapper<VersionDto, VersionModel> {

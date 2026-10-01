@@ -1,7 +1,7 @@
 package com.a.injector.presentation.managehero
 
-import com.a.injector.data.util.TextResource
 import com.a.injector.domain.model.HeroModel
+import com.a.injector.domain.model.Text
 
 data class ManageHeroState(
     val isOnEdit: Boolean = false,
@@ -10,7 +10,7 @@ data class ManageHeroState(
     val isDeleteEnabled: Boolean = false,
 
     val isHeroLoading: Boolean = true,
-    val isHeroError: TextResource? = null,
+    val isHeroError: Text? = null,
     val hero: HeroModel = HeroModel.EMPTY,
 
     val isDeleteBottomSheetVisible: Boolean = false,

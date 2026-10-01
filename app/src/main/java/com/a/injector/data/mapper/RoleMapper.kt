@@ -1,6 +1,6 @@
 package com.a.injector.data.mapper
 
-import com.a.injector.data.dto.RoleDto
+import com.a.injector.data.remote.role.RoleDto
 import com.a.injector.domain.model.ProfileModel
 import com.a.injector.domain.model.RoleModel
 

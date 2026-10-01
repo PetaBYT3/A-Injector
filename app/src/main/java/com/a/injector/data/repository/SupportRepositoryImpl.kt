@@ -4,16 +4,16 @@ package com.a.injector.data.repository
 
 import arrow.core.Either
 import com.a.injector.R
-import com.a.injector.data.dto.Bucket
 import com.a.injector.data.mapper.SupportMapper
-import com.a.injector.data.remote.AuthApi
-import com.a.injector.data.remote.ProfileApi
-import com.a.injector.data.remote.StorageApi
-import com.a.injector.data.remote.SupportingApi
-import com.a.injector.data.util.TextResource
+import com.a.injector.data.remote.auth.AuthApi
+import com.a.injector.data.remote.profile.ProfileApi
+import com.a.injector.data.remote.storage.StorageApi
+import com.a.injector.data.remote.support.SupportApi
 import com.a.injector.data.util.catchAndDispatch
 import com.a.injector.data.util.toWebpByteArray
 import com.a.injector.domain.model.SupportModel
+import com.a.injector.domain.model.Text
+import com.a.injector.domain.model.state.Bucket
 import com.a.injector.domain.repository.SupportRepository
 import io.github.vinceglb.filekit.PlatformFile
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -30,19 +30,19 @@ import org.koin.core.annotation.Single
 class SupportRepositoryImpl(
     private val authApi: AuthApi,
     private val profileApi: ProfileApi,
-    private val supportingApi: SupportingApi,
+    private val supportApi: SupportApi,
     private val storageApi: StorageApi
 ): SupportRepository {
-    override fun getCurrent(): Flow<Either<TextResource, SupportModel>> {
-        return flow<Either<TextResource, SupportModel>> {
+    override fun getCurrent(): Flow<Either<Text, SupportModel>> {
+        return flow<Either<Text, SupportModel>> {
             val result = authApi.getAuthState().filterNotNull().flatMapLatest { userInfo ->
-                supportingApi.getSingle(
+                supportApi.getSingle(
                     profileId = userInfo.id
                 ).map { supportDto ->
                     if (supportDto != null) {
                         Either.Right(SupportMapper.toModel(supportDto))
                     } else {
-                        Either.Left(TextResource.StringResource(R.string.exception_no_data))
+                        Either.Left(Text.Resource(R.string.exception_no_data))
                     }
                 }
             }
@@ -50,24 +50,24 @@ class SupportRepositoryImpl(
         }.catchAndDispatch()
     }
 
-    override fun getSingle(profileId: String): Flow<Either<TextResource, SupportModel>> {
-        return flow<Either<TextResource, SupportModel>> {
-            val result = supportingApi.getSingle(
+    override fun getSingle(profileId: String): Flow<Either<Text, SupportModel>> {
+        return flow<Either<Text, SupportModel>> {
+            val result = supportApi.getSingle(
                 profileId = profileId
             ).map { supportDto ->
                 if (supportDto != null) {
                     Either.Right(SupportMapper.toModel(supportDto))
                 } else {
-                    Either.Left(TextResource.StringResource(R.string.exception_no_data))
+                    Either.Left(Text.Resource(R.string.exception_no_data))
                 }
             }
             emitAll(result)
         }.catchAndDispatch()
     }
 
-    override fun getList(): Flow<Either<TextResource, List<SupportModel>>> {
-        return flow<Either<TextResource, List<SupportModel>>> {
-            val result = supportingApi.getList().map { supportDtos ->
+    override fun getList(): Flow<Either<Text, List<SupportModel>>> {
+        return flow<Either<Text, List<SupportModel>>> {
+            val result = supportApi.getList().map { supportDtos ->
                 val supportModels = supportDtos.map { supportDto ->
                     SupportMapper.toModel(supportDto)
                 }
@@ -80,10 +80,10 @@ class SupportRepositoryImpl(
     override fun upsert(
         supportModel: SupportModel,
         image: PlatformFile?
-    ): Flow<Either<TextResource, Unit>> {
-        return flow<Either<TextResource, Unit>> {
+    ): Flow<Either<Text, Unit>> {
+        return flow<Either<Text, Unit>> {
             if (image == null) {
-                emit(Either.Left(TextResource.StringResource(R.string.exception_no_image)))
+                emit(Either.Left(Text.Resource(R.string.exception_no_image)))
                 return@flow
             }
 
@@ -92,7 +92,7 @@ class SupportRepositoryImpl(
                 fileByte = image.toWebpByteArray(),
                 fileName = "${supportModel.id}.webp"
             )
-            supportingApi.upsert(
+            supportApi.upsert(
                 supportDto = SupportMapper.toDto(supportModel).copy(
                     imageUrl = imageUrl
                 )
@@ -101,32 +101,32 @@ class SupportRepositoryImpl(
         }.catchAndDispatch()
     }
 
-    override fun confirm(supportModel: SupportModel): Flow<Either<TextResource, Unit>> {
-        return flow<Either<TextResource, Unit>> {
+    override fun confirm(supportModel: SupportModel): Flow<Either<Text, Unit>> {
+        return flow<Either<Text, Unit>> {
             val profileDto = profileApi.getSingle(
                 profileId = supportModel.id
             ).first()
 
             if (profileDto == null) {
-                emit(Either.Left(TextResource.StringResource(R.string.exception_no_data)))
+                emit(Either.Left(Text.Resource(R.string.exception_no_data)))
                 return@flow
             }
 
             profileApi.upsert(
                 profileDto = profileDto.copy(
-                    support = profileDto.support + supportModel.nominal
+                    support = profileDto.support + supportModel.support
                 )
             )
-            supportingApi.delete(
+            supportApi.delete(
                 supportDto = SupportMapper.toDto(supportModel)
             )
             emit(Either.Right(Unit))
         }.catchAndDispatch()
     }
 
-    override fun deny(supportModel: SupportModel): Flow<Either<TextResource, Unit>> {
+    override fun deny(supportModel: SupportModel): Flow<Either<Text, Unit>> {
         return flow {
-            supportingApi.delete(
+            supportApi.delete(
                 supportDto = SupportMapper.toDto(supportModel)
             )
             emit(Either.Right(Unit))

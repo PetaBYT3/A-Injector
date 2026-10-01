@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.AbsoluteRoundedCornerShape
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -181,16 +183,21 @@ private fun Content(
             items = validateSupportSteps,
             key = { _, stringResource -> stringResource }
         ) { index, stringResource ->
-            DefaultListItem(
+            SegmentedListItem(
                 modifier = Modifier
                     .animateItem(),
-                index = index + 1,
-                count = validateSupportSteps.size + 1,
+                colors = ListItemDefaults.colors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainer
+                ),
+                shapes = ListItemDefaults.segmentedShapes(
+                    index = index + 1,
+                    count = validateSupportSteps.size + 1
+                ),
                 leadingContent = { Text(text = (index + 1).toString()) },
                 content = {
                     Text(
                         text = stringResource(stringResource),
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }

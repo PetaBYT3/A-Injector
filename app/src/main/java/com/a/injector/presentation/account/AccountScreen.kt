@@ -27,7 +27,7 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
-import com.a.injector.data.dto.Role
+import com.a.injector.domain.model.state.Role
 import com.a.injector.domain.model.ProfileModel
 import com.a.injector.domain.model.state.AuthResult
 import com.a.injector.presentation.account.ManageAccount.ChangePassword

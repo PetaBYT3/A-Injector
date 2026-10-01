@@ -1,12 +1,12 @@
 package com.a.injector.presentation.settings
 
-import com.a.injector.data.util.TextResource
 import com.a.injector.domain.model.ProfileModel
+import com.a.injector.domain.model.Text
 import java.util.Locale
 
 data class SettingsState(
     val isProfileLoading: Boolean = true,
-    val isProfileError: TextResource? = null,
+    val isProfileError: Text? = null,
     val profile: ProfileModel = ProfileModel.EMPTY,
 
     val isCleanCloudStorageBottomSheetVisible: Boolean = false,

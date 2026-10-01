@@ -1,16 +1,16 @@
 package com.a.injector.presentation.role
 
-import com.a.injector.data.util.TextResource
 import com.a.injector.domain.model.ProfileModel
 import com.a.injector.domain.model.RoleModel
+import com.a.injector.domain.model.Text
 
 data class RoleState(
     val isProfileLoading: Boolean = true,
-    val isProfileError: TextResource? = null,
+    val isProfileError: Text? = null,
     val profile: ProfileModel = ProfileModel.EMPTY,
 
     val isRequestedRoleLoading: Boolean = true,
-    val isRequestedRoleError: TextResource? = null,
+    val isRequestedRoleError: Text? = null,
     val requestedRole: RoleModel = RoleModel.EMPTY,
 
     val isUpsertRoleButtonLoading: Boolean = false,

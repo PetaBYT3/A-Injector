@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="exception_manage_storage_permission_denied">Manage storage permission denied, make sure you grant it</string>
+
     <string name="exception_credential_invalid">Email or password incorrect</string>
     <string name="exception_email_invalid">Email invalid</string>
     <string name="exception_email_unverified">Email not verified</string>

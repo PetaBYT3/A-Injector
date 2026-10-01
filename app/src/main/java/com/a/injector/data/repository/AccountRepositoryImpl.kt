@@ -4,10 +4,10 @@ package com.a.injector.data.repository
 
 import arrow.core.Either
 import com.a.injector.R
-import com.a.injector.data.dto.ProfileDto
-import com.a.injector.data.remote.AuthApi
-import com.a.injector.data.remote.ProfileApi
-import com.a.injector.data.util.TextResource
+import com.a.injector.data.remote.profile.ProfileDto
+import com.a.injector.data.remote.auth.AuthApi
+import com.a.injector.data.remote.profile.ProfileApi
+import com.a.injector.domain.model.Text
 import com.a.injector.data.util.catchAndDispatch
 import com.a.injector.domain.model.state.AuthResult
 import com.a.injector.domain.repository.AccountRepository
@@ -39,21 +39,21 @@ class AccountRepositoryImpl(
         }
     }.flowOn(Dispatchers.IO)
 
-    override fun getCurrent(): Flow<Either<TextResource, UserInfo>> {
-        return flow<Either<TextResource, UserInfo>> {
+    override fun getCurrent(): Flow<Either<Text, UserInfo>> {
+        return flow<Either<Text, UserInfo>> {
             val result = authApi.getAuthState().map { userInfo ->
                 if (userInfo != null) {
                     Either.Right(userInfo)
                 } else {
-                    Either.Left(TextResource.StringResource(R.string.exception_no_data))
+                    Either.Left(Text.Resource(R.string.exception_no_data))
                 }
             }
             emitAll(result)
         }.catchAndDispatch()
     }
 
-    override fun signIn(email: String, password: String): Flow<Either<TextResource, Unit>> {
-        return flow<Either<TextResource, Unit>> {
+    override fun signIn(email: String, password: String): Flow<Either<Text, Unit>> {
+        return flow<Either<Text, Unit>> {
             authApi.signIn(
                 email = email,
                 password = password
@@ -62,8 +62,8 @@ class AccountRepositoryImpl(
         }.catchAndDispatch()
     }
 
-    override fun signUp(email: String, password: String): Flow<Either<TextResource, Unit>> {
-        return flow<Either<TextResource, Unit>> {
+    override fun signUp(email: String, password: String): Flow<Either<Text, Unit>> {
+        return flow<Either<Text, Unit>> {
             authApi.signUp(
                 email = email,
                 password = password
@@ -79,35 +79,35 @@ class AccountRepositoryImpl(
         }.catchAndDispatch()
     }
 
-    override fun signLink(email: String): Flow<Either<TextResource, TextResource>> {
-        return flow<Either<TextResource, TextResource>> {
+    override fun signLink(email: String): Flow<Either<Text, Text>> {
+        return flow<Either<Text, Text>> {
             authApi.signOtp(
                 email = email
             )
-            emit(Either.Right(TextResource.StringResource(R.string.success_sign_link_email_sent)))
+            emit(Either.Right(Text.Resource(R.string.success_sign_link_email_sent)))
         }.catchAndDispatch()
     }
 
-    override fun signGuest(): Flow<Either<TextResource, Unit>> {
-        return flow<Either<TextResource, Unit>> {
+    override fun signGuest(): Flow<Either<Text, Unit>> {
+        return flow<Either<Text, Unit>> {
             authApi.signGuest()
             emit(Either.Right(Unit))
         }.catchAndDispatch()
     }
 
-    override fun signOut(): Flow<Either<TextResource, Unit>> {
-        return flow<Either<TextResource, Unit>> {
+    override fun signOut(): Flow<Either<Text, Unit>> {
+        return flow<Either<Text, Unit>> {
             authApi.signOut()
             emit(Either.Right(Unit))
         }.catchAndDispatch()
     }
 
-    override fun changePassword(password: String): Flow<Either<TextResource, TextResource>> {
-        return flow<Either<TextResource, TextResource>> {
+    override fun changePassword(password: String): Flow<Either<Text, Text>> {
+        return flow<Either<Text, Text>> {
             authApi.changePassword(
                 password = password
             )
-            emit(Either.Right(TextResource.StringResource(R.string.success_change_password)))
+            emit(Either.Right(Text.Resource(R.string.success_change_password)))
         }.catchAndDispatch()
     }
 }

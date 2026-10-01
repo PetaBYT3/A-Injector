@@ -1,6 +1,6 @@
 package com.a.injector.data.mapper
 
-import com.a.injector.data.dto.SupportDto
+import com.a.injector.data.remote.support.SupportDto
 import com.a.injector.domain.model.ProfileModel
 import com.a.injector.domain.model.SupportModel
 
@@ -8,7 +8,7 @@ object SupportMapper: Mapper<SupportDto, SupportModel> {
     override fun toModel(dto: SupportDto): SupportModel {
         return SupportModel(
             id = dto.id,
-            nominal = dto.nominal,
+            support = dto.support,
             imageUrl = dto.imageUrl,
             profile = if (dto.profile != null) {
                 ProfileMapper.toModel(dto.profile)
@@ -21,7 +21,7 @@ object SupportMapper: Mapper<SupportDto, SupportModel> {
     override fun toDto(model: SupportModel): SupportDto {
         return SupportDto(
             id = model.id,
-            nominal = model.nominal,
+            support = model.support,
             imageUrl = model.imageUrl,
             profile = null
         )

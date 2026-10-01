@@ -3,9 +3,9 @@ package com.a.injector.presentation.hero
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a.injector.R
-import com.a.injector.data.util.TextResource
 import com.a.injector.domain.model.ReplaceModel
 import com.a.injector.domain.model.SkinModel
+import com.a.injector.domain.model.Text
 import com.a.injector.domain.repository.InjectRepository
 import com.a.injector.domain.repository.ProfileRepository
 import com.a.injector.domain.repository.ScriptRepository
@@ -105,7 +105,7 @@ class HeroViewModel(
                     currentState.copy(
                         targetSkin = skinModel,
                         targetReplace = replaceModel,
-                        injectStatus = TextResource.DynamicString("Starting"),
+                        injectStatus = Text.Resource(R.string.checking),
                         isInjectBottomSheetVisible = true
                     )
                 }
@@ -117,7 +117,7 @@ class HeroViewModel(
                 }
                 _effect.send(
                     element = ScreenEffect.ShowSnackBar(
-                        message = TextResource.StringResource(R.string.success_script_install)
+                        message = Text.Resource(R.string.success_script_install)
                     )
                 )
             }.collect { either ->

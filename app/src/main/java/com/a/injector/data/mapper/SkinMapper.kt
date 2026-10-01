@@ -1,6 +1,6 @@
 package com.a.injector.data.mapper
 
-import com.a.injector.data.dto.SkinDto
+import com.a.injector.data.remote.skin.SkinDto
 import com.a.injector.domain.model.SkinModel
 
 object SkinMapper : Mapper<SkinDto, SkinModel> {

@@ -3,7 +3,6 @@ package com.a.injector.presentation.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a.injector.BuildConfig
-import com.a.injector.domain.model.state.CommandService
 import com.a.injector.domain.repository.ApplicationRepository
 import com.a.injector.domain.repository.InjectRepository
 import com.a.injector.domain.repository.PermissionRepository
@@ -118,29 +117,9 @@ class HomeViewModel(
                     )
                 }
             }
-            is HomeAction.SetCommandServiceButton -> {
-                setCommandServiceButton(commandService = action.commandService)
-            }
-            HomeAction.SupportBottomSheet -> {
-                _state.update { currentState ->
-                    currentState.copy(isSupportBottomSheetVisible = !currentState.isSupportBottomSheetVisible)
-                }
-            }
             is HomeAction.ShowSnackBar -> {
                 viewModelScope.launch {
-                    _effect.send(ScreenEffect.ShowSnackBar(action.textResource))
-                }
-            }
-        }
-    }
-
-    private fun setCommandServiceButton(commandService: CommandService) {
-        viewModelScope.launch {
-            injectRepository.setCommandService(
-                commandService = commandService
-            ).collect { either ->
-                either.onLeft { error ->
-                    _effect.send(ScreenEffect.ShowSnackBar(error))
+                    _effect.send(ScreenEffect.ShowSnackBar(action.text))
                 }
             }
         }

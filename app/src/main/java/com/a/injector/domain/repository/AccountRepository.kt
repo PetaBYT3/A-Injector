@@ -1,7 +1,7 @@
 package com.a.injector.domain.repository
 
 import arrow.core.Either
-import com.a.injector.data.util.TextResource
+import com.a.injector.domain.model.Text
 import com.a.injector.domain.model.state.AuthResult
 import io.github.jan.supabase.auth.user.UserInfo
 import kotlinx.coroutines.flow.Flow
@@ -9,12 +9,12 @@ import kotlinx.coroutines.flow.Flow
 interface AccountRepository {
     val currentState: Flow<AuthResult>
 
-    fun getCurrent(): Flow<Either<TextResource, UserInfo>>
-    fun signIn(email: String, password: String): Flow<Either<TextResource, Unit>>
-    fun signUp(email: String, password: String): Flow<Either<TextResource, Unit>>
-    fun signLink(email: String): Flow<Either<TextResource, TextResource>>
-    fun signGuest(): Flow<Either<TextResource, Unit>>
-    fun signOut(): Flow<Either<TextResource, Unit>>
+    fun getCurrent(): Flow<Either<Text, UserInfo>>
+    fun signIn(email: String, password: String): Flow<Either<Text, Unit>>
+    fun signUp(email: String, password: String): Flow<Either<Text, Unit>>
+    fun signLink(email: String): Flow<Either<Text, Text>>
+    fun signGuest(): Flow<Either<Text, Unit>>
+    fun signOut(): Flow<Either<Text, Unit>>
 
-    fun changePassword(password: String): Flow<Either<TextResource, TextResource>>
+    fun changePassword(password: String): Flow<Either<Text, Text>>
 }

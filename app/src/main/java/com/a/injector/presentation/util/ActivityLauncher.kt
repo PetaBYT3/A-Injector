@@ -10,7 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import com.a.injector.BuildConfig
 import com.a.injector.R
-import com.a.injector.data.util.TextResource
+import com.a.injector.domain.model.Text
 
 fun openStoragePermissionSettings(context: Context) {
     val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION).apply {
@@ -23,19 +23,19 @@ fun openStoragePermissionSettings(context: Context) {
 fun openInBrowser(
     uriHandler: UriHandler,
     url: String,
-    onError: (TextResource) -> Unit
+    onError: (Text) -> Unit
 ) {
     try {
         uriHandler.openUri(url)
     } catch (e: Exception) {
-        onError(TextResource.StringResource(R.string.exception_no_handler))
+        onError(Text.Resource(R.string.exception_no_handler))
     }
 }
 
 fun sendToEmail(
     context: Context,
     email: String,
-    onError: (TextResource) -> Unit
+    onError: (Text) -> Unit
 ) {
     val cleanEmail = email.trim()
     val mailUri = "mailto:$cleanEmail".toUri()
@@ -47,7 +47,7 @@ fun sendToEmail(
     try {
         context.startActivity(intent)
     } catch (e: Exception) {
-        onError(TextResource.StringResource(R.string.exception_no_handler))
+        onError(Text.Resource(R.string.exception_no_handler))
     }
 }
 

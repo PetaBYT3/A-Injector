@@ -1,8 +1,8 @@
 package com.a.injector.presentation.manageskin
 
-import com.a.injector.data.util.TextResource
 import com.a.injector.domain.model.HeroModel
 import com.a.injector.domain.model.SkinModel
+import com.a.injector.domain.model.Text
 
 data class ManageSkinState(
     val isOnEdit: Boolean = false,
@@ -11,11 +11,11 @@ data class ManageSkinState(
     val isDeleteEnabled: Boolean = false,
 
     val isHeroLoading: Boolean = true,
-    val isHeroError: TextResource? = null,
+    val isHeroError: Text? = null,
     val hero: HeroModel = HeroModel.EMPTY,
 
     val isSkinLoading: Boolean = true,
-    val isSkinError: TextResource? = null,
+    val isSkinError: Text? = null,
     val skin: SkinModel = SkinModel.EMPTY,
 
     val isDeleteBottomSheetVisible: Boolean = false,

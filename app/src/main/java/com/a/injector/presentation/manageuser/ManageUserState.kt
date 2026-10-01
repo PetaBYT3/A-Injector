@@ -1,11 +1,11 @@
 package com.a.injector.presentation.manageuser
 
-import com.a.injector.data.util.TextResource
 import com.a.injector.domain.model.ProfileModel
+import com.a.injector.domain.model.Text
 
 data class ManageUserState(
     val isProfileLoading: Boolean = true,
-    val isProfileError: TextResource? = null,
+    val isProfileError: Text? = null,
     val profile: ProfileModel = ProfileModel.EMPTY,
 
     val nominalToAddTextField: String = "",
