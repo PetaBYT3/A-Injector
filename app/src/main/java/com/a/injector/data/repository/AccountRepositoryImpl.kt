@@ -31,9 +31,10 @@ class AccountRepositoryImpl(
     private val authApi: AuthApi,
     private val profileApi: ProfileApi
 ): AccountRepository {
-    override val currentAuthState: Flow<AuthResult> = authApi.getAuthState().map { userInfo ->
+    override val currentState: Flow<AuthResult> = authApi.getAuthState().map { userInfo ->
         when {
             userInfo == null -> AuthResult.Unauthenticated
+            userInfo.isAnonymous == true -> AuthResult.Guest
             else -> AuthResult.Authenticated
         }
     }.flowOn(Dispatchers.IO)

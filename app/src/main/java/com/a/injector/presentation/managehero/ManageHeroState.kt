@@ -19,6 +19,6 @@ data class ManageHeroState(
     val isUpsertButtonLoading: Boolean = false
 ) {
     val isContentLoading: Boolean get() =
-        isProfileLoading &&
+        isProfileLoading ||
         isHeroLoading
 }

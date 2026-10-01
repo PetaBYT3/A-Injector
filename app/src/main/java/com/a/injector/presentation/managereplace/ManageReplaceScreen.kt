@@ -1,19 +1,17 @@
 package com.a.injector.presentation.managereplace
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AttachFile
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.InsertDriveFile
 import androidx.compose.material.icons.rounded.Person4
 import androidx.compose.material.icons.rounded.Save
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -41,9 +39,7 @@ import com.a.injector.presentation.component.CustomIconButton
 import com.a.injector.presentation.component.CustomSlideUpAnimatedVisibility
 import com.a.injector.presentation.component.CustomSurfaceText
 import com.a.injector.presentation.component.CustomTextField
-import com.a.injector.presentation.component.CustomTextListTitle
 import com.a.injector.presentation.component.CustomTopAppBar
-import com.a.injector.presentation.component.DefaultClickableListItem
 import com.a.injector.presentation.component.DefaultListItem
 import com.a.injector.presentation.component.spacer
 import com.a.injector.presentation.mainnavigation.popBackStack
@@ -89,6 +85,7 @@ private fun Preview() {
     ManageReplaceScreen(
         navBackStack = rememberNavBackStack(),
         state = ManageReplaceState(
+            isProfileLoading = false,
             isHeroLoading = false,
             isSkinLoading = false,
             isReplaceLoading = false
@@ -229,51 +226,59 @@ private fun Content(
         }
         spacer()
         item("replaceTitle") {
-            CustomTextListTitle(
+            DefaultListItem(
                 modifier = Modifier
                     .animateItem(),
-                text = stringResource(R.string.replace)
+                index = 0,
+                count = 4,
+                content = { Text(text = stringResource(R.string.replace)) }
             )
         }
-        item("replaceItem") {
-            Column(
-                modifier = Modifier
-                    .animateItem(),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                CustomTextField(
-                    label = stringResource(R.string.label),
-                    value = state.replace.label,
-                    onValueChange = { onAction(ManageReplaceAction.LabelTextField(it)) }
-                )
-                CustomTextField(
-                    label = stringResource(R.string.name),
-                    value = state.replace.name,
-                    onValueChange = { onAction(ManageReplaceAction.NameTextField(it)) }
-                )
-                DefaultClickableListItem(
-                    onClick = { filePicker.launch() },
-                    leadingContent = { Icon(Icons.Rounded.InsertDriveFile, null) },
-                    content = { Text(text = stringResource(R.string.script)) },
-                    supportingContent = {
-                        Text(
-                            text = state.replaceFile?.name ?: stringResource(R.string.exception_no_script)
-                        )
-                    },
-                    trailingContent = {
-                        if (state.replaceFile != null) {
-                            IconButton(
-                                colors = IconButtonDefaults.iconButtonColors(
-                                    containerColor = MaterialTheme.colorScheme.errorContainer,
-                                    contentColor = MaterialTheme.colorScheme.onErrorContainer
-                                ),
-                                onClick = { onAction(ManageReplaceAction.ReplaceFilePicker(null)) },
-                                content = { Icon(Icons.Rounded.Delete, null) }
-                            )
+        item("labelTextField") {
+            CustomTextField(
+                label = stringResource(R.string.label),
+                value = state.replace.label,
+                onValueChange = { onAction(ManageReplaceAction.LabelTextField(it)) }
+            )
+        }
+        item("nameTextField") {
+            CustomTextField(
+                label = stringResource(R.string.name),
+                value = state.replace.name,
+                onValueChange = { onAction(ManageReplaceAction.NameTextField(it)) }
+            )
+        }
+        item("scriptFile") {
+            DefaultListItem(
+                index = 3,
+                count = 4,
+                leadingContent = { Icon(Icons.Rounded.InsertDriveFile, null) },
+                content = { Text(text = stringResource(R.string.script)) },
+                supportingContent = {
+                    Text(
+                        text = state.replaceFile?.name ?: stringResource(R.string.exception_no_script)
+                    )
+                },
+                trailingContent = {
+                    IconButton(
+                        onClick = {
+                            if (state.replaceFile != null) {
+                                onAction(ManageReplaceAction.ReplaceFilePicker(null))
+                            } else {
+                                filePicker.launch()
+                            }
+                        },
+                        content = {
+                            val imageVector = if (state.replaceFile != null) {
+                                Icons.Rounded.Delete
+                            } else {
+                                Icons.Rounded.AttachFile
+                            }
+                            Icon(imageVector, null)
                         }
-                    }
-                )
-            }
+                    )
+                }
+            )
         }
     }
 }

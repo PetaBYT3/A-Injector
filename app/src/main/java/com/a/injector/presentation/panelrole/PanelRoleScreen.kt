@@ -2,10 +2,13 @@ package com.a.injector.presentation.panelrole
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -15,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -95,14 +99,28 @@ private fun PanelRoleScreen(
     )
 
     CustomBottomSheet(
-        visible = state.isGrantRequestBottomSheetVisible,
+        visible = state.isActionBottomSheetVisible,
         onDismiss = { onAction(PanelRoleAction.DismissGrantRequestBottomSheet) },
-        title = stringResource(R.string.verify),
+        title = stringResource(R.string.action),
         content = {
             item {
                 DefaultListItem(
-                    content = { Text(text = state.requestToGrant.profile.username) },
-                    supportingContent = { Text(text = state.requestToGrant.role.name) }
+                    content = { Text(text = state.requestToAction.profile.username) },
+                    supportingContent = {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(5.dp)
+                        ) {
+                            Text(text = state.requestToAction.profile.role.title.asString())
+                            Icon(
+                                modifier = Modifier
+                                    .size(15.dp),
+                                imageVector = Icons.Rounded.ArrowForward,
+                                contentDescription = null
+                            )
+                            Text(text = state.requestToAction.role.title.asString())
+                        }
+                    }
                 )
             }
         },
@@ -110,7 +128,15 @@ private fun PanelRoleScreen(
             CustomButton(
                 onClick = {
                     onAction(PanelRoleAction.DismissGrantRequestBottomSheet)
-                    onAction(PanelRoleAction.GrantRequestButton)
+                    onAction(PanelRoleAction.DenyButton)
+                },
+                text = stringResource(R.string.decline),
+                isError = true
+            )
+            CustomButton(
+                onClick = {
+                    onAction(PanelRoleAction.DismissGrantRequestBottomSheet)
+                    onAction(PanelRoleAction.ConfirmButton)
                 },
                 text = stringResource(R.string.confirm)
             )

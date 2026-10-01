@@ -22,6 +22,6 @@ data class HeroState(
     val injectStatus: TextResource = TextResource.DynamicString(""),
 ) {
     val isContentLoading: Boolean get() =
-        isProfileLoading &&
+        isProfileLoading ||
         isHeroDetailLoading
 }

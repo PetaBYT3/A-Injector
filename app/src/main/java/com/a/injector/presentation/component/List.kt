@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.InsertDriveFile
@@ -133,8 +132,8 @@ fun DefaultListItem(
         supportingContent = null,
         content = {
             Row(
-                modifier = Modifier.
-                fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (leadingContent != null) {
@@ -182,26 +181,20 @@ fun DefaultListItem(
                         }
                     }
                 }
-                Box(
-                    modifier = Modifier
-                        .widthIn(min = 48.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (trailingContent != null) {
-                        Spacer(
-                            modifier = Modifier
-                                .width(12.5.dp)
+                if (trailingContent != null) {
+                    Spacer(
+                        modifier = Modifier
+                            .width(12.5.dp)
+                    )
+                    ProvideTextStyle(
+                        value = MaterialTheme.typography.labelSmall.copy(
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        ProvideTextStyle(
-                            value = MaterialTheme.typography.labelSmall.copy(
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                    ) {
+                        CompositionLocalProvider(
+                            LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant
                         ) {
-                            CompositionLocalProvider(
-                                LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant
-                            ) {
-                                trailingContent()
-                            }
+                            trailingContent()
                         }
                     }
                 }
@@ -287,26 +280,20 @@ fun DefaultClickableListItem(
                         }
                     }
                 }
-                Box(
-                    modifier = Modifier
-                        .widthIn(min = 48.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (trailingContent != null) {
-                        Spacer(
-                            modifier = Modifier
-                                .width(12.5.dp)
+                if (trailingContent != null) {
+                    Spacer(
+                        modifier = Modifier
+                            .width(12.5.dp)
+                    )
+                    ProvideTextStyle(
+                        value = MaterialTheme.typography.labelSmall.copy(
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        ProvideTextStyle(
-                            value = MaterialTheme.typography.labelSmall.copy(
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                    ) {
+                        CompositionLocalProvider(
+                            LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant
                         ) {
-                            CompositionLocalProvider(
-                                LocalContentColor provides MaterialTheme.colorScheme.onSurfaceVariant
-                            ) {
-                                trailingContent()
-                            }
+                            trailingContent()
                         }
                     }
                 }

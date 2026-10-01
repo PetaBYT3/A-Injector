@@ -2,9 +2,13 @@ package com.a.injector.presentation.account
 
 import com.a.injector.data.util.TextResource
 import com.a.injector.domain.model.ProfileModel
+import com.a.injector.domain.model.state.AuthResult
 import io.github.jan.supabase.auth.user.UserInfo
 
 data class AccountState(
+    val isAuthStateLoading: Boolean = true,
+    val authState: AuthResult = AuthResult.Unauthenticated,
+
     val isUserInfoLoading: Boolean = true,
     val isUserInfoError: TextResource? = null,
     val userInfo: UserInfo? = null,
@@ -20,6 +24,7 @@ data class AccountState(
     val isSingOutButtonLoading: Boolean = false
 ) {
     val isContentLoading: Boolean get() =
-        isUserInfoLoading &&
+        isAuthStateLoading ||
+        isUserInfoLoading ||
         isProfileLoading
 }

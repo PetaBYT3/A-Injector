@@ -180,7 +180,6 @@ private fun Content(
                     .animateItem(),
                 index = index,
                 count = state.filteredProfiles.size,
-                overlineContent = { Text(text = profileModel.role.name) },
                 content = {
                     Text(
                         text = profileModel.username,
@@ -188,6 +187,7 @@ private fun Content(
                         overflow = TextOverflow.Ellipsis
                     )
                 },
+                supportingContent = { Text(text = profileModel.role.name) },
                 trailingContent = {
                     CustomIconButton(
                         onClick = {

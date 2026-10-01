@@ -24,7 +24,7 @@ data class ManageSkinState(
     val isUpsertButtonLoading: Boolean = false
 ) {
     val isContentLoading: Boolean get() =
-        isProfileLoading &&
-        isHeroLoading &&
+        isProfileLoading ||
+        isHeroLoading ||
         isSkinLoading
 }

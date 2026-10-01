@@ -50,6 +50,7 @@ fun CustomSurfaceText(
         modifier = modifier
             .padding(start = 6.dp, end = 6.dp),
         style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
         text = text
     )
 }

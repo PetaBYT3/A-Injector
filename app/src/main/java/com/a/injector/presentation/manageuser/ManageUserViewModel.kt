@@ -54,14 +54,20 @@ class ManageUserViewModel(
 
     fun onAction(action: ManageUserAction) {
         when (action) {
-            is ManageUserAction.NominalToAddTextField -> {
+            is ManageUserAction.UsernameTextField -> {
                 _state.update { currentState ->
-                    currentState.copy(nominalToAddTextField = action.nominalToAdd)
+                    currentState.copy(
+                        profile = currentState.profile.copy(username = action.username)
+                    )
                 }
             }
-            ManageUserAction.SelectRoleBottomSheet -> {
+            is ManageUserAction.SupportTextField -> {
                 _state.update { currentState ->
-                    currentState.copy(isSelectRoleBottomSheetVisible = !currentState.isSelectRoleBottomSheetVisible)
+                    currentState.copy(
+                        profile = currentState.profile.copy(
+                            nominal = action.support.ifBlank { "0" }.toLong()
+                        )
+                    )
                 }
             }
             is ManageUserAction.SelectRoleButton -> {

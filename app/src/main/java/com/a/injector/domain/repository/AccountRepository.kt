@@ -7,7 +7,7 @@ import io.github.jan.supabase.auth.user.UserInfo
 import kotlinx.coroutines.flow.Flow
 
 interface AccountRepository {
-    val currentAuthState: Flow<AuthResult>
+    val currentState: Flow<AuthResult>
 
     fun getCurrent(): Flow<Either<TextResource, UserInfo>>
     fun signIn(email: String, password: String): Flow<Either<TextResource, Unit>>

@@ -2,7 +2,9 @@ package com.a.injector.presentation.loading
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.a.injector.domain.model.state.AuthResult
+import com.a.injector.domain.model.state.AuthResult.Authenticated
+import com.a.injector.domain.model.state.AuthResult.Guest
+import com.a.injector.domain.model.state.AuthResult.Unauthenticated
 import com.a.injector.domain.repository.AccountRepository
 import com.a.injector.domain.repository.NavigationRepository
 import com.a.injector.presentation.mainnavigation.MainNavigationRoute
@@ -28,13 +30,13 @@ class LoadingViewModel(
         viewModelScope.launch {
             when (signMethod) {
                 SignMethod.EmailPassword -> {
-                    accountRepository.currentAuthState.collect { currentAuth ->
+                    accountRepository.currentState.collect { currentAuth ->
                         delay(1.5.seconds)
                         when (currentAuth) {
-                            AuthResult.Unauthenticated -> {
+                            Unauthenticated -> {
                                 navigationRepository.replaceTo(MainNavigationRoute.LandingScreen)
                             }
-                            AuthResult.Authenticated -> {
+                            Authenticated, Guest -> {
                                 navigationRepository.replaceTo(MainNavigationRoute.BottomNavigation)
                             }
                         }
@@ -42,9 +44,10 @@ class LoadingViewModel(
                 }
                 SignMethod.EmailLink -> {
                     val authResult = withTimeoutOrNull(10.seconds) {
-                        accountRepository.currentAuthState.first { it == AuthResult.Authenticated }
+                        accountRepository.currentState.first { it == Authenticated || it == Guest }
                     }
 
+                    delay(1.5.seconds)
                     if (authResult != null) {
                         navigationRepository.replaceTo(MainNavigationRoute.BottomNavigation)
                     } else {

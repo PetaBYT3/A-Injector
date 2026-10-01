@@ -15,6 +15,7 @@
     <string name="exception_shizuku_unauthorized">Cannot perform action, cause unauthorized by shizuku</string>
     <string name="exception_superuser_denied">Cannot perform action, cause superuser access denied</string>
     <string name="exception_no_data">Data has been does not exist or has been deleted</string>
+    <string name="exception_unknown">Something went wrong</string>
 
     <string name="exception_fail_to_read_image">Fail to read image</string>
     <string name="exception_no_script">No script file picked</string>

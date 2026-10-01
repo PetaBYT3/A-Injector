@@ -1,7 +1,6 @@
 package com.a.injector.presentation.support
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -33,9 +32,8 @@ import com.a.injector.presentation.component.CustomCenterTextMessage
 import com.a.injector.presentation.component.CustomFloatingActionButton
 import com.a.injector.presentation.component.CustomFloatingActionToolBar
 import com.a.injector.presentation.component.CustomIconButton
-import com.a.injector.presentation.component.CustomSurfaceText
+import com.a.injector.presentation.component.CustomSlideUpAnimatedVisibility
 import com.a.injector.presentation.component.CustomTextField
-import com.a.injector.presentation.component.CustomTextListTitle
 import com.a.injector.presentation.component.CustomTopAppBar
 import com.a.injector.presentation.component.DefaultClickableListItem
 import com.a.injector.presentation.component.DefaultListItem
@@ -49,6 +47,7 @@ import io.github.vinceglb.filekit.dialogs.FileKitMode
 import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.name
+import io.github.vinceglb.filekit.path
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -77,7 +76,10 @@ fun SupportingScreenRoot(
 private fun Preview() {
     SupportingScreen(
         navBackStack = rememberNavBackStack(),
-        state = SupportState(),
+        state = SupportState(
+            isProfileLoading = false,
+            isRequestedSupportLoading = false
+        ),
         onAction = {},
         snackBarHostState = SnackbarHostState()
     )
@@ -108,15 +110,21 @@ private fun SupportingScreen(
         },
         snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         floatingActionButton = {
-            CustomFloatingActionToolBar(
-                floatingActionButton = {
-                    CustomFloatingActionButton(
-                        onClick = { onAction(SupportAction.UpsertSupportingButton) },
-                        content = { Icon(Icons.Rounded.OpenInNew, null) },
-                        isLoading = state.isUpsertSupportButtonLoading
+            if (!state.isRequested) {
+                CustomSlideUpAnimatedVisibility(
+                    visible = !state.isContentLoading && !state.isRequested
+                ) {
+                    CustomFloatingActionToolBar(
+                        floatingActionButton = {
+                            CustomFloatingActionButton(
+                                onClick = { onAction(SupportAction.UpsertSupportingButton) },
+                                content = { Icon(Icons.Rounded.OpenInNew, null) },
+                                isLoading = state.isUpsertSupportButtonLoading
+                            )
+                        }
                     )
                 }
-            )
+            }
         }
     )
 }
@@ -161,81 +169,73 @@ private fun Content(
                 )
             }
         }
-        item("supportDesc") {
-            CustomSurfaceText(
-                modifier = Modifier
-                    .animateItem(),
-                text = stringResource(R.string.support_desc)
-            )
-        }
-        spacer()
         item("currentTitle") {
-            CustomTextListTitle(
-                modifier = Modifier
-                    .animateItem(),
-                text = stringResource(R.string.current)
-            )
-        }
-        item("currentItem") {
             DefaultListItem(
                 modifier = Modifier
                     .animateItem(),
-                content = { Text(text = state.profile.nominal.toIdr()) }
+                content = { Text(text = stringResource(R.string.support_cur)) },
+                supportingContent = { Text(text = state.profile.nominal.toIdr()) }
             )
         }
         spacer()
         item("requestedTitle") {
-            CustomTextListTitle(
-                modifier = Modifier
-                    .animateItem(),
-                text = stringResource(R.string.requested)
+            DefaultListItem(
+                index = 0,
+                count = 3,
+                content = { Text(text = stringResource(R.string.support_req)) },
+                trailingContent = {
+                    if (state.isRequested) {
+                        Text(text = stringResource(R.string.waiting))
+                    }
+                }
             )
         }
-        item("requestedItem") {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                CustomTextField(
-                    label = stringResource(R.string.nominal),
-                    value = state.requestedSupport.nominal.toString(),
-                    onValueChange = { userInput ->
-                        val filteredInput = userInput.filter { it.isDigit() }
-                        onAction(SupportAction.NominalTextField(filteredInput))
-                    },
-                    visualTransformation = IdrVisualTransformation(""),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number
-                    )
-                )
-                DefaultClickableListItem(
-                    content = { Text(text = stringResource(R.string.proof)) },
-                    onClick = {
-                        val imageToView = state.requestedSupport.imageUrl.takeIf { imageUrl ->
-                            imageUrl.isNotBlank()
-                        } ?: state.imageToUpload?.name
+        item("requestedNominal") {
+            CustomTextField(
+                label = stringResource(R.string.nominal),
+                value = state.requestedSupport.nominal.toString(),
+                onValueChange = { userInput ->
+                    val filteredInput = userInput.filter { it.isDigit() }
+                    onAction(SupportAction.NominalTextField(filteredInput))
+                },
+                visualTransformation = IdrVisualTransformation(""),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number
+                ),
+                readOnly = state.isRequested
+            )
+        }
+        item("requestedProof") {
+            DefaultClickableListItem(
+                index = 2,
+                count = 3,
+                content = { Text(text = stringResource(R.string.proof)) },
+                onClick = {
+                    val imageToView = state.requestedSupport.imageUrl.takeIf { imageUrl ->
+                        imageUrl.isNotBlank()
+                    } ?: state.imageToUpload?.path
 
-                        if (imageToView != null) {
-                            navBackStack.add(MainNavigationRoute.ImagePreviewScreen(imageToView))
-                        }
-                    },
-                    supportingContent = {
-                        val supportingText = state.requestedSupport.imageUrl.takeIf { imageUrl ->
-                            imageUrl.isNotBlank()
-                        } ?: state.imageToUpload?.name ?: stringResource(R.string.exception_no_image)
-                        Text(
-                            text = supportingText,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    },
-                    trailingContent = {
-                        CustomIconButton(
-                            onClick = { filePicker.launch() },
-                            content = { Icon(Icons.Rounded.AttachFile, null) }
-                        )
+                    if (imageToView != null) {
+                        navBackStack.add(MainNavigationRoute.ImagePreviewScreen(imageToView))
                     }
-                )
-            }
+                },
+                supportingContent = {
+                    val supportingText = state.requestedSupport.imageUrl.takeIf { imageUrl ->
+                        imageUrl.isNotBlank()
+                    } ?: state.imageToUpload?.name ?: stringResource(R.string.exception_no_image)
+                    Text(
+                        text = supportingText,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                },
+                trailingContent = {
+                    CustomIconButton(
+                        onClick = { if (!state.isRequested) filePicker.launch() },
+                        content = { Icon(Icons.Rounded.AttachFile, null) }
+                    )
+                }
+            )
         }
     }
 }

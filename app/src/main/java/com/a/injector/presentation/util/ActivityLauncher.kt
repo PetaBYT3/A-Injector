@@ -1,9 +1,12 @@
 package com.a.injector.presentation.util
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.provider.Settings
 import androidx.compose.ui.platform.UriHandler
+import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import com.a.injector.BuildConfig
 import com.a.injector.R
@@ -45,5 +48,16 @@ fun sendToEmail(
         context.startActivity(intent)
     } catch (e: Exception) {
         onError(TextResource.StringResource(R.string.exception_no_handler))
+    }
+}
+
+fun copyToClipboard(
+    context: Context,
+    text: String
+) {
+    val clipboard = ContextCompat.getSystemService(context, ClipboardManager::class.java)
+    if (clipboard != null) {
+        val clip = ClipData.newPlainText("A Injector", text)
+        clipboard.setPrimaryClip(clip)
     }
 }

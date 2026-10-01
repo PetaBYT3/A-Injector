@@ -41,7 +41,6 @@ import com.a.injector.R
 import com.a.injector.presentation.component.CustomFloatingActionButton
 import com.a.injector.presentation.component.CustomFloatingActionToolBar
 import com.a.injector.presentation.component.CustomSlideUpAnimatedVisibility
-import com.a.injector.presentation.component.CustomSurfaceText
 import com.a.injector.presentation.component.CustomTextField
 import com.a.injector.presentation.component.CustomTopAppBar
 import com.a.injector.presentation.component.spacer
@@ -141,14 +140,6 @@ private fun Content(
         contentPadding = PaddingValues(start = 10.dp, end = 10.dp, bottom = 100.dp),
         verticalArrangement = Arrangement.spacedBy(2.5.dp)
     ) {
-        item("passwordDesc") {
-            CustomSurfaceText(
-                modifier = Modifier
-                    .animateItem(),
-                text = stringResource(R.string.password_desc)
-            )
-        }
-        spacer()
         item("passwordTextField") {
             CustomTextField(
                 modifier = Modifier
@@ -205,7 +196,8 @@ private fun Content(
                         )
                         Text(
                             text = stringResource(staticModel.content),
-                            style = MaterialTheme.typography.bodyMedium
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }

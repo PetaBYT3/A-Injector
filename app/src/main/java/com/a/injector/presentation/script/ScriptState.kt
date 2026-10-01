@@ -15,6 +15,6 @@ data class ScriptState(
     val searchTextField: String = "",
 ) {
     val isContentLoading: Boolean get() =
-        isProfileLoading &&
+        isProfileLoading ||
         isHeroesLoading
 }

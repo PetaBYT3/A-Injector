@@ -43,7 +43,7 @@ class PasswordViewModel(
         val hasEightChar = password.length >= 8
         val hasUppercase = password.any { it.isUpperCase() }
         val hasNumber = password.any { it.isDigit() }
-        val valid = hasEightChar && hasUppercase && hasNumber
+        val valid = hasEightChar && hasUppercase && hasNumber && password.isNotBlank()
 
         _state.update { currentState ->
             currentState.copy(

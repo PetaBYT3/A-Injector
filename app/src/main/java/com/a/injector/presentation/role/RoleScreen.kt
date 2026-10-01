@@ -14,6 +14,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -26,12 +27,11 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
 import com.a.injector.data.dto.Role
-import com.a.injector.domain.model.RoleModel
 import com.a.injector.presentation.component.CustomCenterCircularWavyProgressIndicator
 import com.a.injector.presentation.component.CustomCenterTextMessage
 import com.a.injector.presentation.component.CustomFloatingActionButton
 import com.a.injector.presentation.component.CustomFloatingActionToolBar
-import com.a.injector.presentation.component.CustomTextListTitle
+import com.a.injector.presentation.component.CustomSlideUpAnimatedVisibility
 import com.a.injector.presentation.component.CustomTopAppBar
 import com.a.injector.presentation.component.DefaultClickableListItem
 import com.a.injector.presentation.component.DefaultListItem
@@ -59,6 +59,10 @@ fun RoleScreenRoot(
         snackBarHostState = snackBarHostState,
         screenEffect = viewModel.effect
     )
+
+    LaunchedEffect(state.isContentLoading) {
+        viewModel.onAction(RoleAction.RoleButton(state.profile.role))
+    }
 }
 
 @Composable
@@ -66,7 +70,10 @@ fun RoleScreenRoot(
 private fun Preview() {
     RoleScreen(
         navBackStack = rememberNavBackStack(),
-        state = RoleState(),
+        state = RoleState(
+            isProfileLoading = false,
+            isRequestedRoleLoading = false
+        ),
         onAction = {},
         snackBarHostState = SnackbarHostState()
     )
@@ -97,15 +104,19 @@ private fun RoleScreen(
         },
         snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         floatingActionButton = {
-            CustomFloatingActionToolBar(
-                floatingActionButton = {
-                    CustomFloatingActionButton(
-                        onClick = { onAction(RoleAction.UpsertRoleButton) },
-                        content = { Icon(Icons.Rounded.OpenInNew, null) },
-                        isLoading = state.isUpsertRoleButtonLoading
-                    )
-                }
-            )
+            CustomSlideUpAnimatedVisibility(
+                visible = !state.isContentLoading && !state.isRequested
+            ) {
+                CustomFloatingActionToolBar(
+                    floatingActionButton = {
+                        CustomFloatingActionButton(
+                            onClick = { onAction(RoleAction.UpsertRoleButton) },
+                            content = { Icon(Icons.Rounded.OpenInNew, null) },
+                            isLoading = state.isUpsertRoleButtonLoading
+                        )
+                    }
+                )
+            }
         }
     )
 }
@@ -142,31 +153,29 @@ private fun Content(
             return@LazyColumn
         }
 
-        item("currentTitle") {
-            CustomTextListTitle(
-                modifier = Modifier
-                    .animateItem(),
-                text = stringResource(R.string.current)
-            )
-        }
         item("currentItem") {
             DefaultListItem(
                 modifier = Modifier
                     .animateItem(),
-                content = { Text(text = state.profile.role.title.asString()) },
-                supportingContent = { Text(text = state.profile.role.desc.asString()) }
+                content = { Text(text = stringResource(R.string.role_cur)) },
+                supportingContent = { Text(text = state.profile.role.title.asString()) }
             )
         }
         spacer()
-        item("requestedTitle") {
-            CustomTextListTitle(
-                modifier = Modifier
-                    .animateItem(),
-                text = stringResource(R.string.requested)
-            )
-        }
         val allowedRole = Role.entries.filterNot { role ->
             role == Role.Administrator || role == state.profile.role
+        }
+        item("requestedTitle") {
+            DefaultListItem(
+                index = 0,
+                count = allowedRole.size + 1,
+                content = { Text(text = stringResource(R.string.role_req)) },
+                trailingContent = {
+                    if (state.isRequested) {
+                        Text(text = stringResource(R.string.waiting))
+                    }
+                }
+            )
         }
         itemsIndexed(
             items = allowedRole
@@ -174,17 +183,12 @@ private fun Content(
             DefaultClickableListItem(
                 modifier = Modifier
                     .animateItem(),
-                index = index,
-                count = allowedRole.size,
-                onClick = { onAction(RoleAction.RoleButton(role)) },
+                index = index + 1,
+                count = allowedRole.size + 1,
+                onClick = { if (!state.isRequested) onAction(RoleAction.RoleButton(role)) },
                 leadingContent = {
-                    val isChecked = if (state.requestedRole != RoleModel.EMPTY) {
-                        false
-                    } else {
-                        state.requestedRole.role == role
-                    }
                     RadioButton(
-                        selected = isChecked,
+                        selected = state.requestedRole.role == role,
                         onClick = null
                     )
                 },

@@ -26,10 +26,9 @@ import com.a.injector.presentation.component.CustomCenterCircularWavyProgressInd
 import com.a.injector.presentation.component.CustomCenterTextMessage
 import com.a.injector.presentation.component.CustomFloatingActionButton
 import com.a.injector.presentation.component.CustomFloatingActionToolBar
-import com.a.injector.presentation.component.CustomSurfaceText
+import com.a.injector.presentation.component.CustomSlideUpAnimatedVisibility
 import com.a.injector.presentation.component.CustomTextField
 import com.a.injector.presentation.component.CustomTopAppBar
-import com.a.injector.presentation.component.spacer
 import com.a.injector.presentation.mainnavigation.popBackStack
 import com.a.injector.presentation.util.ScreenEffectLauncher
 import org.koin.compose.viewmodel.koinViewModel
@@ -91,15 +90,19 @@ private fun UsernameScreen(
         },
         snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         floatingActionButton = {
-            CustomFloatingActionToolBar(
-                floatingActionButton = {
-                    CustomFloatingActionButton(
-                        onClick = { onAction(UsernameAction.UpsertProfileButton) },
-                        content = { Icon(Icons.Rounded.Save, null) },
-                        isLoading = state.isUpsertProfileButtonLoading
-                    )
-                }
-            )
+            CustomSlideUpAnimatedVisibility(
+                visible = state.profile.username.isNotBlank()
+            ) {
+                CustomFloatingActionToolBar(
+                    floatingActionButton = {
+                        CustomFloatingActionButton(
+                            onClick = { onAction(UsernameAction.UpsertProfileButton) },
+                            content = { Icon(Icons.Rounded.Save, null) },
+                            isLoading = state.isUpsertProfileButtonLoading
+                        )
+                    }
+                )
+            }
         }
     )
 }
@@ -135,14 +138,6 @@ private fun Content(
             }
             return@LazyColumn
         }
-        item("usernameDesc") {
-            CustomSurfaceText(
-                modifier = Modifier
-                    .animateItem(),
-                text = stringResource(R.string.username_desc)
-            )
-        }
-        spacer()
         item("usernameTextField") {
             CustomTextField(
                 modifier = Modifier

@@ -25,6 +25,9 @@ sealed interface MainNavigationRoute: NavKey {
     data object BottomNavigation: MainNavigationRoute, NavKey
 
     @Serializable
+    data object SupportDevScreen: MainNavigationRoute, NavKey
+
+    @Serializable
     data class HeroScreen(val heroId: String): MainNavigationRoute, NavKey
 
     @Serializable
@@ -58,10 +61,12 @@ sealed interface MainNavigationRoute: NavKey {
     data object PanelUserScreen: MainNavigationRoute, NavKey
 
     @Serializable
-    data class ManageUserScreen(val profileId: String): MainNavigationRoute, NavKey
+    data class ManageUserScreen(
+        val profileId: String)
+        : MainNavigationRoute, NavKey
 
     @Serializable
     data class ImagePreviewScreen(
-        val imageUrl: String
+        val imageSource: String
     ): MainNavigationRoute, NavKey
 }

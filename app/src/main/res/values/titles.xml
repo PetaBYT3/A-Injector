@@ -16,6 +16,21 @@
     <string name="update">Update</string>
     <string name="update_desc">A new version is ready to download. We highly recommend updating your application to ensure optimal performance. Continuing to use this outdated version may result in unexpected bugs, feature instability, or app crashes.</string>
 
+    <string name="support_method">Support Method</string>
+    <string name="qris">QRIS</string>
+    <string name="qris_desc">A International</string>
+    <string name="qris_meta">NMID: ID1026603540257A01</string>
+    <string name="seabank">Seabank</string>
+    <string name="seabank_desc">901223053319</string>
+
+    <string name="validate_support_step">Validate Support Step</string>
+    <string name="validate_supp_1">Go to the Account menu</string>
+    <string name="validate_supp_2">Tap the edit icon on the left of the Support section</string>
+    <string name="validate_supp_3">Enter the amount you previously contributed</string>
+    <string name="validate_supp_4">Select an image as proof of your support</string>
+    <string name="validate_supp_5">Tap the Send or Request button at the bottom right of the screen</string>
+    <string name="validate_supp_6">Wait for confirmation. Once confirmed, your total support amount will increase</string>
+
     <string name="add">Add</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
@@ -28,6 +43,7 @@
     <string name="search_here">Search here…</string>
     <string name="empty">Empty</string>
     <string name="unknown">Unknown</string>
+    <string name="info">Information</string>
 
     <string name="label">Label</string>
     <string name="name">Name</string>
@@ -37,13 +53,17 @@
     <string name="password">Password</string>
     <string name="password_desc">Update your password regularly to keep your account safe and secure.</string>
     <string name="username">Username</string>
-    <string name="username_desc">Your username is your public profile name. Make sure it’s something you’re comfortable sharing with others!</string>
+    <string name="username_desc">Your username is your public profile name. Make sure it’s something you’re comfortable sharing with others</string>
     <string name="contribution">Contribution</string>
     <string name="support">Support</string>
-    <string name="support_desc">Your support helps keep this project alive! Contributions in the Top 10 will be proudly displayed alongside your name on the Supporter Leaderboard</string>
+    <string name="support_cur">Current Support</string>
+    <string name="support_req">Requested Support</string>
+    <string name="support_desc">Your support helps keep this project alive. Contributions in the Top 10 will be proudly displayed alongside your name on the Supporter Leaderboard</string>
     <string name="nominal">Nominal</string>
     <string name="proof">Proof</string>
     <string name="role">Role</string>
+    <string name="role_cur">Current Role</string>
+    <string name="role_req">Requested Role</string>
 
     <string name="eight_character">Has 8 character</string>
     <string name="capital">Has capital alphabet</string>
@@ -120,4 +140,6 @@
 
     <string name="no_support_requested">No support requested</string>
     <string name="no_role_requested">No role requested</string>
+
+    <string name="waiting">Waiting</string>
 </resources>

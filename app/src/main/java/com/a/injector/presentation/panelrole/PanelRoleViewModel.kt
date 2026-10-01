@@ -49,29 +49,44 @@ class PanelRoleViewModel(
             is PanelRoleAction.ShowGrantRequestBottomSheet -> {
                 _state.update { currentState ->
                     currentState.copy(
-                        requestToGrant = action.request,
-                        isGrantRequestBottomSheetVisible = true
+                        requestToAction = action.request,
+                        isActionBottomSheetVisible = true
                     )
                 }
             }
             PanelRoleAction.DismissGrantRequestBottomSheet -> {
                 _state.update { currentState ->
-                    currentState.copy(isGrantRequestBottomSheetVisible = false)
+                    currentState.copy(isActionBottomSheetVisible = false)
                 }
             }
-            PanelRoleAction.GrantRequestButton -> {
-                grantRequestButton()
+            PanelRoleAction.DenyButton -> {
+                denyButton()
+            }
+            PanelRoleAction.ConfirmButton -> {
+                confirmButton()
             }
         }
     }
 
-    private fun grantRequestButton() {
+    private fun denyButton() {
+        viewModelScope.launch {
+            roleRepository.deny(
+                roleModel = _state.value.requestToAction
+            ).collect { either ->
+                either.onLeft { textResource ->
+                    _effect.send(ScreenEffect.ShowSnackBar(textResource))
+                }
+            }
+        }
+    }
+
+    private fun confirmButton() {
         viewModelScope.launch {
             roleRepository.confirm(
-                roleModel = _state.value.requestToGrant
+                roleModel = _state.value.requestToAction
             ).collect { either ->
-                either.onLeft { error ->
-                    _effect.send(ScreenEffect.ShowSnackBar(error))
+                either.onLeft { textResource ->
+                    _effect.send(ScreenEffect.ShowSnackBar(textResource))
                 }
             }
         }

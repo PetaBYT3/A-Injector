@@ -31,8 +31,8 @@ data class ManageReplaceState(
     val isUpsertButtonLoading: Boolean = false
 ) {
     val isContentLoading: Boolean get() =
-        isProfileLoading &&
-        isHeroLoading &&
-        isSkinLoading &&
+        isProfileLoading ||
+        isHeroLoading ||
+        isSkinLoading ||
         isReplaceLoading
 }

@@ -25,12 +25,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -57,6 +55,8 @@ import com.a.injector.presentation.home.AboutDeveloper.Linkedin
 import com.a.injector.presentation.home.AboutDeveloper.Mlbb
 import com.a.injector.presentation.home.AboutDeveloper.Support
 import com.a.injector.presentation.home.AboutDeveloper.Tiktok
+import com.a.injector.presentation.mainnavigation.MainNavigationRoute
+import com.a.injector.presentation.util.copyToClipboard
 import com.a.injector.presentation.util.openInBrowser
 import com.a.injector.presentation.util.openStoragePermissionSettings
 import com.a.injector.presentation.util.sendToEmail
@@ -109,6 +109,7 @@ private fun HomeScreen(
             Content(
                 modifier = Modifier
                     .padding(innerPadding),
+                navBackStack = navBackStack,
                 state = state,
                 onAction = onAction
             )
@@ -184,12 +185,12 @@ private fun HomeScreen(
 @Composable
 private fun Content(
     modifier: Modifier = Modifier,
+    navBackStack: NavBackStack<NavKey>,
     state: HomeState,
     onAction: (HomeAction) -> Unit
 ) {
     val context = LocalContext.current
     val uriHandler = LocalUriHandler.current
-    val clipboardManager = LocalClipboardManager.current
 
     LazyColumn(
         modifier = modifier,
@@ -242,10 +243,9 @@ private fun Content(
                         val supportingText = TextResource.StringResource(staticModel.supportingContent)
                         when (staticModel.id) {
                             Mlbb -> {
-                                clipboardManager.setText(
-                                    annotatedString = AnnotatedString(
-                                        text = supportingText.asString(context)
-                                    )
+                                copyToClipboard(
+                                    context = context,
+                                    text = supportingText.asString(context)
                                 )
                             }
                             Email -> {
@@ -263,7 +263,7 @@ private fun Content(
                                 )
                             }
                             Support -> {
-                                onAction(HomeAction.SupportBottomSheet)
+                                navBackStack.add(MainNavigationRoute.SupportDevScreen)
                             }
                         }
                     }

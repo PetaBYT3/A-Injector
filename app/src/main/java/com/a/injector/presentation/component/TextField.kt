@@ -54,7 +54,11 @@ fun TransparentTextField(
     placeholder: String? = null,
     value: String,
     onValueChange: (String) -> Unit,
-    trailingIcon: @Composable (() -> Unit)? = null
+    trailingIcon: @Composable (() -> Unit)? = null,
+    readOnly: Boolean = false,
+    singleLine: Boolean = false,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
 ) {
     MaterialTheme(
         motionScheme = MotionScheme.standard()
@@ -76,7 +80,10 @@ fun TransparentTextField(
             value = value,
             onValueChange = { onValueChange(it) },
             trailingIcon = trailingIcon,
-            singleLine = true
+            singleLine = singleLine,
+            readOnly = readOnly,
+            visualTransformation = visualTransformation,
+            keyboardOptions = keyboardOptions
         )
     }
 }

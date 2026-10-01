@@ -19,7 +19,8 @@ data class SupportState(
     val isUpsertSupportButtonLoading: Boolean = false
 ) {
     val isContentLoading: Boolean get() =
-        isProfileLoading &&
+        isProfileLoading ||
         isRequestedSupportLoading
 
+    val isRequested: Boolean get() = requestedSupport.id.isNotBlank()
 }

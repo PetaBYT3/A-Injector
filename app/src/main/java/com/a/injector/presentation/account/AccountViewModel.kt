@@ -31,6 +31,17 @@ class AccountViewModel(
 
     init {
         viewModelScope.launch {
+            accountRepository.currentState.collect { authResult ->
+                _state.update { currentState ->
+                    currentState.copy(
+                        authState = authResult,
+                        isAuthStateLoading = false
+                    )
+                }
+            }
+        }
+
+        viewModelScope.launch {
             accountRepository.getCurrent().collect { either ->
                 either.onRight { userInfo ->
                     _state.update { currentState ->

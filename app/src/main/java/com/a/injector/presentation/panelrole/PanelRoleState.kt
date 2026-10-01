@@ -8,8 +8,8 @@ data class PanelRoleState(
     val isRequestDetailsError: TextResource? = null,
     val requestDetails: List<RoleModel> = emptyList(),
 
-    val isGrantRequestBottomSheetVisible: Boolean = false,
-    val requestToGrant: RoleModel = RoleModel.EMPTY,
+    val isActionBottomSheetVisible: Boolean = false,
+    val requestToAction: RoleModel = RoleModel.EMPTY,
 ) {
     val isContentLoading: Boolean get() =
         isRequestDetailsLoading

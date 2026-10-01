@@ -41,7 +41,7 @@ class ManageReplaceViewModel(
                 either.onRight { profileModel ->
                     _state.update { currentState ->
                         currentState.copy(
-                            isDeleteEnabled = profileModel.role.modifyEnabled,
+                            isDeleteEnabled = profileModel.role.deleteEnabled,
                             isProfileLoading = false
                         )
                     }

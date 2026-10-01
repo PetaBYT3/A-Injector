@@ -11,6 +11,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -32,8 +33,8 @@ import com.a.injector.presentation.component.CustomIconButton
 import com.a.injector.presentation.component.CustomSlideUpAnimatedVisibility
 import com.a.injector.presentation.component.CustomSurfaceText
 import com.a.injector.presentation.component.CustomTextField
-import com.a.injector.presentation.component.CustomTextListTitle
 import com.a.injector.presentation.component.CustomTopAppBar
+import com.a.injector.presentation.component.DefaultListItem
 import com.a.injector.presentation.mainnavigation.popBackStack
 import com.a.injector.presentation.util.ScreenEffectLauncher
 import org.koin.androidx.compose.koinViewModel
@@ -71,6 +72,7 @@ private fun Preview() {
     ManageHeroScreen(
         navBackStack = rememberNavBackStack(),
         state = ManageHeroState(
+            isProfileLoading = false,
             isHeroLoading = false,
             isDeleteBottomSheetVisible = true
         ),
@@ -177,10 +179,12 @@ private fun Content(
             return@LazyColumn
         }
         item("heroTitle") {
-            CustomTextListTitle(
+            DefaultListItem(
                 modifier = Modifier
                     .animateItem(),
-                text = stringResource(R.string.hero)
+                index = 0,
+                count = 2,
+                content = { Text(text = stringResource(R.string.hero)) }
             )
         }
         item("heroItem") {

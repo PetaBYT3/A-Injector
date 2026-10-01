@@ -5,10 +5,11 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Save
 import androidx.compose.material3.Icon
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -18,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -26,17 +28,16 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
 import com.a.injector.data.dto.Role
-import com.a.injector.presentation.component.CustomBottomSheet
 import com.a.injector.presentation.component.CustomCenterCircularWavyProgressIndicator
 import com.a.injector.presentation.component.CustomFloatingActionButton
 import com.a.injector.presentation.component.CustomFloatingActionToolBar
-import com.a.injector.presentation.component.CustomIconButton
 import com.a.injector.presentation.component.CustomTextField
 import com.a.injector.presentation.component.CustomTopAppBar
 import com.a.injector.presentation.component.DefaultClickableListItem
 import com.a.injector.presentation.component.MessageListItem
 import com.a.injector.presentation.component.spacer
 import com.a.injector.presentation.mainnavigation.popBackStack
+import com.a.injector.presentation.util.IdrVisualTransformation
 import com.a.injector.presentation.util.ScreenEffectLauncher
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -91,7 +92,7 @@ private fun ManageUserScreen(
         topBar = {
             CustomTopAppBar(
                 navigationClick = { navBackStack.popBackStack() },
-                title = stringResource(R.string.user_panel)
+                title = stringResource(R.string.edit)
             )
         },
         content = { innerPadding ->
@@ -114,31 +115,6 @@ private fun ManageUserScreen(
                     )
                 }
             )
-        }
-    )
-
-    CustomBottomSheet(
-        visible = state.isSelectRoleBottomSheetVisible,
-        onDismiss = { onAction(ManageUserAction.SelectRoleBottomSheet) },
-        title = stringResource(R.string.verify),
-        content = {
-            val allowedRole = Role.entries.filterNot { role ->
-                role == Role.Administrator || role == state.profile.role
-            }
-            itemsIndexed(
-                items = allowedRole,
-                key = { _, role -> role.name }
-            ) { index, role ->
-                DefaultClickableListItem(
-                    index = index,
-                    count = allowedRole.size,
-                    onClick = {
-                        onAction(ManageUserAction.SelectRoleButton(role))
-                        onAction(ManageUserAction.SelectRoleBottomSheet)
-                    },
-                    content = { Text(text = role.name) }
-                )
-            }
         }
     )
 }
@@ -180,8 +156,7 @@ private fun Content(
                     .animateItem(),
                 label = stringResource(R.string.username),
                 value = state.profile.username,
-                onValueChange = {},
-                readOnly = true
+                onValueChange = { onAction(ManageUserAction.UsernameTextField(it)) }
             )
         }
         spacer()
@@ -191,27 +166,35 @@ private fun Content(
                     .animateItem(),
                 label = stringResource(R.string.support),
                 value = state.profile.nominal.toString(),
-                onValueChange = {},
-                trailingIcon = { Text(text = "IDR") },
-                readOnly = true
+                onValueChange = { userInput ->
+                    val filteredInput = userInput.filter { it.isDigit() }
+                    onAction(ManageUserAction.SupportTextField(filteredInput))
+                },
+                visualTransformation = IdrVisualTransformation(""),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number
+                )
             )
         }
         spacer()
-        spacer()
-        item {
-            CustomTextField(
+        itemsIndexed(
+            items = Role.entries,
+            key = { _, role -> role.name }
+        ) { index, role ->
+            DefaultClickableListItem(
                 modifier = Modifier
                     .animateItem(),
-                label = stringResource(R.string.role),
-                value = state.profile.role.name,
-                onValueChange = {},
-                trailingIcon = {
-                    CustomIconButton(
-                        onClick = { onAction(ManageUserAction.SelectRoleBottomSheet) },
-                        content = { Icon(Icons.Rounded.Edit, null) }
+                index = index,
+                count = Role.entries.size,
+                onClick = { onAction(ManageUserAction.SelectRoleButton(role)) },
+                leadingContent = {
+                    RadioButton(
+                        selected = state.profile.role == role,
+                        onClick = null
                     )
                 },
-                readOnly = true
+                content = { Text(text = role.title.asString()) },
+                supportingContent = { Text(text = role.desc.asString()) }
             )
         }
     }

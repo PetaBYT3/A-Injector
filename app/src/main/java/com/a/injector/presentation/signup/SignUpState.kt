@@ -10,8 +10,8 @@ data class SignUpState(
     val isSignUpButtonLoading: Boolean = false
 ) {
     val isDataValid: Boolean get() =
-        emailTextField.isNotEmpty() &&
-        passwordTextField.isNotEmpty() &&
+        emailTextField.isNotBlank() &&
+        passwordTextField.isNotBlank() &&
         passwordHasEightChar &&
         passwordHasUppercase &&
         passwordHasNumber

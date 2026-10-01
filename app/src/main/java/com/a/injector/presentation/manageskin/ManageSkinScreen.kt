@@ -1,7 +1,6 @@
 package com.a.injector.presentation.manageskin
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -36,7 +35,6 @@ import com.a.injector.presentation.component.CustomIconButton
 import com.a.injector.presentation.component.CustomSlideUpAnimatedVisibility
 import com.a.injector.presentation.component.CustomSurfaceText
 import com.a.injector.presentation.component.CustomTextField
-import com.a.injector.presentation.component.CustomTextListTitle
 import com.a.injector.presentation.component.CustomTopAppBar
 import com.a.injector.presentation.component.DefaultListItem
 import com.a.injector.presentation.component.spacer
@@ -79,6 +77,7 @@ private fun Preview() {
     Screen(
         navBackStack = rememberNavBackStack(),
         state = ManageSkinState(
+            isProfileLoading = false,
             isHeroLoading = false,
             isSkinLoading = false
         ),
@@ -193,29 +192,31 @@ private fun Content(
         }
         spacer()
         item("skinTitle") {
-            CustomTextListTitle(
+            DefaultListItem(
                 modifier = Modifier
                     .animateItem(),
-                text = stringResource(R.string.skin)
+                index = 0,
+                count = 3,
+                content = { Text(text = stringResource(R.string.skin)) }
             )
         }
-        item("skinItem") {
-            Column(
+        item("labelTextField") {
+            CustomTextField(
                 modifier = Modifier
                     .animateItem(),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                CustomTextField(
-                    label = stringResource(R.string.label),
-                    value = state.skin.label,
-                    onValueChange = { onAction(ManageSkinAction.SkinLabelTextField(it)) }
-                )
-                CustomTextField(
-                    label = stringResource(R.string.name),
-                    value = state.skin.name,
-                    onValueChange = { onAction(ManageSkinAction.SkinNameTextField(it)) }
-                )
-            }
+                label = stringResource(R.string.label),
+                value = state.skin.label,
+                onValueChange = { onAction(ManageSkinAction.SkinLabelTextField(it)) }
+            )
+        }
+        item("nameTextField") {
+            CustomTextField(
+                modifier = Modifier
+                    .animateItem(),
+                label = stringResource(R.string.name),
+                value = state.skin.name,
+                onValueChange = { onAction(ManageSkinAction.SkinNameTextField(it)) }
+            )
         }
     }
 }

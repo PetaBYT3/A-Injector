@@ -14,10 +14,12 @@ data class RoleState(
     val requestedRole: RoleModel = RoleModel.EMPTY,
 
     val isUpsertRoleButtonLoading: Boolean = false,
-
     val isRoleBottomSheetVisible: Boolean = false
 ) {
+
     val isContentLoading: Boolean get() =
-        isProfileLoading &&
+        isProfileLoading ||
         isRequestedRoleLoading
+
+    val isRequested: Boolean get() = requestedRole.id.isNotBlank()
 }

@@ -29,6 +29,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
 import com.a.injector.data.dto.Role
 import com.a.injector.domain.model.ProfileModel
+import com.a.injector.domain.model.state.AuthResult
 import com.a.injector.presentation.account.ManageAccount.ChangePassword
 import com.a.injector.presentation.account.Profile.Contribution
 import com.a.injector.presentation.account.Profile.Email
@@ -156,16 +157,7 @@ private fun Content(
             }
             return@LazyColumn
         }
-        if (state.profile == ProfileModel.GUEST) {
-            item("guestAccount") {
-                DefaultListItem(
-                    modifier = Modifier
-                        .animateItem(),
-                    content = { Text(text = stringResource(R.string.guest_account)) }
-                )
-            }
-            return@LazyColumn
-        } else {
+        if (state.authState != AuthResult.Guest) {
             itemsIndexed(
                 items = profiles,
                 key = { _, staticModel -> staticModel.id.name }
@@ -238,6 +230,14 @@ private fun Content(
                     supportingContent = if (staticModel.supportingContent != null) {
                         { Text(text = stringResource(staticModel.supportingContent)) }
                     } else null
+                )
+            }
+        } else {
+            item("guestAccount") {
+                DefaultListItem(
+                    modifier = Modifier
+                        .animateItem(),
+                    content = { Text(text = stringResource(R.string.guest_account)) }
                 )
             }
         }

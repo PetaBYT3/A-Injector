@@ -82,7 +82,6 @@ class RoleViewModel(
             is RoleAction.RoleButton -> {
                 _state.update { currentState ->
                     currentState.copy(requestedRole = currentState.requestedRole.copy(
-                        id = _state.value.profile.id,
                         role = action.role)
                     )
                 }
@@ -96,7 +95,9 @@ class RoleViewModel(
     private fun upsertRoleButton() {
         viewModelScope.launch {
             roleRepository.upsert(
-                roleModel = _state.value.requestedRole
+                roleModel = _state.value.requestedRole.copy(
+                    id = _state.value.profile.id
+                )
             ).onStart {
                 _state.update { currentState ->
                     currentState.copy(isUpsertRoleButtonLoading = true)

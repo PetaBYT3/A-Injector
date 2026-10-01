@@ -40,7 +40,8 @@ class HeroViewModel(
                 either.onRight { profileModel ->
                     _state.update { currentState ->
                         currentState.copy(
-                            isModifyEnabled = profileModel.role.modifyEnabled
+                            isModifyEnabled = profileModel.role.modifyEnabled,
+                            isProfileLoading = false
                         )
                     }
                 }.onLeft { textResource ->

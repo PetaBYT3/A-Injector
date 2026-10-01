@@ -39,6 +39,7 @@ import com.a.injector.presentation.signin.SignInScreenRoot
 import com.a.injector.presentation.signlink.SignLinkScreenRoot
 import com.a.injector.presentation.signup.SignUpScreenRoot
 import com.a.injector.presentation.support.SupportingScreenRoot
+import com.a.injector.presentation.supportdev.SupportDevScreenRoot
 import com.a.injector.presentation.username.UsernameScreenRoot
 import org.koin.compose.koinInject
 
@@ -118,6 +119,13 @@ fun NavigationScreen(
                 is MainNavigationRoute.BottomNavigation -> {
                     NavEntry(navKey) {
                         BottomNavigationScreenRoot(
+                            navBackStack = navBackStack
+                        )
+                    }
+                }
+                is MainNavigationRoute.SupportDevScreen -> {
+                    NavEntry(navKey) {
+                        SupportDevScreenRoot(
                             navBackStack = navBackStack
                         )
                     }
@@ -218,7 +226,7 @@ fun NavigationScreen(
                     NavEntry(navKey) {
                         ImagePreviewScreenRoot(
                             navBackStack = navBackStack,
-                            imageUrl = navKey.imageUrl
+                            imageSource = navKey.imageSource
                         )
                     }
                 }
