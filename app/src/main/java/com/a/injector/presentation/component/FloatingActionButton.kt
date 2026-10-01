@@ -29,7 +29,6 @@ fun CustomFloatingActionButton(
                                 .size(24.dp)
                         )
                     }
-
                     false -> {
                         content()
                     }

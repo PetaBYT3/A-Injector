@@ -46,6 +46,9 @@ sealed interface MainNavigationRoute: NavKey {
     data object RoleScreen: MainNavigationRoute, NavKey
 
     @Serializable
+    data object PasswordScreen: MainNavigationRoute, NavKey
+
+    @Serializable
     data object PanelSupportingScreen: MainNavigationRoute, NavKey
 
     @Serializable

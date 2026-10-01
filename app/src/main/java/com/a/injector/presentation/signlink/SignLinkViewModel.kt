@@ -33,7 +33,7 @@ class SignLinkViewModel(
                     currentState.copy(emailTextField = action.email)
                 }
             }
-            SignLinkAction.SendOtpButton -> {
+            SignLinkAction.SendLinkButton -> {
                 sendOtpButton()
             }
         }
@@ -45,11 +45,11 @@ class SignLinkViewModel(
                 email = _state.value.emailTextField
             ).onStart {
                 _state.update { currentState ->
-                    currentState.copy(isSendOtpButtonLoading = true) }
+                    currentState.copy(isSendLinkButtonLoading = true) }
             }.onCompletion {
                 _state.update { currentState ->
                     currentState.copy(
-                        isSendOtpButtonLoading = false,
+                        isSendLinkButtonLoading = false,
                         emailTextField = ""
                     )
                 }

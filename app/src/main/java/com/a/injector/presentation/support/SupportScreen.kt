@@ -33,6 +33,7 @@ import com.a.injector.presentation.component.CustomCenterTextMessage
 import com.a.injector.presentation.component.CustomFloatingActionButton
 import com.a.injector.presentation.component.CustomFloatingActionToolBar
 import com.a.injector.presentation.component.CustomIconButton
+import com.a.injector.presentation.component.CustomSurfaceText
 import com.a.injector.presentation.component.CustomTextField
 import com.a.injector.presentation.component.CustomTextListTitle
 import com.a.injector.presentation.component.CustomTopAppBar
@@ -41,6 +42,7 @@ import com.a.injector.presentation.component.DefaultListItem
 import com.a.injector.presentation.component.spacer
 import com.a.injector.presentation.mainnavigation.MainNavigationRoute
 import com.a.injector.presentation.mainnavigation.popBackStack
+import com.a.injector.presentation.util.IdrVisualTransformation
 import com.a.injector.presentation.util.ScreenEffectLauncher
 import com.a.injector.presentation.util.toIdr
 import io.github.vinceglb.filekit.dialogs.FileKitMode
@@ -159,7 +161,14 @@ private fun Content(
                 )
             }
         }
-
+        item("supportDesc") {
+            CustomSurfaceText(
+                modifier = Modifier
+                    .animateItem(),
+                text = stringResource(R.string.support_desc)
+            )
+        }
+        spacer()
         item("currentTitle") {
             CustomTextListTitle(
                 modifier = Modifier
@@ -193,6 +202,7 @@ private fun Content(
                         val filteredInput = userInput.filter { it.isDigit() }
                         onAction(SupportAction.NominalTextField(filteredInput))
                     },
+                    visualTransformation = IdrVisualTransformation(""),
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number
                     )

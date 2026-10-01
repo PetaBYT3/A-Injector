@@ -35,13 +35,26 @@ class SignUpViewModel(
                 }
             }
             is SignUpAction.PasswordTextField -> {
-                _state.update { currentState ->
-                    currentState.copy(passwordTextField = action.password)
-                }
+                passwordTextField(password = action.password)
             }
             SignUpAction.SignUpButton -> {
                 signUpButton()
             }
+        }
+    }
+
+    private fun passwordTextField(password: String) {
+        val hasEightChar = password.length >= 8
+        val hasUppercase = password.any { it.isUpperCase() }
+        val hasNumber = password.any { it.isDigit() }
+
+        _state.update { currentState ->
+            currentState.copy(
+                passwordTextField = password,
+                passwordHasEightChar = hasEightChar,
+                passwordHasUppercase = hasUppercase,
+                passwordHasNumber = hasNumber,
+            )
         }
     }
 

@@ -4,13 +4,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.VisibilityOff
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconToggleButton
 import androidx.compose.material3.OutlinedButton
@@ -36,7 +34,9 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
-import com.a.injector.presentation.component.CustomButton
+import com.a.injector.presentation.component.CustomExtendedFloatingActionButton
+import com.a.injector.presentation.component.CustomFloatingActionToolBar
+import com.a.injector.presentation.component.CustomSlideUpAnimatedVisibility
 import com.a.injector.presentation.component.CustomSurfaceText
 import com.a.injector.presentation.component.CustomTextField
 import com.a.injector.presentation.component.CustomTopAppBar
@@ -101,7 +101,22 @@ private fun SignInScreen(
                 onAction = onAction
             )
         },
-        snackbarHost = { SnackbarHost(hostState = snackBarHostState) }
+        snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
+        floatingActionButton = {
+            CustomSlideUpAnimatedVisibility(
+                visible = state.isDataValid
+            ) {
+                CustomFloatingActionToolBar(
+                    floatingActionButton = {
+                        CustomExtendedFloatingActionButton(
+                            onClick = { onAction(SignInAction.SignInButton) },
+                            content = { Text(text = stringResource(R.string.sign_in)) },
+                            isLoading = state.isSingInButtonLoading
+                        )
+                    }
+                )
+            }
+        }
     )
 }
 
@@ -174,18 +189,9 @@ private fun Content(
             ) {
                 OutlinedButton(
                     modifier = Modifier
-                        .align(Alignment.TopStart),
+                        .align(Alignment.CenterEnd),
                     onClick = { navBackStack.add(MainNavigationRoute.SignLinkScreen) },
                     content = { Text(text = stringResource(R.string.forget_password)) }
-                )
-                CustomButton(
-                    modifier = Modifier
-                        .height(ButtonDefaults.MediumContainerHeight)
-                        .align(Alignment.TopEnd),
-                    onClick = { onAction(SignInAction.SignInButton) },
-                    text = stringResource(R.string.sign_in),
-                    isLoading = state.isSingInButtonLoading,
-                    enabled = state.isDataValid
                 )
             }
         }

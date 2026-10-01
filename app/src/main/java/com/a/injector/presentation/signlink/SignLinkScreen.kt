@@ -1,20 +1,16 @@
 package com.a.injector.presentation.signlink
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -24,7 +20,9 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
-import com.a.injector.presentation.component.CustomButton
+import com.a.injector.presentation.component.CustomExtendedFloatingActionButton
+import com.a.injector.presentation.component.CustomFloatingActionToolBar
+import com.a.injector.presentation.component.CustomSlideUpAnimatedVisibility
 import com.a.injector.presentation.component.CustomSurfaceText
 import com.a.injector.presentation.component.CustomTextField
 import com.a.injector.presentation.component.CustomTopAppBar
@@ -88,7 +86,22 @@ private fun SignLinkScreen(
                 onAction = onAction
             )
         },
-        snackbarHost = { SnackbarHost(hostState = snackBarHostState) }
+        snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
+        floatingActionButton = {
+            CustomSlideUpAnimatedVisibility(
+                visible = state.emailTextField.isNotBlank()
+            ) {
+                CustomFloatingActionToolBar(
+                    floatingActionButton = {
+                        CustomExtendedFloatingActionButton(
+                            onClick = { onAction(SignLinkAction.SendLinkButton) },
+                            content = { Text(text = stringResource(R.string.send)) },
+                            isLoading = state.isSendLinkButtonLoading
+                        )
+                    }
+                )
+            }
+        }
     )
 }
 
@@ -120,23 +133,6 @@ private fun Content(
                 value = state.emailTextField,
                 onValueChange = { onAction(SignLinkAction.EmailTextField(it)) }
             )
-        }
-        spacer()
-        item("sendButton") {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .animateItem(),
-                contentAlignment = Alignment.CenterEnd
-            ) {
-                CustomButton(
-                    modifier = Modifier
-                        .height(ButtonDefaults.MediumContainerHeight),
-                    onClick = { onAction(SignLinkAction.SendOtpButton) },
-                    text = stringResource(R.string.send),
-                    isLoading = state.isSendOtpButtonLoading
-                )
-            }
         }
     }
 }

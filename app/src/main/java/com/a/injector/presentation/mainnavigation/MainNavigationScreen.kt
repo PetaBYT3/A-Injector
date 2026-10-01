@@ -33,6 +33,7 @@ import com.a.injector.presentation.manageuser.ManageUserScreenRoot
 import com.a.injector.presentation.panelrole.PanelRoleScreenRoot
 import com.a.injector.presentation.panelsupporting.PanelSupportingScreenRoot
 import com.a.injector.presentation.paneluser.PanelUserScreenRoot
+import com.a.injector.presentation.password.PasswordScreenRoot
 import com.a.injector.presentation.role.RoleScreenRoot
 import com.a.injector.presentation.signin.SignInScreenRoot
 import com.a.injector.presentation.signlink.SignLinkScreenRoot
@@ -187,6 +188,13 @@ fun NavigationScreen(
                 is MainNavigationRoute.ManageRoleScreen -> {
                     NavEntry(navKey) {
                         PanelRoleScreenRoot(
+                            navBackStack = navBackStack
+                        )
+                    }
+                }
+                is MainNavigationRoute.PasswordScreen -> {
+                    NavEntry(navKey) {
+                        PasswordScreenRoot(
                             navBackStack = navBackStack
                         )
                     }

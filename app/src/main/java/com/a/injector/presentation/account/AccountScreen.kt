@@ -229,7 +229,7 @@ private fun Content(
                     onClick = {
                         when (staticModel.id) {
                             ChangePassword -> {
-
+                                navBackStack.add(MainNavigationRoute.PasswordScreen)
                             }
                         }
                     },

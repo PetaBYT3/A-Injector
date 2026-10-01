@@ -6,12 +6,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItemDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SegmentedListItem
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -30,7 +34,9 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
-import com.a.injector.presentation.component.DefaultClickableListItem
+import com.a.injector.presentation.landing.SignOption.Guest
+import com.a.injector.presentation.landing.SignOption.SignIn
+import com.a.injector.presentation.landing.SignOption.SignUp
 import com.a.injector.presentation.mainnavigation.MainNavigationRoute
 import com.a.injector.presentation.util.ScreenEffectLauncher
 import org.koin.compose.viewmodel.koinViewModel
@@ -117,18 +123,23 @@ private fun Content(
             verticalArrangement = Arrangement.spacedBy(2.5.dp)
         ) {
             signOptions.fastForEachIndexed { index, staticModel ->
-                DefaultClickableListItem(
-                    index = index,
-                    count = signOptions.size,
+                SegmentedListItem(
+                    colors = ListItemDefaults.colors(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainer
+                    ),
+                    shapes = ListItemDefaults.segmentedShapes(
+                        index = index,
+                        count = signOptions.size
+                    ),
                     onClick = {
                         when (staticModel.id) {
-                            SignOption.SignIn -> {
+                            SignIn -> {
                                 navBackStack.add(MainNavigationRoute.SignInScreen)
                             }
-                            SignOption.SignUp -> {
+                            SignUp -> {
                                 navBackStack.add(MainNavigationRoute.SignUpScreen)
                             }
-                            SignOption.Guest -> {
+                            Guest -> {
                                 onAction(LandingAction.ButtonSignGuest)
                             }
                         }
@@ -136,14 +147,15 @@ private fun Content(
                     content = {
                         Box(
                             modifier = Modifier
-                                .fillMaxWidth(),
+                                .fillMaxWidth()
+                                .heightIn(min = 48.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             when (staticModel.id) {
-                                SignOption.SignIn, SignOption.SignUp -> {
+                                SignIn, SignUp -> {
                                     Text(text = stringResource(staticModel.content))
                                 }
-                                SignOption.Guest -> {
+                                Guest -> {
                                     if (!state.isGuestButtonLoading) {
                                         Text(text = stringResource(staticModel.content))
                                     } else {

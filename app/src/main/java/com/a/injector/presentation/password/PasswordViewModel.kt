@@ -31,13 +31,28 @@ class PasswordViewModel(
     fun onAction(action: PasswordAction) {
         when (action) {
             is PasswordAction.PasswordTextField -> {
-                _state.update { currentState ->
-                    currentState.copy(passwordTextField = action.password)
-                }
+                passwordTextField(password = action.password)
             }
             PasswordAction.ChangePasswordButton -> {
                 changePasswordButton()
             }
+        }
+    }
+
+    private fun passwordTextField(password: String) {
+        val hasEightChar = password.length >= 8
+        val hasUppercase = password.any { it.isUpperCase() }
+        val hasNumber = password.any { it.isDigit() }
+        val valid = hasEightChar && hasUppercase && hasNumber
+
+        _state.update { currentState ->
+            currentState.copy(
+                passwordTextField = password,
+                passwordHasEightChar = hasEightChar,
+                passwordHasUppercase = hasUppercase,
+                passwordHasNumber = hasNumber,
+                passwordValid = valid
+            )
         }
     }
 
