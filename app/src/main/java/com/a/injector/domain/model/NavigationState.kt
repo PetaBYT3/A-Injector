@@ -1,4 +1,4 @@
-package com.a.injector.domain.model.state
+package com.a.injector.domain.model
 
 import com.a.injector.presentation.mainnavigation.MainNavigationRoute
 

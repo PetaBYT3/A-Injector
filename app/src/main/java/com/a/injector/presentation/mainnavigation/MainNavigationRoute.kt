@@ -62,11 +62,14 @@ sealed interface MainNavigationRoute: NavKey {
 
     @Serializable
     data class ManageUserScreen(
-        val profileId: String)
-        : MainNavigationRoute, NavKey
+        val profileId: String
+    ): MainNavigationRoute, NavKey
 
     @Serializable
     data class ImagePreviewScreen(
         val imageSource: String
     ): MainNavigationRoute, NavKey
+
+    @Serializable
+    data object DebugScreen: MainNavigationRoute, NavKey
 }

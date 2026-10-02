@@ -21,8 +21,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import com.a.injector.data.system.ShizukuCommandService
-import com.a.injector.data.system.SuperuserCommandService
+import com.a.injector.data.system.shizuku.ShizukuApi
+import com.a.injector.data.system.superuser.SuperuserApi
 import com.a.injector.domain.repository.DirectoryRepository
 import com.a.injector.domain.repository.NavigationRepository
 import com.a.injector.domain.repository.PermissionRepository
@@ -44,8 +44,8 @@ class MainActivity : ComponentActivity() {
 
     private val directoryRepository: DirectoryRepository by inject()
     private val permissionRepository: PermissionRepository by inject()
-    private val shizukuCommandService: ShizukuCommandService by inject()
-    private val superuserCommandService: SuperuserCommandService by inject()
+    private val shizukuApi: ShizukuApi by inject()
+    private val superuserApi: SuperuserApi by inject()
     private val navigationRepository: NavigationRepository by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,8 +55,8 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             supabaseClient.realtime.connect()
             permissionRepository.checkPermission()
-            shizukuCommandService.check()
-            superuserCommandService.check()
+            shizukuApi.check()
+            superuserApi.check()
         }
 
         enableEdgeToEdge()
@@ -105,8 +105,8 @@ class MainActivity : ComponentActivity() {
 
         lifecycleScope.launch {
             permissionRepository.checkPermission()
-            shizukuCommandService.check()
-            superuserCommandService.check()
+            shizukuApi.check()
+            superuserApi.check()
         }
     }
 
@@ -115,7 +115,7 @@ class MainActivity : ComponentActivity() {
 
         lifecycleScope.launch {
             supabaseClient.realtime.disconnect()
-            shizukuCommandService.destroy()
+            shizukuApi.destroy()
         }
     }
 }

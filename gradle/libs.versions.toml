@@ -7,10 +7,11 @@ espressoCore = "3.5.1"
 lifecycleRuntimeKtx = "2.11.0"
 activityCompose = "1.13.0"
 kotlin = "2.4.10"
-composeBom = "2026.08.00"
-material3Version = "1.5.0-alpha27"
+composeBom = "2026.09.00"
+material3Version = "1.5.0-alpha29"
 materialIconExtendedVersion = "1.7.8"
 
+dadbVersion = "2.0.0"
 splashScreenVersion = "1.2.0"
 koinVersion = "4.2.2"
 koinAnnotationVersion = "2.3.1"
@@ -20,10 +21,10 @@ dataStoreVersion = "1.2.1"
 ktorVersion = "3.0.0"
 firebaseVersion = "34.18.0"
 supabaseVersion = "3.8.0"
-coilVersion = "2.6.0"
+coilVersion = "2.7.0"
 zoomableImageCoilVersion = "0.19.0"
 gitliveFirestoreVersion = "2.6.0"
-fileKitVersion = "0.15.0"
+fileKitVersion = "0.16.0"
 shizukuVersion = "13.1.5"
 
 googleKspVersion = "2.3.2"
@@ -45,6 +46,9 @@ androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "u
 androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3Version" }
+
+#ADB
+dadb = { module = "dev.mobile:dadb", version.ref = "dadbVersion" }
 
 #Splash Screen
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "splashScreenVersion" }

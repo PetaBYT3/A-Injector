@@ -8,7 +8,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.CircularWavyProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -18,15 +21,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
+import com.a.injector.BuildConfig
 import com.a.injector.R
 import com.a.injector.data.util.toMegaBytes
+import com.a.injector.domain.model.state.InjectMethod
 import com.a.injector.domain.model.state.Role
 import com.a.injector.presentation.component.CustomBottomSheet
 import com.a.injector.presentation.component.CustomButton
@@ -34,6 +41,7 @@ import com.a.injector.presentation.component.CustomCenterCircularWavyProgressInd
 import com.a.injector.presentation.component.CustomSurfaceText
 import com.a.injector.presentation.component.CustomTopAppBar
 import com.a.injector.presentation.component.DefaultClickableListItem
+import com.a.injector.presentation.component.DefaultListItem
 import com.a.injector.presentation.component.spacer
 import com.a.injector.presentation.mainnavigation.MainNavigationRoute
 import com.a.injector.presentation.settings.CloudSetting.CleanStorage
@@ -41,6 +49,7 @@ import com.a.injector.presentation.settings.CloudSetting.PanelSupporting
 import com.a.injector.presentation.settings.CloudSetting.RoleManager
 import com.a.injector.presentation.settings.CloudSetting.UserPanel
 import com.a.injector.presentation.settings.DeviceSetting.CleanCache
+import com.a.injector.presentation.settings.DeviceSetting.Inject
 import com.a.injector.presentation.settings.DeviceSetting.Language
 import com.a.injector.presentation.util.ScreenEffectLauncher
 import org.koin.compose.viewmodel.koinViewModel
@@ -124,6 +133,36 @@ private fun SettingsScreen(
     )
 
     CustomBottomSheet(
+        visible = state.isInjectMethodBottomSheetVisible,
+        onDismiss = { onAction(SettingsAction.InjectMethodBottomSheet) },
+        title = stringResource(R.string.inject_method),
+        content = {
+            itemsIndexed(
+                items = InjectMethod.entries,
+                key = { _, injectMethod -> injectMethod.name }
+            ) { index, injectMethod ->
+                DefaultClickableListItem(
+                    modifier = Modifier
+                        .animateItem(),
+                    index = index,
+                    count = InjectMethod.entries.size,
+                    onClick = {
+                        onAction(SettingsAction.InjectMethodBottomSheet)
+                        onAction(SettingsAction.SetInjectMethodButton(injectMethod))
+                    },
+                    leadingContent = {
+                        RadioButton(
+                            selected = state.injectMethod == injectMethod,
+                            onClick = null
+                        )
+                    },
+                    content = { Text(text = stringResource(injectMethod.title)) }
+                )
+            }
+        }
+    )
+
+    CustomBottomSheet(
         visible = state.isLanguageBottomSheetVisible,
         onDismiss = { onAction(SettingsAction.LanguageBottomSheet) },
         title = stringResource(R.string.language),
@@ -175,6 +214,35 @@ private fun SettingsScreen(
             )
         }
     )
+
+    CustomBottomSheet(
+        visible = state.isAboutAppBottomSheetVisible,
+        onDismiss = { onAction(SettingsAction.AboutAppBottomSheet) },
+        title = stringResource(R.string.about_app),
+        content = {
+            item {
+                DefaultListItem(
+                    leadingContent = { Icon(ImageVector.vectorResource(R.drawable.android), null) },
+                    content = { Text(text = stringResource(R.string.app_version)) },
+                    supportingContent = { Text(text = BuildConfig.VERSION_NAME) }
+                )
+            }
+            spacer()
+            itemsIndexed(
+                items = aboutApps
+            ) { index, static ->
+                DefaultListItem(
+                    index = index,
+                    count = aboutApps.size,
+                    leadingContent = static.leadingContent,
+                    content = { Text(text = stringResource(static.content)) },
+                    supportingContent = if (static.supportingContent != null) {
+                        { Text(text = stringResource(static.supportingContent)) }
+                    } else null
+                )
+            }
+        }
+    )
 }
 
 @Composable
@@ -189,63 +257,64 @@ private fun Content(
         contentPadding = PaddingValues(start = 10.dp, end = 10.dp, bottom = 100.dp),
         verticalArrangement = Arrangement.spacedBy(2.5.dp)
     ) {
-        if (state.isContentLoading) {
-            item("isContentLoading") {
-                CustomCenterCircularWavyProgressIndicator(
-                    modifier = Modifier
-                        .animateItem()
-                )
+        when {
+            state.isProfileLoading -> {
+                item("isProfieLoading") {
+                    CustomCenterCircularWavyProgressIndicator(
+                        modifier = Modifier
+                            .animateItem()
+                    )
+                }
             }
-            return@LazyColumn
-        }
-        if (state.profile.role == Role.Administrator) {
-            itemsIndexed(
-                items = cloudSettings,
-                key = { _, static -> static.id.name }
-            ) { index, static ->
-                DefaultClickableListItem(
-                    modifier = Modifier
-                        .animateItem(),
-                    index = index,
-                    count = cloudSettings.size,
-                    onClick = {
-                        when (static.id) {
-                            PanelSupporting -> {
-                                navBackStack.add(MainNavigationRoute.PanelSupportingScreen)
-                            }
-                            RoleManager -> {
-                                navBackStack.add(MainNavigationRoute.ManageRoleScreen)
-                            }
-                            UserPanel -> {
-                                navBackStack.add(MainNavigationRoute.PanelUserScreen)
-                            }
-                            CleanStorage -> {
-                                onAction(SettingsAction.CleanCloudStorageBottomSheet)
-                            }
-                        }
-                    },
-                    leadingContent = static.leadingContent,
-                    content = { Text(text = stringResource(static.content)) },
-                    supportingContent = if (static.supportingContent != null) {
-                        { Text(text = stringResource(static.supportingContent)) }
-                    } else null,
-                    trailingContent = {
-                        when (static.id) {
-                            CleanStorage -> {
-                                if (state.isCleanCloudStorageButtonLoading) {
-                                    CircularWavyProgressIndicator(
-                                        modifier = Modifier
-                                            .size(24.dp)
-                                    )
+            state.profile.role == Role.Administrator -> {
+                itemsIndexed(
+                    items = cloudSettings,
+                    key = { _, static -> static.id.name }
+                ) { index, static ->
+                    DefaultClickableListItem(
+                        modifier = Modifier
+                            .animateItem(),
+                        index = index,
+                        count = cloudSettings.size,
+                        onClick = {
+                            when (static.id) {
+                                PanelSupporting -> {
+                                    navBackStack.add(MainNavigationRoute.PanelSupportingScreen)
+                                }
+                                RoleManager -> {
+                                    navBackStack.add(MainNavigationRoute.ManageRoleScreen)
+                                }
+                                UserPanel -> {
+                                    navBackStack.add(MainNavigationRoute.PanelUserScreen)
+                                }
+                                CleanStorage -> {
+                                    onAction(SettingsAction.CleanCloudStorageBottomSheet)
                                 }
                             }
-                            else -> {}
+                        },
+                        leadingContent = static.leadingContent,
+                        content = { Text(text = stringResource(static.content)) },
+                        supportingContent = if (static.supportingContent != null) {
+                            { Text(text = stringResource(static.supportingContent)) }
+                        } else null,
+                        trailingContent = {
+                            when (static.id) {
+                                CleanStorage -> {
+                                    if (state.isCleanCloudStorageButtonLoading) {
+                                        CircularWavyProgressIndicator(
+                                            modifier = Modifier
+                                                .size(24.dp)
+                                        )
+                                    }
+                                }
+                                else -> {}
+                            }
                         }
-                    }
-                )
+                    )
+                }
             }
-            spacer()
         }
+        spacer()
         itemsIndexed(
             items = deviceSettings,
             key = { _, staticModel -> staticModel.id.name }
@@ -263,6 +332,9 @@ private fun Content(
                         CleanCache -> {
                             onAction(SettingsAction.CleanCacheBottomSheet)
                         }
+                        Inject -> {
+                            onAction(SettingsAction.InjectMethodBottomSheet)
+                        }
                     }
                 },
                 leadingContent = static.leadingContent,
@@ -276,12 +348,14 @@ private fun Content(
                         CleanCache -> {
                             state.cacheSize.toMegaBytes()
                         }
+                        Inject -> {
+                            stringResource(state.injectMethod.title)
+                        }
                     }
                     Text(text = text)
                 },
                 trailingContent = {
                     when (static.id) {
-                        Language -> {}
                         CleanCache -> {
                             if (state.isCleanCacheButtonLoading) {
                                 CircularWavyProgressIndicator(
@@ -290,8 +364,19 @@ private fun Content(
                                 )
                             }
                         }
+                        else -> {}
                     }
                 }
+            )
+        }
+        spacer()
+        item("aboutApp") {
+            DefaultClickableListItem(
+                modifier = Modifier
+                    .animateItem(),
+                onClick = { onAction(SettingsAction.AboutAppBottomSheet) },
+                leadingContent = { Icon(Icons.Rounded.Info, null) },
+                content = { Text(text = stringResource(R.string.about_app)) }
             )
         }
     }

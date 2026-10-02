@@ -1,8 +1,8 @@
-package com.a.injector.data.system
+package com.a.injector.data.system.shizuku
 
 import kotlinx.coroutines.flow.Flow
 
-interface ShizukuCommandService {
+interface ShizukuApi {
     val isAuthorized: Flow<Boolean>
     suspend fun check()
     suspend fun copy(sourcePath: String, targetPath: String)

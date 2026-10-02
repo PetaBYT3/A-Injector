@@ -4,7 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.a.injector.domain.model.state.CommandService
+import com.a.injector.domain.model.state.InjectMethod
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import org.koin.core.annotation.Single
@@ -15,17 +15,17 @@ class SettingsApiImpl(
     private val dataStore: DataStore<Preferences>
 ): SettingsApi {
     private companion object {
-        val COMMAND_SERVICES = stringPreferencesKey("executor")
+        val INJECT_METHOD = stringPreferencesKey("injectMethod")
         val LANGUAGE = stringPreferencesKey("language")
     }
 
-    override val commandService: Flow<CommandService> = dataStore.data.map { preferences ->
-        CommandService.valueOf(preferences[COMMAND_SERVICES] ?: CommandService.StoragePermission.name)
+    override val injectMethod: Flow<InjectMethod> = dataStore.data.map { preferences ->
+        InjectMethod.valueOf(preferences[INJECT_METHOD] ?: InjectMethod.StorageManager.name)
     }
 
-    override suspend fun setCommandService(commandService: CommandService) {
+    override suspend fun setInjectMethod(injectMethod: InjectMethod) {
         dataStore.edit { preferences ->
-            preferences[COMMAND_SERVICES] = commandService.name
+            preferences[INJECT_METHOD] = injectMethod.name
         }
     }
 

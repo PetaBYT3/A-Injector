@@ -48,10 +48,15 @@ val supportedLanguage = listOf(
 )
 
 enum class DeviceSetting {
-    Language, CleanCache
+    Inject, Language, CleanCache
 }
 
 val deviceSettings = listOf(
+    StaticModel(
+        id = DeviceSetting.Inject,
+        leadingContent = { Icon(ImageVector.vectorResource(R.drawable.inject), null) },
+        content = R.string.inject_method
+    ),
     StaticModel(
         id = DeviceSetting.Language,
         leadingContent = { Icon(Icons.Rounded.Language, null) },
@@ -61,5 +66,30 @@ val deviceSettings = listOf(
         id = DeviceSetting.CleanCache,
         leadingContent = { Icon(Icons.Rounded.CleaningServices, null) },
         content = R.string.clean_cache
+    )
+)
+
+enum class AboutApp {
+    Kotlin, JetpackCompose, Supabase
+}
+
+val aboutApps = listOf(
+    StaticModel(
+        id = AboutApp.Kotlin,
+        content = R.string.kotlin,
+        leadingContent = { Icon(ImageVector.vectorResource(R.drawable.kotlin), null) },
+        supportingContent = R.string.kotlin_desc
+    ),
+    StaticModel(
+        id = AboutApp.JetpackCompose,
+        leadingContent = { Icon(ImageVector.vectorResource(R.drawable.compose), null) },
+        content = R.string.jetpack_compose,
+        supportingContent = R.string.jetpack_compose_desc
+    ),
+    StaticModel(
+        id = AboutApp.Supabase,
+        leadingContent = { Icon(ImageVector.vectorResource(R.drawable.supabase), null) },
+        content = R.string.supabase,
+        supportingContent = R.string.supabase_desc
     )
 )

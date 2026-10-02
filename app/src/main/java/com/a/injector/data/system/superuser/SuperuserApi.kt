@@ -1,8 +1,8 @@
-package com.a.injector.data.system
+package com.a.injector.data.system.superuser
 
 import kotlinx.coroutines.flow.Flow
 
-interface SuperuserCommandService {
+interface SuperuserApi {
     val isGranted: Flow<Boolean>
     suspend fun check()
     suspend fun copy(sourcePath: String, targetPath: String)

@@ -7,18 +7,18 @@ import com.a.injector.R
 import com.a.injector.data.local.settings.SettingsApi
 import com.a.injector.data.mapper.VersionMapper
 import com.a.injector.data.remote.version.VersionApi
-import com.a.injector.data.util.toMessage
+import com.a.injector.data.util.catchAndDispatch
 import com.a.injector.domain.model.Text
 import com.a.injector.domain.model.VersionModel
+import com.a.injector.domain.model.state.InjectMethod
 import com.a.injector.domain.repository.ApplicationRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -41,15 +41,27 @@ class ApplicationRepositoryImpl(
     }
 
     override fun getVersion(): Flow<Either<Text, VersionModel>> {
-        return versionApi.getSingle().map { versionDto ->
-            if (versionDto != null) {
-                Either.Right(VersionMapper.toModel(versionDto)) as Either<Text, VersionModel>
-            } else {
-                Either.Left(Text.Resource(R.string.exception_no_data))
+        return flow<Either<Text, VersionModel>> {
+            val result = versionApi.getSingle().map { versionDto ->
+                if (versionDto != null) {
+                    Either.Right(VersionMapper.toModel(versionDto))
+                } else {
+                    Either.Left(Text.Resource(R.string.exception_no_data))
+                }
             }
-        }.catch { throwable ->
-            emit(Either.Left(throwable.toMessage()))
-        }.flowOn(Dispatchers.IO)
+            emitAll(result)
+        }.catchAndDispatch()
+    }
+
+    override val injectMethod: Flow<InjectMethod> = settingsApi.injectMethod
+
+    override fun setInjectMethod(injectMethod: InjectMethod): Flow<Either<Text, Unit>> {
+        return flow<Either<Text, Unit>> {
+            settingsApi.setInjectMethod(
+                injectMethod = injectMethod
+            )
+            emit(Either.Right(Unit))
+        }.catchAndDispatch()
     }
 
     override val language: Flow<Locale> = settingsApi.language
@@ -60,9 +72,7 @@ class ApplicationRepositoryImpl(
                 locale = locale
             )
             emit(Either.Right(Unit))
-        }.catch { throwable ->
-            emit(Either.Left(throwable.toMessage()))
-        }.flowOn(Dispatchers.IO)
+        }.catchAndDispatch()
     }
 
     private val _cacheSize = MutableStateFlow(0L)
@@ -77,9 +87,7 @@ class ApplicationRepositoryImpl(
             }
             emit(Either.Right(Text.Resource(R.string.success_clean_cache)))
             updateCacheSize()
-        }.catch { throwable ->
-            emit(Either.Left(throwable.toMessage()))
-        }.flowOn(Dispatchers.IO)
+        }.catchAndDispatch()
     }
 
     private fun updateCacheSize() {

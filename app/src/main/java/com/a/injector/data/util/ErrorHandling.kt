@@ -71,6 +71,18 @@ fun Throwable.toMessage(): Text {
         is ConnectException, is UnknownHostException -> {
             Text.Resource(R.string.exception_no_connection)
         }
+        is ManageStoragePermissionDenied -> {
+            Text.Resource(R.string.exception_manage_storage_permission_denied)
+        }
+        is ManageStorageMethodFailed -> {
+            Text.Resource(R.string.exception_manage_storage_failed)
+        }
+        is ShizukuUnauthorized -> {
+            Text.Resource(R.string.exception_shizuku_unauthorized)
+        }
+        is SuperuserDenied -> {
+            Text.Resource(R.string.exception_superuser_denied)
+        }
         else -> {
             val message = this.message
             if (message != null) {

@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="exception_manage_storage_permission_denied">Manage storage permission denied, make sure you grant it</string>
+    <string name="exception_manage_storage_failed">Inject with manage storage method failed, try other inject method</string>
+
+    <string name="shizuku_unauthorized">Shizuku unauthorized or not running</string>
+
+    <string name="superuser_denied">Superuser access denied or device isn\'t rooted</string>
 
     <string name="exception_credential_invalid">Email or password incorrect</string>
     <string name="exception_email_invalid">Email invalid</string>
@@ -26,4 +31,6 @@
     <string name="exception_no_image">No image file picked</string>
 
     <string name="exception_no_handler">No installed app on your device can handle this action</string>
+
+    <string name="exception_adb_failed">Failed to start local adb</string>
 </resources>

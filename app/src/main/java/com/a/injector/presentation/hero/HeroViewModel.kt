@@ -98,6 +98,7 @@ class HeroViewModel(
 
     private fun startInject(skinModel: SkinModel, replaceModel: ReplaceModel) {
         viewModelScope.launch {
+            var isLeft = false
             injectRepository.execute(
                 replaceModel = replaceModel
             ).onStart {
@@ -115,17 +116,20 @@ class HeroViewModel(
                         isInjectBottomSheetVisible = false
                     )
                 }
-                _effect.send(
-                    element = ScreenEffect.ShowSnackBar(
-                        message = Text.Resource(R.string.success_script_install)
+                if (!isLeft) {
+                    _effect.send(
+                        element = ScreenEffect.ShowSnackBar(
+                            message = Text.Resource(R.string.success_script_install)
+                        )
                     )
-                )
+                }
             }.collect { either ->
                 either.onRight { message ->
                     _state.update { currentState ->
                         currentState.copy(injectStatus = message)
                     }
                 }.onLeft { error ->
+                    isLeft = true
                     _effect.send(ScreenEffect.ShowSnackBar(error))
                 }
             }

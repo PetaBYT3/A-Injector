@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.a.injector.BuildConfig
 import com.a.injector.domain.repository.ApplicationRepository
 import com.a.injector.domain.repository.InjectRepository
-import com.a.injector.domain.repository.PermissionRepository
 import com.a.injector.domain.repository.ProfileRepository
 import com.a.injector.presentation.util.ScreenEffect
 import kotlinx.coroutines.channels.Channel
@@ -19,7 +18,6 @@ import org.koin.android.annotation.KoinViewModel
 @KoinViewModel
 class HomeViewModel(
     private val applicationRepository: ApplicationRepository,
-    private val permissionRepository: PermissionRepository,
     private val injectRepository: InjectRepository,
     private val profileRepository: ProfileRepository
 ): ViewModel() {
@@ -53,9 +51,12 @@ class HomeViewModel(
         }
 
         viewModelScope.launch {
-            permissionRepository.isManageExternalStorageGranted.collect { isGranted ->
+            injectRepository.currentInjectMethod.collect { injectModel ->
                 _state.update { currentState ->
-                    currentState.copy(isManageExternalStorageGranted = isGranted)
+                    currentState.copy(
+                        inject = injectModel,
+                        isInjectLoading = false
+                    )
                 }
             }
         }
@@ -105,16 +106,12 @@ class HomeViewModel(
         when (action) {
             HomeAction.MaintenanceBottomSheet -> {
                 _state.update { currentState ->
-                    currentState.copy(
-                        isMaintenanceBottomSheetVisible = !currentState.isMaintenanceBottomSheetVisible
-                    )
+                    currentState.copy(isMaintenanceBottomSheetVisible = !currentState.isMaintenanceBottomSheetVisible)
                 }
             }
             HomeAction.UpdateBottomSheet -> {
                 _state.update { currentState ->
-                    currentState.copy(
-                        isUpdateBottomSheetVisible = !currentState.isUpdateBottomSheetVisible
-                    )
+                    currentState.copy(isUpdateBottomSheetVisible = !currentState.isUpdateBottomSheetVisible)
                 }
             }
             is HomeAction.ShowSnackBar -> {

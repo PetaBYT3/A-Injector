@@ -1,6 +1,7 @@
-package com.a.injector.data.system
+package com.a.injector.data.system.superuser
 
 import android.content.Context
+import com.a.injector.data.util.SuperuserDenied
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,16 +14,16 @@ import java.io.DataOutputStream
 import java.io.InputStreamReader
 
 @Single
-class SuperuserCommandServiceImpl(
+class SuperuserApiImpl(
     private val context: Context
-): SuperuserCommandService {
+): SuperuserApi {
     private val _isGranted = MutableStateFlow(false)
     override val isGranted: Flow<Boolean> = _isGranted.asStateFlow()
 
-    private var process: Process? = null
-
     override suspend fun check() {
         withContext(Dispatchers.IO) {
+            var process: Process? = null
+
             try {
                 process = Runtime.getRuntime().exec(arrayOf("su", "-c", "id"))
                 val reader = BufferedReader(InputStreamReader(process?.inputStream))
@@ -40,9 +41,12 @@ class SuperuserCommandServiceImpl(
 
     override suspend fun copy(sourcePath: String, targetPath: String) {
         withContext(Dispatchers.IO) {
-            if (!_isGranted.value) throw Exception("")
+            check()
+            if (!_isGranted.value) {
+                throw SuperuserDenied()
+            }
 
-            process = Runtime.getRuntime().exec("su")
+            val process = Runtime.getRuntime().exec("su")
             val os = DataOutputStream(process?.outputStream)
 
             try {

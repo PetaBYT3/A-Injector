@@ -1,6 +1,6 @@
 package com.a.injector.domain.repository
 
-import com.a.injector.domain.model.state.NavigationState
+import com.a.injector.domain.model.NavigationState
 import com.a.injector.presentation.mainnavigation.MainNavigationRoute
 import kotlinx.coroutines.flow.Flow
 

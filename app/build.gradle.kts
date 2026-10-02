@@ -66,6 +66,9 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     debugImplementation(libs.androidx.compose.ui.tooling)
 
+    //ADB
+    implementation(libs.dadb)
+
     //SplashScreen
     implementation(libs.androidx.core.splashscreen)
 

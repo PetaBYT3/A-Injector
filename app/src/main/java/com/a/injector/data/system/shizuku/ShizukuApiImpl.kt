@@ -1,7 +1,8 @@
-package com.a.injector.data.system
+package com.a.injector.data.system.shizuku
 
 import android.content.Context
 import android.content.pm.PackageManager
+import com.a.injector.data.util.ShizukuUnauthorized
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,9 +13,9 @@ import org.koin.core.annotation.Single
 import rikka.shizuku.Shizuku
 
 @Single
-class ShizukuCommandServiceImpl(
+class ShizukuApiImpl(
     private val context: Context
-): ShizukuCommandService {
+): ShizukuApi {
     private val _isAuthorized = MutableStateFlow(false)
     override val isAuthorized: Flow<Boolean> = _isAuthorized.asStateFlow()
 
@@ -50,7 +51,8 @@ class ShizukuCommandServiceImpl(
 
     override suspend fun copy(sourcePath: String, targetPath: String) {
         withContext(Dispatchers.IO) {
-            if (!_isAuthorized.value) throw Exception("")
+            check()
+            if (!_isAuthorized.value) throw ShizukuUnauthorized()
 
             val command = arrayOf("sh", "-c", "cp -rf '$sourcePath' '$targetPath'")
             val newProcess = Shizuku::class.java.getDeclaredMethod(

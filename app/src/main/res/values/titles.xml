@@ -16,6 +16,17 @@
     <string name="update">Update</string>
     <string name="update_desc">A new version is ready to download. We highly recommend updating your application to ensure optimal performance. Continuing to use this outdated version may result in unexpected bugs, feature instability, or app crashes.</string>
 
+    <string name="inject_method">Inject Method</string>
+    <string name="storage_manager">Storage Manager</string>
+    <string name="storage_permission">Storage Permission</string>
+    <string name="shizuku">Shizuku</string>
+    <string name="superuser">Superuser</string>
+
+    <string name="granted">Granted</string>
+    <string name="denied">Denied</string>
+    <string name="authorized">Authorized</string>
+    <string name="unauthorized">Unauthorized</string>
+
     <string name="support_method">Support Method</string>
     <string name="qris">QRIS</string>
     <string name="qris_desc">A International</string>
@@ -81,10 +92,6 @@
     <string name="account">Account</string>
     <string name="settings">Settings</string>
 
-    <string name="storage_permission">Storage Permission</string>
-    <string name="granted">Granted</string>
-    <string name="denied">Denied</string>
-
     <string name="about_developer">About Developer</string>
     <string name="mlbb">Mlbb</string>
     <string name="mlbb_desc">1879393654(2964)</string>
@@ -136,7 +143,17 @@
 
     <string name="language">Language</string>
     <string name="clean_cache">Clean Cache</string>
-    <string name="clean_cache_desc">All downloaded and extracted script on cache will be deleted, once you\'re reinstalling the same script you will redownload it again</string>
+    <string name="clean_cache_desc">All downloaded script will be deleted, once you\'re reinstalling the same script you will redownload it again</string>
+    <string name="about_app">About App</string>
+
+    <string name="app_version">App Version</string>
+    <string name="tech_stack">Tech Stack</string>
+    <string name="kotlin">Kotlin</string>
+    <string name="kotlin_desc">Handle UI state and app logic</string>
+    <string name="jetpack_compose">Jetpack Compose</string>
+    <string name="jetpack_compose_desc">Framework for building user interface</string>
+    <string name="supabase">Supabase</string>
+    <string name="supabase_desc">Handle user authentication, database, and file storage</string>
 
     <string name="no_support_requested">No support requested</string>
     <string name="no_role_requested">No role requested</string>

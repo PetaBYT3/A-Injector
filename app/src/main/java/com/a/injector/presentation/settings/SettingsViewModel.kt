@@ -2,6 +2,7 @@ package com.a.injector.presentation.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.a.injector.domain.model.state.InjectMethod
 import com.a.injector.domain.repository.ApplicationRepository
 import com.a.injector.domain.repository.NavigationRepository
 import com.a.injector.domain.repository.OptimizeDatabaseRepository
@@ -54,6 +55,14 @@ class SettingsViewModel(
         }
 
         viewModelScope.launch {
+            applicationRepository.injectMethod.collect { injectMethod ->
+                _state.update { currentState ->
+                    currentState.copy(injectMethod = injectMethod)
+                }
+            }
+        }
+
+        viewModelScope.launch {
             applicationRepository.language.collect { locale ->
                 _state.update { currentState ->
                     currentState.copy(currentLanguage = locale)
@@ -74,19 +83,23 @@ class SettingsViewModel(
         when (action) {
             SettingsAction.CleanCloudStorageBottomSheet -> {
                 _state.update { currentState ->
-                    currentState.copy(
-                        isCleanCloudStorageBottomSheetVisible = !currentState.isCleanCloudStorageBottomSheetVisible
-                    )
+                    currentState.copy(isCleanCloudStorageBottomSheetVisible = !currentState.isCleanCloudStorageBottomSheetVisible)
                 }
             }
             SettingsAction.CleanCloudStorageButton -> {
                 cleanCloudStorageButton()
             }
+            SettingsAction.InjectMethodBottomSheet -> {
+                _state.update { currentState ->
+                    currentState.copy(isInjectMethodBottomSheetVisible = !currentState.isInjectMethodBottomSheetVisible)
+                }
+            }
+            is SettingsAction.SetInjectMethodButton -> {
+                setInjectMethod(injectMethod = action.injectMethod)
+            }
             SettingsAction.LanguageBottomSheet -> {
                 _state.update { currentState ->
-                    currentState.copy(
-                        isLanguageBottomSheetVisible = !currentState.isLanguageBottomSheetVisible
-                    )
+                    currentState.copy(isLanguageBottomSheetVisible = !currentState.isLanguageBottomSheetVisible)
                 }
             }
             is SettingsAction.SetLanguageButton -> {
@@ -94,13 +107,16 @@ class SettingsViewModel(
             }
             SettingsAction.CleanCacheBottomSheet -> {
                 _state.update { currentState ->
-                    currentState.copy(
-                        isCleanCacheBottomSheetVisible = !currentState.isCleanCacheBottomSheetVisible
-                    )
+                    currentState.copy(isCleanCacheBottomSheetVisible = !currentState.isCleanCacheBottomSheetVisible)
                 }
             }
             SettingsAction.CleanCacheButton -> {
                 cleanCacheButton()
+            }
+            SettingsAction.AboutAppBottomSheet -> {
+                _state.update { currentState ->
+                    currentState.copy(isAboutAppBottomSheetVisible = !currentState.isAboutAppBottomSheetVisible)
+                }
             }
         }
     }
@@ -118,6 +134,18 @@ class SettingsViewModel(
                     _effect.send(ScreenEffect.ShowSnackBar(message))
                 }.onLeft { error ->
                     _effect.send(ScreenEffect.ShowSnackBar(error))
+                }
+            }
+        }
+    }
+
+    private fun setInjectMethod(injectMethod: InjectMethod) {
+        viewModelScope.launch {
+            applicationRepository.setInjectMethod(
+                injectMethod = injectMethod
+            ).collect { either ->
+                either.onLeft { text ->
+                    _effect.send(ScreenEffect.ShowSnackBar(text))
                 }
             }
         }

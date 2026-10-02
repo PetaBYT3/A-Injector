@@ -20,9 +20,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,6 +34,9 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
 import com.a.injector.domain.model.Text
+import com.a.injector.domain.model.state.InjectMethod.Shizuku
+import com.a.injector.domain.model.state.InjectMethod.StorageManager
+import com.a.injector.domain.model.state.InjectMethod.Superuser
 import com.a.injector.presentation.component.CustomBottomSheet
 import com.a.injector.presentation.component.CustomButton
 import com.a.injector.presentation.component.CustomCenterCircularWavyProgressIndicator
@@ -78,7 +83,7 @@ private fun Preview() {
     HomeScreen(
         navBackStack = rememberNavBackStack(),
         state = HomeState(
-            isManageExternalStorageGranted = false
+
         ),
         onAction = {}
     )
@@ -167,29 +172,56 @@ private fun Content(
         contentPadding = PaddingValues(start = 10.dp, end = 10.dp, bottom = 100.dp),
         verticalArrangement = Arrangement.spacedBy(2.5.dp)
     ) {
-        item("methodItem") {
-            PrimaryListItem(
-                modifier = Modifier
-                    .animateItem(),
-                leadingContent = { Icon(Icons.Rounded.Storage, null) },
-                content = { Text(text = stringResource(R.string.storage_permission)) },
-                supportingContent = {
-                    val text = when (state.isManageExternalStorageGranted) {
-                        true -> stringResource(R.string.granted)
-                        false -> stringResource(R.string.denied)
+        if (state.isInjectLoading) {
+            item("isMethodLoading") {
+                CustomCenterCircularWavyProgressIndicator(
+                    modifier = Modifier
+                        .animateItem()
+                )
+            }
+        } else {
+            item("methodItem") {
+                PrimaryListItem(
+                    modifier = Modifier
+                        .animateItem(),
+                    leadingContent = {
+                        val imageVector = when (state.inject.injectMethod) {
+                            StorageManager -> Icons.Rounded.Storage
+                            Shizuku -> ImageVector.vectorResource(R.drawable.shizuku)
+                            Superuser -> ImageVector.vectorResource(R.drawable.superuser)
+                        }
+                        Icon(imageVector, null)
+                    },
+                    content = { Text(text = stringResource(state.inject.injectMethod.title)) },
+                    supportingContent = {
+                        val supportingText = when (state.inject.injectMethod) {
+                            Shizuku -> {
+                                if (state.inject.isGranted) {
+                                    R.string.authorized
+                                } else {
+                                    R.string.unauthorized
+                                }
+                            }
+                            else -> {
+                                if (state.inject.isGranted) {
+                                    R.string.granted
+                                } else {
+                                    R.string.denied
+                                }
+                            }
+                        }
+                        Text(text = stringResource(supportingText))
+                    },
+                    trailingContent = {
+                        if (state.inject.injectMethod == StorageManager) {
+                            Button(
+                                onClick = { openStoragePermissionSettings(context) },
+                                content = { Text(text = stringResource(R.string.settings)) }
+                            )
+                        }
                     }
-                    Text(text = text)
-                },
-                trailingContent = {
-                    val context = LocalContext.current
-                    if (!state.isManageExternalStorageGranted) {
-                        Button(
-                            onClick = { openStoragePermissionSettings(context) },
-                            content = { Text(text = stringResource(R.string.settings)) }
-                        )
-                    }
-                }
-            )
+                )
+            }
         }
         spacer()
         item("aboutDeveloperTitle") {
