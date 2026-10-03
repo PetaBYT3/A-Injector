@@ -11,6 +11,7 @@ import kotlin.uuid.Uuid
 @Serializable
 data class HeroDto(
     val id: String = Uuid.random().toString(),
+    @EncodeDefault
     val name: String = "",
 
     @EncodeDefault(EncodeDefault.Mode.NEVER)

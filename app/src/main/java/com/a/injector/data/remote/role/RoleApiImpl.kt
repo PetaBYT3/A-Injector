@@ -70,13 +70,14 @@ class RoleApiImpl(
             emit(Unit)
         }.onCompletion {
             supabaseClient.realtime.removeChannel(channel)
-        }.map {
-            supabaseClient.from(SupabaseConst.ROLE_TABLE).select(
+        }.flatMapLatest {
+            val data = supabaseClient.from(SupabaseConst.ROLE_TABLE).select(
                 request = { filter { eq("id", profileId) } },
                 columns = Columns.raw(
                     "*, ${SupabaseConst.PROFILE_TABLE}(*)"
                 )
             ).decodeSingleOrNull<RoleDto>()
+            flowOf(data)
         }
     }
 

@@ -8,8 +8,7 @@ data class ManageUserState(
     val isProfileError: Text? = null,
     val profile: ProfileModel = ProfileModel.EMPTY,
 
-    val nominalToAddTextField: String = "",
-    val isSelectRoleBottomSheetVisible: Boolean = false,
+    val supportTextField: String = "",
 
     val isUpsertProfileButtonLoading: Boolean = false
 ) {

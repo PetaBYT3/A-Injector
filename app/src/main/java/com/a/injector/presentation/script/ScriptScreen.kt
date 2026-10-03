@@ -37,12 +37,12 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
 import com.a.injector.domain.model.HeroModel
 import com.a.injector.presentation.component.CustomCenterCircularWavyProgressIndicator
+import com.a.injector.presentation.component.CustomCenterTextMessage
 import com.a.injector.presentation.component.CustomFloatingActionButton
 import com.a.injector.presentation.component.CustomHorizontalToolBar
 import com.a.injector.presentation.component.CustomSlideUpAnimatedVisibility
 import com.a.injector.presentation.component.CustomTopAppBar
 import com.a.injector.presentation.component.DefaultClickableListItem
-import com.a.injector.presentation.component.MessageListItem
 import com.a.injector.presentation.component.TransparentTextField
 import com.a.injector.presentation.mainnavigation.MainNavigationRoute
 import org.koin.compose.viewmodel.koinViewModel
@@ -189,7 +189,7 @@ private fun Content(
         }
         if (state.isHeroesError != null) {
             item("isHeroesError") {
-                MessageListItem(
+                CustomCenterTextMessage(
                     modifier = Modifier
                         .animateItem(),
                     text = state.isHeroesError.asString(),
@@ -200,7 +200,7 @@ private fun Content(
         }
         if (state.filteredHeroes.isEmpty()) {
             item("isHeroesEmpty") {
-                MessageListItem(
+                CustomCenterTextMessage(
                     modifier = Modifier
                         .animateItem(),
                     text = stringResource(R.string.empty)

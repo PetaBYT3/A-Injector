@@ -35,11 +35,11 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
 import com.a.injector.presentation.component.CustomCenterCircularWavyProgressIndicator
+import com.a.injector.presentation.component.CustomCenterTextMessage
 import com.a.injector.presentation.component.CustomHorizontalToolBar
 import com.a.injector.presentation.component.CustomIconButton
 import com.a.injector.presentation.component.CustomTopAppBar
 import com.a.injector.presentation.component.DefaultListItem
-import com.a.injector.presentation.component.MessageListItem
 import com.a.injector.presentation.component.TransparentTextField
 import com.a.injector.presentation.mainnavigation.MainNavigationRoute
 import com.a.injector.presentation.mainnavigation.popBackStack
@@ -161,7 +161,7 @@ private fun Content(
         }
         if (state.isProfileError != null) {
             item("isProfileError") {
-                MessageListItem(
+                CustomCenterTextMessage(
                     modifier = Modifier
                         .animateItem(),
                     text = state.isProfileError.asString()
@@ -171,7 +171,7 @@ private fun Content(
         }
         if (state.filteredProfiles.isEmpty()) {
             item("isProfileEmpty") {
-                MessageListItem(
+                CustomCenterTextMessage(
                     modifier = Modifier
                         .animateItem(),
                     text = stringResource(R.string.empty)

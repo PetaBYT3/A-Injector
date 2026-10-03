@@ -2,7 +2,6 @@
 
 package com.a.injector.presentation.bottomnavigation
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.WindowInsets
@@ -82,25 +81,26 @@ private fun BottomNavigationScreen(
                 3 -> SettingsScreenRoot(navBackStack = navBackStack)
             }
         }
-        AnimatedVisibility(
-            visible = !isKeyboardVisible
-        ) {
-            NavigationBar(
-                content = {
-                    bottomNavigationItems.fastForEachIndexed { index, static ->
-                        NavigationBarItem(
-                            selected = pagerState.currentPage == index,
-                            onClick = {
-                                scope.launch {
-                                    pagerState.animateScrollToPage(index)
-                                }
-                            },
-                            icon = { static.leadingContent?.invoke() },
-                            label = { Text(text = stringResource(static.content)) }
-                        )
-                    }
+//        AnimatedVisibility(
+//            visible = !isKeyboardVisible
+//        ) {
+//
+//        }
+        NavigationBar(
+            content = {
+                bottomNavigationItems.fastForEachIndexed { index, static ->
+                    NavigationBarItem(
+                        selected = pagerState.currentPage == index,
+                        onClick = {
+                            scope.launch {
+                                pagerState.animateScrollToPage(index)
+                            }
+                        },
+                        icon = { static.leadingContent?.invoke() },
+                        label = { Text(text = stringResource(static.content)) }
+                    )
                 }
-            )
-        }
+            }
+        )
     }
 }

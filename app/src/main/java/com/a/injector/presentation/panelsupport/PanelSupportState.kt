@@ -10,8 +10,7 @@ data class PanelSupportState(
 
     val isSupportingBottomSheetVisible: Boolean = false,
     val supportingToAction: SupportModel = SupportModel.EMPTY,
-    val proofUrlToAction: String? = null,
-    val isActionSupportingButtonLoading: Boolean = false,
+    val proofUrlToAction: String? = null
 ) {
     val isContentLoading: Boolean get() =
         isSupportingListLoading

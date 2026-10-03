@@ -178,7 +178,7 @@ private fun Content(
                                 append(" ")
                                 append(stringResource(R.string.top_contributor_desc))
                             }
-                            Supporting -> state.profile.nominal.toIdr()
+                            Supporting -> state.profile.support.toIdr()
                             ProfileRole -> stringResource(state.profile.role.title)
                         }
                         Text(text = supportingText)

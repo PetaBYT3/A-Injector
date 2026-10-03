@@ -7,7 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AttachFile
-import androidx.compose.material.icons.rounded.OpenInNew
+import androidx.compose.material.icons.rounded.Save
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -118,7 +118,7 @@ private fun SupportingScreen(
                         floatingActionButton = {
                             CustomFloatingActionButton(
                                 onClick = { onAction(SupportAction.UpsertSupportingButton) },
-                                content = Icons.Rounded.OpenInNew,
+                                content = Icons.Rounded.Save,
                                 isLoading = state.isUpsertSupportButtonLoading
                             )
                         }
@@ -174,7 +174,7 @@ private fun Content(
                 modifier = Modifier
                     .animateItem(),
                 content = { Text(text = stringResource(R.string.support_cur)) },
-                supportingContent = { Text(text = state.profile.nominal.toIdr()) }
+                supportingContent = { Text(text = state.profile.support.toIdr()) }
             )
         }
         spacer()

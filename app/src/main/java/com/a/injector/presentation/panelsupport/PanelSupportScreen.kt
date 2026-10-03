@@ -216,8 +216,7 @@ private fun Content(
                         onClick = {
                             onAction(PanelSupportAction.ShowSupportBottomSheet(supportingModel))
                         },
-                        content = { Icon(Icons.Rounded.Edit, null) },
-                        isLoading = state.isActionSupportingButtonLoading
+                        content = { Icon(Icons.Rounded.Edit, null) }
                     )
                 }
             )

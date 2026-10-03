@@ -2,7 +2,6 @@ package com.a.injector.presentation.component
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,7 +23,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -297,40 +295,6 @@ fun DefaultClickableListItem(
                         }
                     }
                 }
-            }
-        }
-    )
-}
-
-@Composable
-fun MessageListItem(
-    modifier: Modifier = Modifier,
-    text: String,
-    isError: Boolean = false
-) {
-    SegmentedListItem(
-        modifier = modifier,
-        colors = ListItemDefaults.colors(
-            contentColor = Color.Transparent
-        ),
-        shapes = ListItemDefaults.segmentedShapes(
-            index = 0,
-            count = 1
-        ),
-        content = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    color = if (isError) {
-                        MaterialTheme.colorScheme.error
-                    } else {
-                        MaterialTheme.colorScheme.onSurface
-                    },
-                    text = text
-                )
             }
         }
     )

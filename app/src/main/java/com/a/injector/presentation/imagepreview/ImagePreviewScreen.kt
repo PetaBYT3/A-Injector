@@ -19,7 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
-import com.a.injector.presentation.component.CustomZoomableAsyncImage
+import com.a.injector.presentation.component.CustomAsyncImage
 import com.a.injector.presentation.mainnavigation.popBackStack
 
 @Composable
@@ -48,7 +48,7 @@ fun ImagePreviewScreenRoot(
                     .fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                CustomZoomableAsyncImage(
+                CustomAsyncImage(
                     modifier = Modifier
                         .fillMaxSize(),
                     imageSource = imageSource

@@ -48,7 +48,6 @@ import com.a.injector.presentation.component.CustomTopAppBar
 import com.a.injector.presentation.component.CustomUndismissableBottomSheet
 import com.a.injector.presentation.component.DefaultClickableListItem
 import com.a.injector.presentation.component.DefaultListItem
-import com.a.injector.presentation.component.MessageListItem
 import com.a.injector.presentation.component.PrimaryListItem
 import com.a.injector.presentation.component.SkinDetailListItem
 import com.a.injector.presentation.component.spacer
@@ -258,7 +257,7 @@ private fun Content(
         }
         if (state.isHeroDetailError != null) {
             item("isHeroDetailError") {
-                MessageListItem(
+                CustomCenterTextMessage(
                     modifier = Modifier
                         .animateItem(),
                     text = state.isHeroDetailError.asString(),

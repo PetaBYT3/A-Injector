@@ -70,13 +70,14 @@ class SupportApiImpl(
             emit(Unit)
         }.onCompletion {
             supabaseClient.realtime.removeChannel(channel)
-        }.map {
-            supabaseClient.from(SupabaseConst.SUPPORT_TABLE).select(
+        }.flatMapLatest {
+            val data = supabaseClient.from(SupabaseConst.SUPPORT_TABLE).select(
                 request = { filter { eq("id", profileId) } },
                 columns = Columns.raw(
                     "*, ${SupabaseConst.PROFILE_TABLE}(*)"
                 )
             ).decodeSingleOrNull<SupportDto>()
+            flowOf(data)
         }
     }
 

@@ -65,7 +65,7 @@ class ManageUserViewModel(
                 _state.update { currentState ->
                     currentState.copy(
                         profile = currentState.profile.copy(
-                            nominal = action.support.ifBlank { "0" }.toLong()
+                            support = action.support.ifBlank { "0" }.toLong()
                         )
                     )
                 }
@@ -85,12 +85,8 @@ class ManageUserViewModel(
 
     private fun upsertProfileButton() {
         viewModelScope.launch {
-            val nominalToAdd = _state.value.nominalToAddTextField.ifBlank { "0" }
-            val finalNominal = _state.value.profile.nominal + nominalToAdd.toLong()
             profileRepository.upsert(
-                profileModel = _state.value.profile.copy(
-                    nominal = finalNominal
-                )
+                profileModel = _state.value.profile
             ).onStart {
                 _state.update { currentState ->
                     currentState.copy(isUpsertProfileButtonLoading = true)

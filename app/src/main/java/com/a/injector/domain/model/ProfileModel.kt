@@ -7,7 +7,7 @@ data class ProfileModel(
     val username: String,
     val role: Role,
     val contribution: Int,
-    val nominal: Long
+    val support: Long
 ) {
     companion object {
         val EMPTY = ProfileModel(
@@ -15,7 +15,7 @@ data class ProfileModel(
             username = "",
             role = Role.User,
             contribution = 0,
-            nominal = 0
+            support = 0
         )
 
         val GUEST = ProfileModel(
@@ -23,7 +23,7 @@ data class ProfileModel(
             username = "Guest",
             role = Role.User,
             contribution = 0,
-            nominal = 0
+            support = 0
         )
     }
 }

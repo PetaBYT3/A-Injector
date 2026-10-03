@@ -4,6 +4,7 @@ package com.a.injector.data.repository
 
 import arrow.core.Either
 import com.a.injector.R
+import com.a.injector.data.mapper.ProfileMapper
 import com.a.injector.data.mapper.RoleMapper
 import com.a.injector.data.remote.auth.AuthApi
 import com.a.injector.data.remote.profile.ProfileApi
@@ -16,7 +17,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -83,15 +83,8 @@ class RoleRepositoryImpl(
 
     override fun confirm(roleModel: RoleModel): Flow<Either<Text, Unit>> {
         return flow<Either<Text, Unit>> {
-            val profileDto = profileApi.getSingle(
-                profileId = roleModel.id
-            ).first()
-            if (profileDto == null) {
-                emit(Either.Left(Text.Resource(R.string.exception_no_data)))
-                return@flow
-            }
             profileApi.upsert(
-                profileDto = profileDto.copy(
+                profileDto = ProfileMapper.toDto(roleModel.profile).copy(
                     role = roleModel.role
                 )
             )

@@ -20,6 +20,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
@@ -57,13 +59,24 @@ class ProfileApiImpl(
     }
 
     override fun getListBySupporting(): Flow<List<ProfileDto>> {
-        return supabaseClient.from(SupabaseConst.PROFILE_TABLE).selectAsFlow(
-            primaryKey = ProfileDto::id,
-            filter = {
-                gt("support", 0)
-            }
-        ).map { profileDtos ->
-            profileDtos.sortedByDescending { it.support }.take(10)
+        val channel = supabaseClient.channel("getProfileByHighestSupport:${Uuid.random()}")
+        return channel.postgresChangeFlow<PostgresAction>(
+            schema = SupabaseConst.SCHEMA,
+            filter = { table = SupabaseConst.PROFILE_TABLE }
+        ).map(::mapPostgrestAction).debounce(SupabaseConst.DEBOUNCE).onStart {
+            channel.subscribe()
+            emit(Unit)
+        }.onCompletion {
+            supabaseClient.realtime.removeChannel(channel)
+        }.flatMapLatest {
+            val data = supabaseClient.from(SupabaseConst.PROFILE_TABLE).select(
+                request = {
+                    filter { gt("support", 0) }
+                    order("support", Order.DESCENDING)
+                    limit(10)
+                }
+            ).decodeList<ProfileDto>()
+            flowOf(data)
         }
     }
 
@@ -77,14 +90,15 @@ class ProfileApiImpl(
             emit(Unit)
         }.onCompletion {
             supabaseClient.realtime.removeChannel(channel)
-        }.map {
-            supabaseClient.from(SupabaseConst.PROFILE_TABLE).select(
+        }.flatMapLatest {
+            val data = supabaseClient.from(SupabaseConst.PROFILE_TABLE).select(
                 request = {
                     filter { gt("contribution", 0) }
                     order("contribution", Order.DESCENDING)
                     limit(10)
                 }
             ).decodeList<ProfileDto>()
+            flowOf(data)
         }
     }
 

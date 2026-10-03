@@ -40,12 +40,12 @@ import com.a.injector.domain.model.state.InjectMethod.Superuser
 import com.a.injector.presentation.component.CustomBottomSheet
 import com.a.injector.presentation.component.CustomButton
 import com.a.injector.presentation.component.CustomCenterCircularWavyProgressIndicator
+import com.a.injector.presentation.component.CustomCenterTextMessage
 import com.a.injector.presentation.component.CustomSurfaceText
 import com.a.injector.presentation.component.CustomTextListTitle
 import com.a.injector.presentation.component.CustomTopAppBar
 import com.a.injector.presentation.component.DefaultClickableListItem
 import com.a.injector.presentation.component.DefaultListItem
-import com.a.injector.presentation.component.MessageListItem
 import com.a.injector.presentation.component.PrimaryListItem
 import com.a.injector.presentation.component.spacer
 import com.a.injector.presentation.home.AboutDeveloper.Email
@@ -296,7 +296,7 @@ private fun Content(
             }
             state.isTopSupporterError != null -> {
                 item("isTopSupporterError") {
-                    MessageListItem(
+                    CustomCenterTextMessage(
                         modifier = Modifier
                             .animateItem(),
                         text = state.isTopSupporterError.asString()
@@ -305,7 +305,7 @@ private fun Content(
             }
             state.topSupporter.isEmpty() -> {
                 item("isTopSupporterEmpty") {
-                    MessageListItem(
+                    CustomCenterTextMessage(
                         modifier = Modifier
                             .animateItem(),
                         text = stringResource(R.string.empty)
@@ -331,7 +331,7 @@ private fun Content(
                             )
                         },
                         trailingContent = {
-                            Text(text = profileModel.nominal.toIdr())
+                            Text(text = profileModel.support.toIdr())
                         }
                     )
                 }
@@ -356,7 +356,7 @@ private fun Content(
             }
             state.isTopContributionError != null -> {
                 item("isHighestContributionProfileError") {
-                    MessageListItem(
+                    CustomCenterTextMessage(
                         modifier = Modifier
                             .animateItem(),
                         text = state.isTopContributionError.asString(),
@@ -366,7 +366,7 @@ private fun Content(
             }
             state.topContribution.isEmpty() -> {
                 item("isHighestContributionProfileEmpty") {
-                    MessageListItem(
+                    CustomCenterTextMessage(
                         modifier = Modifier
                             .animateItem(),
                         text = stringResource(R.string.empty)

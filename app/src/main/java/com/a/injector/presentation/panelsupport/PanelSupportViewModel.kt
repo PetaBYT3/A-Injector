@@ -7,8 +7,6 @@ import com.a.injector.presentation.util.ScreenEffect
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -72,17 +70,9 @@ class PanelSupportViewModel(
 
     private fun denySupportingButton() {
         viewModelScope.launch {
-            supportRepository.confirm(
+            supportRepository.deny(
                 supportModel = _state.value.supportingToAction
-            ).onStart {
-                _state.update { currentState ->
-                    currentState.copy(isActionSupportingButtonLoading = true)
-                }
-            }.onCompletion {
-                _state.update { currentState ->
-                    currentState.copy(isActionSupportingButtonLoading = false)
-                }
-            }.collect { either ->
+            ).collect { either ->
                 either.onLeft { error ->
                     _effect.send(ScreenEffect.ShowSnackBar(error))
                 }
@@ -92,17 +82,9 @@ class PanelSupportViewModel(
 
     private fun confirmSupportingButton() {
         viewModelScope.launch {
-            supportRepository.deny(
+            supportRepository.confirm(
                 supportModel = _state.value.supportingToAction
-            ).onStart {
-                _state.update { currentState ->
-                    currentState.copy(isActionSupportingButtonLoading = true)
-                }
-            }.onCompletion {
-                _state.update { currentState ->
-                    currentState.copy(isActionSupportingButtonLoading = false)
-                }
-            }.collect { either ->
+            ).collect { either ->
                 either.onLeft { error ->
                     _effect.send(ScreenEffect.ShowSnackBar(error))
                 }

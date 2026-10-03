@@ -28,12 +28,12 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
 import com.a.injector.domain.model.state.Role
 import com.a.injector.presentation.component.CustomCenterCircularWavyProgressIndicator
+import com.a.injector.presentation.component.CustomCenterTextMessage
 import com.a.injector.presentation.component.CustomFloatingActionButton
 import com.a.injector.presentation.component.CustomHorizontalToolBar
 import com.a.injector.presentation.component.CustomTextField
 import com.a.injector.presentation.component.CustomTopAppBar
 import com.a.injector.presentation.component.DefaultClickableListItem
-import com.a.injector.presentation.component.MessageListItem
 import com.a.injector.presentation.component.spacer
 import com.a.injector.presentation.mainnavigation.popBackStack
 import com.a.injector.presentation.util.IdrVisualTransformation
@@ -141,7 +141,7 @@ private fun Content(
         }
         if (state.isProfileError != null) {
             item("isProfileError") {
-                MessageListItem(
+                CustomCenterTextMessage(
                     modifier = Modifier
                         .animateItem(),
                     text = state.isProfileError.asString()
@@ -164,7 +164,7 @@ private fun Content(
                 modifier = Modifier
                     .animateItem(),
                 label = stringResource(R.string.support),
-                value = state.profile.nominal.toString(),
+                value = state.profile.support.toString(),
                 onValueChange = { userInput ->
                     val filteredInput = userInput.filter { it.isDigit() }
                     onAction(ManageUserAction.SupportTextField(filteredInput))

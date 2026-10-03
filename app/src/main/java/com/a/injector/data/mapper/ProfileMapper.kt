@@ -10,7 +10,7 @@ object ProfileMapper: Mapper<ProfileDto, ProfileModel> {
             username = dto.username,
             role = dto.role,
             contribution = dto.contribution,
-            nominal = dto.support
+            support = dto.support
         )
     }
 
@@ -20,7 +20,7 @@ object ProfileMapper: Mapper<ProfileDto, ProfileModel> {
             username = model.username,
             role = model.role,
             contribution = model.contribution,
-            support = model.nominal,
+            support = model.support,
         )
     }
 }
