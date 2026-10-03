@@ -14,7 +14,9 @@ interface AccountRepository {
     fun signUp(email: String, password: String): Flow<Either<Text, Unit>>
     fun signLink(email: String): Flow<Either<Text, Text>>
     fun signGuest(): Flow<Either<Text, Unit>>
-    fun signOut(): Flow<Either<Text, Unit>>
+    fun signOutGlobal(): Flow<Either<Text, Text>>
+    fun singOutOthers(): Flow<Either<Text, Text>>
+    fun signOutLocal(): Flow<Either<Text, Unit>>
 
     fun changePassword(password: String): Flow<Either<Text, Text>>
 }

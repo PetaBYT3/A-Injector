@@ -4,6 +4,8 @@
 
     <string name="success_script_install">Skrip berhasil terpasang</string>
 
+    <string name="success_terminate_session">Sesi berhasil diakhiri</string>
+
     <string name="success_profile_updated">Profil berhasil diperbarui</string>
     <string name="success_support_request">Permintaan dukungan telah dikirim</string>
     <string name="success_role_request">Permintaan peran telah dikirim</string>

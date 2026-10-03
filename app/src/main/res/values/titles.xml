@@ -125,6 +125,8 @@
     <string name="user_desc">Simply just regular user who want to install script</string>
 
     <string name="manage_account">Manage Account</string>
+    <string name="terminate_session">Terminate Session</string>
+    <string name="terminate_session_desc">Terminate session or sign out account on other devices</string>
     <string name="change_password">Change Password</string>
     <string name="change_password_desc">Change your password directly</string>
 

@@ -2,7 +2,6 @@
 
 package com.a.injector.data.repository
 
-import android.util.Log
 import arrow.core.Either
 import com.a.injector.R
 import com.a.injector.data.mapper.ProfileMapper
@@ -104,7 +103,6 @@ class SupportRepositoryImpl(
 
     override fun confirm(supportModel: SupportModel): Flow<Either<Text, Unit>> {
         return flow<Either<Text, Unit>> {
-            Log.d("DataDebug", supportModel.toString())
             profileApi.upsert(
                 profileDto = ProfileMapper.toDto(supportModel.profile).copy(
                     support = supportModel.profile.support + supportModel.support
@@ -112,6 +110,10 @@ class SupportRepositoryImpl(
             )
             supportApi.delete(
                 supportDto = SupportMapper.toDto(supportModel)
+            )
+            storageApi.delete(
+                fromBucket = Bucket.IMAGE,
+                files = listOf("${supportModel.id}.webp")
             )
             emit(Either.Right(Unit))
         }.catchAndDispatch()
@@ -121,6 +123,10 @@ class SupportRepositoryImpl(
         return flow {
             supportApi.delete(
                 supportDto = SupportMapper.toDto(supportModel)
+            )
+            storageApi.delete(
+                fromBucket = Bucket.IMAGE,
+                files = listOf("${supportModel.id}.webp")
             )
             emit(Either.Right(Unit))
         }.catchAndDispatch()

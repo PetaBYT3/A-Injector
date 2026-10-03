@@ -17,8 +17,8 @@ data class AccountState(
     val isProfileError: Text? = null,
     val profile: ProfileModel = ProfileModel.EMPTY,
 
-    val isCleanStorageBottomSheetVisible: Boolean = false,
-    val isCleanStorageButtonLoading: Boolean = false,
+    val isTerminateSessionBottomSheetVisible: Boolean = false,
+    val isTerminateSessionButtonLoading: Boolean = false,
 
     val isSignOutBottomSheetVisible: Boolean = false,
     val isSingOutButtonLoading: Boolean = false

@@ -1,6 +1,7 @@
 package com.a.injector.presentation.account
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Email
 import androidx.compose.material.icons.rounded.Password
 import androidx.compose.material.icons.rounded.PermIdentity
@@ -45,10 +46,16 @@ val profiles = listOf(
 )
 
 enum class ManageAccount {
-    ChangePassword
+    TerminateSession, ChangePassword
 }
 
 val manageAccounts = listOf(
+    StaticModel(
+        id = ManageAccount.TerminateSession,
+        leadingContent = { Icon(Icons.Rounded.Close, null) },
+        content = R.string.terminate_session,
+        supportingContent = R.string.terminate_session_desc
+    ),
     StaticModel(
         id = ManageAccount.ChangePassword,
         leadingContent = { Icon(Icons.Rounded.Password, null) },

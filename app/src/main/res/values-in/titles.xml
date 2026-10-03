@@ -125,6 +125,8 @@
     <string name="user_desc">Pengguna biasa yang hanya ingin memasang skrip.</string>
 
     <string name="manage_account">Kelola Akun</string>
+    <string name="terminate_session">Keluarkan Sesi</string>
+    <string name="terminate_session_desc">Keluarkan sesi atau keluar dari akun di perangkat lain</string>
     <string name="change_password">Ubah Kata Sandi</string>
     <string name="change_password_desc">Ubah kata sandi Anda secara langsung</string>
 

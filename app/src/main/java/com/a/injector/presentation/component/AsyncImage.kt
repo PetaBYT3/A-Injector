@@ -28,12 +28,20 @@ fun CustomAsyncImage(
         mutableStateOf<AsyncImagePainter.State>(AsyncImagePainter.State.Empty)
     }
 
+    val dynamicUrl = remember(imageSource) {
+        if (imageSource.contains("?")) {
+            "$imageSource&t=${System.currentTimeMillis()}"
+        } else {
+            "$imageSource?t=${System.currentTimeMillis()}"
+        }
+    }
+
     SubcomposeAsyncImage(
         modifier = modifier
             .clip(AbsoluteRoundedCornerShape(15.dp)),
-        model = imageSource,
+        model = dynamicUrl,
         contentDescription = null,
-        contentScale = ContentScale.Fit,
+        contentScale = ContentScale.FillWidth,
         onState = { state -> imageState = state }
     ) {
         CustomFadeAnimatedContent(

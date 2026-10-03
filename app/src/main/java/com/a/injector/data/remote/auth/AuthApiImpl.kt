@@ -66,8 +66,8 @@ class AuthApiImpl(
         supabaseClient.auth.signInAnonymously()
     }
 
-    override suspend fun signOut() {
-        supabaseClient.auth.signOut(SignOutScope.GLOBAL)
+    override suspend fun signOut(scope: SignOutScope) {
+        supabaseClient.auth.signOut(scope)
     }
 
     override suspend fun changePassword(password: String) {

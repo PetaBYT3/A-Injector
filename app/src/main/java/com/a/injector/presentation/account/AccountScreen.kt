@@ -5,11 +5,13 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -20,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -31,6 +34,7 @@ import com.a.injector.domain.model.ProfileModel
 import com.a.injector.domain.model.state.AuthResult
 import com.a.injector.domain.model.state.Role
 import com.a.injector.presentation.account.ManageAccount.ChangePassword
+import com.a.injector.presentation.account.ManageAccount.TerminateSession
 import com.a.injector.presentation.account.Profile.Contribution
 import com.a.injector.presentation.account.Profile.Email
 import com.a.injector.presentation.account.Profile.ProfileRole
@@ -115,6 +119,26 @@ private fun Screen(
     )
 
     CustomBottomSheet(
+        visible = state.isTerminateSessionBottomSheetVisible,
+        onDismiss = { onAction(AccountAction.TerminateSessionBottomSheet) },
+        title = stringResource(R.string.terminate_session),
+        content = {
+            item {
+                CustomSurfaceText(text = stringResource(R.string.terminate_session_desc))
+            }
+        },
+        bottomBar = {
+            CustomButton(
+                onClick = {
+                    onAction(AccountAction.TerminateSessionBottomSheet)
+                    onAction(AccountAction.TerminateSessionButton)
+                },
+                text = stringResource(R.string.confirm)
+            )
+        }
+    )
+
+    CustomBottomSheet(
         visible = state.isSignOutBottomSheetVisible,
         onDismiss = { onAction(AccountAction.SignOutBottomSheet) },
         title = stringResource(R.string.sign_out),
@@ -181,7 +205,11 @@ private fun Content(
                             Supporting -> state.profile.support.toIdr()
                             ProfileRole -> stringResource(state.profile.role.title)
                         }
-                        Text(text = supportingText)
+                        Text(
+                            text = supportingText,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
                     },
                     trailingContent = {
                         when (staticModel.id) {
@@ -212,24 +240,40 @@ private fun Content(
             itemsIndexed(
                 items = manageAccounts,
                 key = { _, staticModel -> staticModel.id.name }
-            ) { index, staticModel ->
+            ) { index, static ->
                 DefaultClickableListItem(
                     modifier = Modifier
                         .animateItem(),
                     index = index,
                     count = manageAccounts.size,
                     onClick = {
-                        when (staticModel.id) {
+                        when (static.id) {
+                            TerminateSession -> {
+                                onAction(AccountAction.TerminateSessionBottomSheet)
+                            }
                             ChangePassword -> {
                                 navBackStack.add(MainNavigationRoute.PasswordScreen)
                             }
                         }
                     },
-                    leadingContent = staticModel.leadingContent,
-                    content = { Text(text = stringResource(staticModel.content)) },
-                    supportingContent = if (staticModel.supportingContent != null) {
-                        { Text(text = stringResource(staticModel.supportingContent)) }
-                    } else null
+                    leadingContent = static.leadingContent,
+                    content = { Text(text = stringResource(static.content)) },
+                    supportingContent = if (static.supportingContent != null) {
+                        { Text(text = stringResource(static.supportingContent)) }
+                    } else null,
+                    trailingContent = {
+                        when (static.id) {
+                            TerminateSession -> {
+                                if (state.isTerminateSessionButtonLoading) {
+                                    CircularWavyProgressIndicator(
+                                        modifier = Modifier
+                                            .size(24.dp)
+                                    )
+                                }
+                            }
+                            ChangePassword -> {}
+                        }
+                    }
                 )
             }
         } else {

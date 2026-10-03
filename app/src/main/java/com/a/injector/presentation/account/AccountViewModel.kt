@@ -84,11 +84,17 @@ class AccountViewModel(
 
     fun onAction(action: AccountAction) {
         when (action) {
+            AccountAction.TerminateSessionBottomSheet -> {
+                _state.update { currentState ->
+                    currentState.copy(isTerminateSessionBottomSheetVisible = !currentState.isTerminateSessionBottomSheetVisible)
+                }
+            }
+            AccountAction.TerminateSessionButton -> {
+                terminateSessionButton()
+            }
             AccountAction.SignOutBottomSheet -> {
                 _state.update { currentState ->
-                    currentState.copy(
-                        isSignOutBottomSheetVisible = !currentState.isSignOutBottomSheetVisible
-                    )
+                    currentState.copy(isSignOutBottomSheetVisible = !currentState.isSignOutBottomSheetVisible)
                 }
             }
             AccountAction.SignOutButton -> {
@@ -97,9 +103,29 @@ class AccountViewModel(
         }
     }
 
+    private fun terminateSessionButton() {
+        viewModelScope.launch {
+            accountRepository.singOutOthers().onStart {
+                _state.update { currentState ->
+                    currentState.copy(isTerminateSessionButtonLoading = true)
+                }
+            }.onCompletion {
+                _state.update { currentState ->
+                    currentState.copy(isTerminateSessionButtonLoading = false)
+                }
+            }.collect { either ->
+                either.onRight { text ->
+                    _effect.send(ScreenEffect.ShowSnackBar(text))
+                }.onLeft { text ->
+                    _effect.send(ScreenEffect.ShowSnackBar(text))
+                }
+            }
+        }
+    }
+
     private fun signOutButton() {
         viewModelScope.launch {
-            accountRepository.signOut().onStart {
+            accountRepository.signOutLocal().onStart {
                 _state.update { it.copy(isSingOutButtonLoading = true) }
             }.onCompletion {
                 _state.update { it.copy(isSingOutButtonLoading = false) }

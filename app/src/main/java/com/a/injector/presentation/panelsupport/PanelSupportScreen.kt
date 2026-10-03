@@ -128,6 +128,8 @@ private fun PanelSupportScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     CustomAsyncImage(
+                        modifier = Modifier
+                            .fillMaxWidth(),
                         imageSource = state.supportingToAction.imageUrl
                     )
                 }

@@ -4,13 +4,14 @@ package com.a.injector.data.repository
 
 import arrow.core.Either
 import com.a.injector.R
-import com.a.injector.data.remote.profile.ProfileDto
 import com.a.injector.data.remote.auth.AuthApi
 import com.a.injector.data.remote.profile.ProfileApi
-import com.a.injector.domain.model.Text
+import com.a.injector.data.remote.profile.ProfileDto
 import com.a.injector.data.util.catchAndDispatch
+import com.a.injector.domain.model.Text
 import com.a.injector.domain.model.state.AuthResult
 import com.a.injector.domain.repository.AccountRepository
+import io.github.jan.supabase.auth.SignOutScope
 import io.github.jan.supabase.auth.user.UserInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -95,9 +96,23 @@ class AccountRepositoryImpl(
         }.catchAndDispatch()
     }
 
-    override fun signOut(): Flow<Either<Text, Unit>> {
+    override fun signOutGlobal(): Flow<Either<Text, Text>> {
+        return flow<Either<Text, Text>> {
+            authApi.signOut(SignOutScope.GLOBAL)
+            emit(Either.Right(Text.Resource(R.string.success_terminate_session)))
+        }.catchAndDispatch()
+    }
+
+    override fun singOutOthers(): Flow<Either<Text, Text>> {
+        return flow<Either<Text, Text>> {
+            authApi.signOut(SignOutScope.OTHERS)
+            emit(Either.Right(Text.Resource(R.string.success_terminate_session)))
+        }.catchAndDispatch()
+    }
+
+    override fun signOutLocal(): Flow<Either<Text, Unit>> {
         return flow<Either<Text, Unit>> {
-            authApi.signOut()
+            authApi.signOut(SignOutScope.LOCAL)
             emit(Either.Right(Unit))
         }.catchAndDispatch()
     }

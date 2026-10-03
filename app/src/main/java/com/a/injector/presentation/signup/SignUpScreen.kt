@@ -184,12 +184,12 @@ private fun Content(
         spacer()
         item {
             Column {
-                passwordRequirements.fastForEach { staticModel ->
+                passwordRequirements.fastForEach { static ->
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(5.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        val isRequirementMet = when (staticModel.id) {
+                        val isRequirementMet = when (static.id) {
                             PasswordRequirement.HasEightCharacter -> state.passwordHasEightChar
                             PasswordRequirement.ContainUppercase -> state.passwordHasUppercase
                             PasswordRequirement.ContainNumber -> state.passwordHasNumber
@@ -210,7 +210,8 @@ private fun Content(
                             contentDescription = null
                         )
                         Text(
-                            text = stringResource(staticModel.content),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            text = stringResource(static.content),
                             style = MaterialTheme.typography.bodyMedium
                         )
                     }
