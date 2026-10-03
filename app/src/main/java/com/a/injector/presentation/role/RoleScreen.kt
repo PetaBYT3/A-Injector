@@ -14,7 +14,6 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -59,10 +58,6 @@ fun RoleScreenRoot(
         snackBarHostState = snackBarHostState,
         screenEffect = viewModel.effect
     )
-
-    LaunchedEffect(state.isContentLoading) {
-        viewModel.onAction(RoleAction.RoleButton(state.profile.role))
-    }
 }
 
 @Composable
@@ -158,12 +153,12 @@ private fun Content(
                 modifier = Modifier
                     .animateItem(),
                 content = { Text(text = stringResource(R.string.role_cur)) },
-                supportingContent = { Text(text = state.profile.role.title.asString()) }
+                supportingContent = { Text(text = stringResource(state.profile.role.title)) }
             )
         }
         spacer()
-        val allowedRole = Role.entries.filterNot { role ->
-            role == Role.Administrator || role == state.profile.role
+        val allowedRole = Role.allowedRoleToRequest.filterNot { role ->
+            role == state.profile.role
         }
         item("requestedTitle") {
             DefaultListItem(
@@ -192,8 +187,8 @@ private fun Content(
                         onClick = null
                     )
                 },
-                content = { Text(text = role.title.asString()) },
-                supportingContent = { Text(text = role.desc.asString()) }
+                content = { Text(text = stringResource(role.title)) },
+                supportingContent = { Text(text = stringResource(role.desc)) }
             )
         }
     }

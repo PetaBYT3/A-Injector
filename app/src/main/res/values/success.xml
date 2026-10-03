@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="success_sign_link_email_sent">Sign with link has been sent to your email</string>
+    <string name="success_sign_link_email_sent">Link has been sent</string>
 
     <string name="success_script_install">Script successfully installed</string>
     
-    <string name="success_profile_updated">Profile successfully updated</string>
+    <string name="success_profile_updated">Profile updated</string>
     <string name="success_support_request">Support request has been sent</string>
     <string name="success_role_request">Role request has been sent</string>
 
     <string name="success_change_password">Password changed</string>
     
-    <string name="success_clean_cloud_storage">All orphan file on the cloud storage successfully deleted</string>
-    <string name="success_clean_cache">All cached downloaded and extracted script file successfully deleted</string>
+    <string name="success_clean_cloud_storage">Cloud storage cleaned</string>
+    <string name="success_clean_cache">Cache cleaned</string>
+
+    <string name="success_image_save">Image saved</string>
 </resources>

@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sign_in">Masuk</string>
+    <string name="sign_in_desc">Silakan masukkan detail Anda untuk masuk ke akun Anda.</string>
+    <string name="sign_up">Daftar</string>
+    <string name="sign_up_desc">Isi informasi Anda di bawah ini untuk memulai.</string>
+    <string name="sign_guest">Masuk Sebagai Tamu</string>
+    <string name="forget_password">Lupa Kata Sandi</string>
+    <string name="sign_link">Tautan Masuk</string>
+    <string name="sign_link_desc">Masukkan alamat email yang terdaftar, dan kami akan mengirimkan tautan ajaib untuk masuk secara langsung.</string>
+    <string name="sign_out">Keluar</string>
+    <string name="sign_out_desc">Apakah Anda yakin ingin keluar?</string>
+
+    <string name="maintenance">Pemeliharaan</string>
+    <string name="maintenance_desc">Aplikasi ini sedang menjalani pemeliharaan terjadwal untuk meningkatkan layanan kami. Selama periode ini, Anda mungkin mengalami ketidakstabilan sistem sementara, bug kecil, atau aplikasi tertutup tiba-tiba. Kami memohon maaf atas ketidaknyamanan ini dan sedang berusaha menyelesaikan pemeliharaan secepat mungkin.</string>
+    <string name="update">Pembaruan</string>
+    <string name="update_desc">Versi baru siap diunduh. Kami sangat menyarankan untuk memperbarui aplikasi Anda demi memastikan kinerja optimal. Terus menggunakan versi lama ini dapat menyebabkan bug tak terduga, ketidakstabilan fitur, atau aplikasi tertutup tiba-tiba.</string>
+
+    <string name="inject_method">Metode Injeksi</string>
+    <string name="storage_manager">Storage Manager</string>
+    <string name="storage_permission">Izin Penyimpanan</string>
+    <string name="shizuku">Shizuku</string>
+    <string name="superuser">Superuser</string>
+
+    <string name="granted">Diizinkan</string>
+    <string name="denied">Ditolak</string>
+    <string name="authorized">Diotorisasi</string>
+    <string name="unauthorized">Tidak Diotorisasi</string>
+
+    <string name="support_method">Metode Dukungan</string>
+    <string name="qris">QRIS</string>
+    <string name="qris_desc">A International</string>
+    <string name="qris_meta">NMID: ID1026603540257A01</string>
+    <string name="seabank">Seabank</string>
+    <string name="seabank_desc">901223053319</string>
+
+    <string name="validate_support_step">Langkah Validasi Dukungan</string>
+    <string name="validate_supp_1">Buka menu Akun pada layar utama setelah bilah navigasi skrip</string>
+    <string name="validate_supp_2">Ketuk ikon ubah di sebelah kiri bagian Dukungan</string>
+    <string name="validate_supp_3">Masukkan nominal yang sebelumnya Anda kontribusikan</string>
+    <string name="validate_supp_4">Pilih gambar sebagai bukti dukungan Anda</string>
+    <string name="validate_supp_5">Ketuk tombol Kirim atau Minta di kanan bawah layar</string>
+    <string name="validate_supp_6">Tunggu konfirmasi. Setelah dikonfirmasi, total nominal dukungan Anda akan bertambah</string>
+
+    <string name="add">Tambah</string>
+    <string name="edit">Ubah</string>
+    <string name="delete">Hapus</string>
+    <string name="decline">Tolak</string>
+    <string name="confirm">Konfirmasi</string>
+    <string name="send">Kirim</string>
+    <string name="dismiss">Tutup</string>
+    <string name="verify">Verifikasi</string>
+    <string name="action">Tindakan</string>
+    <string name="search_here">Cari di sini…</string>
+    <string name="empty">Kosong</string>
+    <string name="unknown">Tidak Diketahui</string>
+    <string name="info">Informasi</string>
+
+    <string name="label">Label</string>
+    <string name="name">Nama</string>
+
+    <string name="profile">Profil</string>
+    <string name="email">Email</string>
+    <string name="password">Kata Sandi</string>
+    <string name="password_desc">Perbarui kata sandi Anda secara berkala agar akun Anda tetap aman dan terlindungi.</string>
+    <string name="username">Nama Pengguna</string>
+    <string name="username_desc">Nama pengguna Anda adalah nama profil publik Anda. Pastikan Anda nyaman membagikannya kepada orang lain.</string>
+    <string name="contribution">Kontribusi</string>
+    <string name="support">Dukungan</string>
+    <string name="support_cur">Dukungan Saat Ini</string>
+    <string name="support_req">Dukungan Diminta</string>
+    <string name="support_desc">Dukungan Anda membantu menjaga proyek ini tetap berjalan. Kontribusi dalam Top 10 akan ditampilkan di Papan Peringkat Pendukung bersama dengan nama Anda.</string>
+    <string name="nominal">Nominal</string>
+    <string name="proof">Bukti</string>
+    <string name="role">Peran</string>
+    <string name="role_cur">Peran Saat Ini</string>
+    <string name="role_req">Peran Diminta</string>
+
+    <string name="eight_character">Memiliki 8 karakter</string>
+    <string name="capital">Memiliki huruf kapital</string>
+    <string name="number">Memiliki angka</string>
+
+    <string name="hero">Hero</string>
+    <string name="hero_delete">Tindakan ini tidak dapat dibatalkan. Apakah Anda yakin ingin menghapus hero ini?</string>
+    <string name="skin">Skin</string>
+    <string name="skin_delete">Tindakan ini tidak dapat dibatalkan. Apakah Anda yakin ingin menghapus skin ini?</string>
+    <string name="replace">Replace</string>
+    <string name="replace_delete">Tindakan ini tidak dapat dibatalkan. Apakah Anda yakin ingin menghapus replace ini?</string>
+
+    <string name="home">Beranda</string>
+    <string name="script">Skrip</string>
+    <string name="account">Akun</string>
+    <string name="settings">Pengaturan</string>
+
+    <string name="about_developer">Tentang Pengembang</string>
+    <string name="mlbb">Mlbb</string>
+    <string name="mlbb_desc">1879393654(2964)</string>
+    <string name="dev_email">Email</string>
+    <string name="dev_email_desc">andreahussanini.2103@gmail.com</string>
+    <string name="linkedin">Linkedin</string>
+    <string name="linkedin_desc">https://www.linkedin.com/in/andrea-hussanini-274223218/</string>
+    <string name="tiktok">Tiktok</string>
+    <string name="tiktok_desc">https://www.tiktok.com/@user5817652151748</string>
+    <string name="github">Github</string>
+    <string name="github_desc">https://github.com/PetaBYT3</string>
+    <string name="support_developer">Dukung Pengembang</string>
+    <string name="support_developer_desc">Aplikasi ini saat ini berjalan pada layanan cloud gratis. Seiring berkembangnya komunitas, kami dengan cepat mencapai batas penyimpanan basis data dan server. Dukungan sukarela Anda langsung menutup biaya infrastruktur cloud, menjaga aplikasi tetap cepat, andal, dan sepenuhnya bebas iklan.</string>
+
+    <string name="top_support">Dukungan Teratas</string>
+    <string name="top_contributor">Kontributor Teratas</string>
+    <string name="top_contributor_desc">Skrip Diunggah</string>
+
+    <string name="current">Saat Ini</string>
+    <string name="requested">Diminta</string>
+
+    <string name="guest_account">Akun Tamu</string>
+
+    <string name="administrator">Administrator</string>
+    <string name="administrator_desc">Kelola profil pengguna, permintaan dukungan, dan peran. Tambah, ubah, serta hapus semua data skrip.</string>
+    <string name="manager">Manager</string>
+    <string name="manager_desc">Kelola dan dapat menambah, mengubah, serta menghapus semua data skrip.</string>
+    <string name="contributor">Contributor</string>
+    <string name="contributor_desc">Kelola dan dapat menambah serta mengubah semua data skrip.</string>
+    <string name="user">User</string>
+    <string name="user_desc">Pengguna biasa yang hanya ingin memasang skrip.</string>
+
+    <string name="manage_account">Kelola Akun</string>
+    <string name="change_password">Ubah Kata Sandi</string>
+    <string name="change_password_desc">Ubah kata sandi Anda secara langsung</string>
+
+    <string name="cloud_settings">Pengaturan Cloud</string>
+
+    <string name="support_panel">Panel Dukungan</string>
+    <string name="support_panel_desc">Mengonfirmasi permintaan dukungan dari pengguna</string>
+    <string name="role_panel">Panel Peran</string>
+    <string name="role_panel_desc">Mengonfirmasi permintaan peran dari pengguna</string>
+    <string name="user_panel">Panel Pengguna</string>
+    <string name="user_panel_desc">Mengubah semua data profil pengguna</string>
+    <string name="clean_cloud_storage">Bersihkan Penyimpanan Cloud</string>
+    <string name="clean_cloud_storage_desc">Hapus semua file yang tidak terikat dari penyimpanan cloud</string>
+
+    <string name="device_settings">Pengaturan Perangkat</string>
+
+    <string name="language">Bahasa</string>
+    <string name="clean_cache">Bersihkan Cache</string>
+    <string name="clean_cache_desc">Semua skrip yang telah diunduh akan dihapus. Saat Anda menginstal ulang skrip yang sama, skrip akan diunduh kembali.</string>
+    <string name="about_app">Tentang Aplikasi</string>
+
+    <string name="app_version">Versi Aplikasi</string>
+    <string name="tech_stack">Tech Stack</string>
+    <string name="kotlin">Kotlin</string>
+    <string name="kotlin_desc">Menangani status UI dan logika aplikasi</string>
+    <string name="jetpack_compose">Jetpack Compose</string>
+    <string name="jetpack_compose_desc">Framework untuk membangun antarmuka pengguna</string>
+    <string name="supabase">Supabase</string>
+    <string name="supabase_desc">Menangani autentikasi pengguna, basis data, dan penyimpanan file</string>
+
+    <string name="no_support_requested">Tidak ada dukungan yang diminta</string>
+    <string name="no_role_requested">Tidak ada peran yang diminta</string>
+
+    <string name="checking">Memeriksa</string>
+    <string name="waiting">Menunggu</string>
+    <string name="downloading">Mengunduh</string>
+    <string name="extracting">Mengekstrak</string>
+    <string name="copying">Menyalin</string>
+    <string name="deleting">Menghapus</string>
+</resources>

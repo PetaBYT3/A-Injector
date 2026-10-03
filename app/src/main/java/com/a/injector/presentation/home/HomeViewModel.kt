@@ -3,9 +3,9 @@ package com.a.injector.presentation.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a.injector.BuildConfig
-import com.a.injector.domain.repository.ApplicationRepository
 import com.a.injector.domain.repository.InjectRepository
 import com.a.injector.domain.repository.ProfileRepository
+import com.a.injector.domain.repository.SettingsRepository
 import com.a.injector.presentation.util.ScreenEffect
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +17,7 @@ import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
 class HomeViewModel(
-    private val applicationRepository: ApplicationRepository,
+    private val settingsRepository: SettingsRepository,
     private val injectRepository: InjectRepository,
     private val profileRepository: ProfileRepository
 ): ViewModel() {
@@ -29,7 +29,7 @@ class HomeViewModel(
 
     init {
         viewModelScope.launch {
-            applicationRepository.getVersion().collect { either ->
+            settingsRepository.getVersion().collect { either ->
                 either.onRight { versionModel ->
                     if (versionModel.maintenance) {
                         _state.update { currentState ->

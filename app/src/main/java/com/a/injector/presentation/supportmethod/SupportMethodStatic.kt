@@ -1,4 +1,4 @@
-package com.a.injector.presentation.supportdev
+package com.a.injector.presentation.supportmethod
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.QrCode

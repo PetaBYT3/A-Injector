@@ -1,4 +1,4 @@
-package com.a.injector.presentation.panelsupporting
+package com.a.injector.presentation.panelsupport
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,7 +19,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,14 +43,14 @@ import com.a.injector.presentation.util.toIdr
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun PanelSupportingScreenRoot(
+fun PanelSupportScreenRoot(
     navBackStack: NavBackStack<NavKey>,
-    viewModel: PanelSupportingViewModel = koinViewModel()
+    viewModel: PanelSupportViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackBarHostState = remember { SnackbarHostState() }
 
-    PanelSupportingScreen(
+    PanelSupportScreen(
         navBackStack = navBackStack,
         state = state,
         onAction = viewModel::onAction,
@@ -67,23 +66,21 @@ fun PanelSupportingScreenRoot(
 @Composable
 @Preview
 private fun Preview() {
-    PanelSupportingScreen(
+    PanelSupportScreen(
         navBackStack = rememberNavBackStack(),
-        state = PanelSupportingState(),
+        state = PanelSupportState(),
         onAction = {},
         snackBarHostState = SnackbarHostState()
     )
 }
 
 @Composable
-private fun PanelSupportingScreen(
+private fun PanelSupportScreen(
     navBackStack: NavBackStack<NavKey>,
-    state: PanelSupportingState,
-    onAction: (PanelSupportingAction) -> Unit,
+    state: PanelSupportState,
+    onAction: (PanelSupportAction) -> Unit,
     snackBarHostState: SnackbarHostState
 ) {
-    val context = LocalContext.current
-
     Scaffold(
         topBar = {
             CustomTopAppBar(
@@ -105,7 +102,7 @@ private fun PanelSupportingScreen(
 
     CustomBottomSheet(
         visible = state.isSupportingBottomSheetVisible,
-        onDismiss = { onAction(PanelSupportingAction.DismissSupportingBottomSheet) },
+        onDismiss = { onAction(PanelSupportAction.DismissSupportBottomSheet) },
         title = stringResource(R.string.action),
         content = {
             item("supportingItem") {
@@ -139,16 +136,16 @@ private fun PanelSupportingScreen(
         bottomBar = {
             CustomButton(
                 onClick = {
-                    onAction(PanelSupportingAction.DismissSupportingBottomSheet)
-                    onAction(PanelSupportingAction.DenySupportingButton)
+                    onAction(PanelSupportAction.DismissSupportBottomSheet)
+                    onAction(PanelSupportAction.DenySupportButton)
                 },
                 text = stringResource(R.string.decline),
                 isError = true
             )
             CustomButton(
                 onClick = {
-                    onAction(PanelSupportingAction.DismissSupportingBottomSheet)
-                    onAction(PanelSupportingAction.ConfirmSupportingButton)
+                    onAction(PanelSupportAction.DismissSupportBottomSheet)
+                    onAction(PanelSupportAction.ConfirmSupportButton)
                 },
                 text = stringResource(R.string.confirm),
             )
@@ -160,8 +157,8 @@ private fun PanelSupportingScreen(
 private fun Content(
     modifier: Modifier = Modifier,
     navBackStack: NavBackStack<NavKey>,
-    state: PanelSupportingState,
-    onAction: (PanelSupportingAction) -> Unit,
+    state: PanelSupportState,
+    onAction: (PanelSupportAction) -> Unit,
 ) {
     LazyColumn(
         modifier = modifier,
@@ -217,7 +214,7 @@ private fun Content(
                 trailingContent = {
                     CustomIconButton(
                         onClick = {
-                            onAction(PanelSupportingAction.ShowSupportingBottomSheet(supportingModel))
+                            onAction(PanelSupportAction.ShowSupportBottomSheet(supportingModel))
                         },
                         content = { Icon(Icons.Rounded.Edit, null) },
                         isLoading = state.isActionSupportingButtonLoading

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="exception_manage_storage_permission_denied">Manage storage permission denied, make sure you grant it</string>
-    <string name="exception_manage_storage_failed">Inject with manage storage method failed, try other inject method</string>
+    <string name="exception_manage_storage_permission_denied">Manage storage permission denied</string>
+    <string name="exception_manage_storage_failed">Inject with manage storage method failed</string>
 
     <string name="shizuku_unauthorized">Shizuku unauthorized or not running</string>
 
@@ -14,7 +14,7 @@
     <string name="exception_password_weak">Password is weak</string>
     <string name="exception_user_not_found">User not found</string>
     <string name="exception_too_many_attempts">Too many attempts</string>
-    <string name="exception_no_connection">No internet connection, check your network</string>
+    <string name="exception_no_connection">No internet connection</string>
     <string name="exception_connection_timeout">Connection timeout</string>
     <string name="exception_server_error">Something went wrong with the server</string>
     <string name="exception_unknown_error">Something went wrong</string>

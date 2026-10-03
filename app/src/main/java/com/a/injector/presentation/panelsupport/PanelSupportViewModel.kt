@@ -1,4 +1,4 @@
-package com.a.injector.presentation.panelsupporting
+package com.a.injector.presentation.panelsupport
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,10 +15,10 @@ import kotlinx.coroutines.launch
 import org.koin.android.annotation.KoinViewModel
 
 @KoinViewModel
-class PanelSupportingViewModel(
+class PanelSupportViewModel(
     private val supportRepository: SupportRepository
 ): ViewModel() {
-    private val _state = MutableStateFlow(PanelSupportingState())
+    private val _state = MutableStateFlow(PanelSupportState())
     val state = _state.asStateFlow()
 
     private val _effect = Channel<ScreenEffect>()
@@ -46,9 +46,9 @@ class PanelSupportingViewModel(
         }
     }
 
-    fun onAction(action: PanelSupportingAction) {
+    fun onAction(action: PanelSupportAction) {
         when (action) {
-            is PanelSupportingAction.ShowSupportingBottomSheet -> {
+            is PanelSupportAction.ShowSupportBottomSheet -> {
                 _state.update { currentState ->
                     currentState.copy(
                         supportingToAction = action.supportModel,
@@ -56,15 +56,15 @@ class PanelSupportingViewModel(
                     )
                 }
             }
-            PanelSupportingAction.DismissSupportingBottomSheet -> {
+            PanelSupportAction.DismissSupportBottomSheet -> {
                 _state.update { currentState ->
                     currentState.copy(isSupportingBottomSheetVisible = false)
                 }
             }
-            PanelSupportingAction.DenySupportingButton -> {
+            PanelSupportAction.DenySupportButton -> {
                 denySupportingButton()
             }
-            PanelSupportingAction.ConfirmSupportingButton -> {
+            PanelSupportAction.ConfirmSupportButton -> {
                 confirmSupportingButton()
             }
         }

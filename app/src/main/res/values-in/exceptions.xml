@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="exception_manage_storage_permission_denied">Izin kelola penyimpanan ditolak</string>
+    <string name="exception_manage_storage_failed">Injeksi dengan metode kelola penyimpanan gagal</string>
+
+    <string name="shizuku_unauthorized">Shizuku tidak diotorisasi atau tidak berjalan</string>
+
+    <string name="superuser_denied">Akses superuser ditolak atau perangkat belum di-root</string>
+
+    <string name="exception_credential_invalid">Email atau kata sandi salah</string>
+    <string name="exception_email_invalid">Email tidak valid</string>
+    <string name="exception_email_unverified">Email belum diverifikasi</string>
+    <string name="exception_email_used">Email sudah digunakan</string>
+    <string name="exception_password_weak">Kata sandi terlalu lemah</string>
+    <string name="exception_user_not_found">Pengguna tidak ditemukan</string>
+    <string name="exception_too_many_attempts">Terlalu banyak percobaan</string>
+    <string name="exception_no_connection">Tidak ada koneksi internet</string>
+    <string name="exception_connection_timeout">Waktu koneksi habis</string>
+    <string name="exception_server_error">Terjadi kesalahan pada server</string>
+    <string name="exception_unknown_error">Terjadi kesalahan</string>
+    <string name="exception_data_already_exist">Data Sudah Ada</string>
+    <string name="exception_shizuku_unauthorized">Tidak dapat melakukan tindakan karena tidak diotorisasi oleh Shizuku</string>
+    <string name="exception_superuser_denied">Tidak dapat melakukan tindakan karena akses superuser ditolak</string>
+    <string name="exception_no_data">Data tidak ada atau telah dihapus</string>
+    <string name="exception_unknown">Terjadi kesalahan</string>
+
+    <string name="exception_fail_to_read_image">Gagal membaca gambar</string>
+    <string name="exception_no_script">Tidak ada file skrip yang dipilih</string>
+    <string name="exception_no_role">Tidak ada peran yang diminta</string>
+    <string name="exception_pick_role">Pilih peran</string>
+    <string name="exception_no_image">Tidak ada file gambar yang dipilih</string>
+
+    <string name="exception_no_handler">Tidak ada aplikasi terinstal yang dapat menangani tindakan ini</string>
+
+    <string name="exception_adb_failed">Gagal memulai ADB lokal</string>
+</resources>

@@ -7,8 +7,10 @@ import com.a.injector.domain.model.state.InjectMethod
 import kotlinx.coroutines.flow.Flow
 import java.util.Locale
 
-interface ApplicationRepository {
+interface SettingsRepository {
     fun getVersion(): Flow<Either<Text, VersionModel>>
+
+    fun cleanStorage(): Flow<Either<Text, Text>>
 
     val injectMethod: Flow<InjectMethod>
     fun setInjectMethod(injectMethod: InjectMethod): Flow<Either<Text, Unit>>

@@ -3,10 +3,9 @@ package com.a.injector.presentation.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.a.injector.domain.model.state.InjectMethod
-import com.a.injector.domain.repository.ApplicationRepository
 import com.a.injector.domain.repository.NavigationRepository
-import com.a.injector.domain.repository.OptimizeDatabaseRepository
 import com.a.injector.domain.repository.ProfileRepository
+import com.a.injector.domain.repository.SettingsRepository
 import com.a.injector.presentation.mainnavigation.MainNavigationRoute
 import com.a.injector.presentation.util.ScreenEffect
 import kotlinx.coroutines.channels.Channel
@@ -23,8 +22,7 @@ import java.util.Locale
 @KoinViewModel
 class SettingsViewModel(
     private val profileRepository: ProfileRepository,
-    private val optimizeDatabaseRepository: OptimizeDatabaseRepository,
-    private val applicationRepository: ApplicationRepository,
+    private val settingsRepository: SettingsRepository,
     private val navigationRepository: NavigationRepository
 ): ViewModel() {
     private val _state = MutableStateFlow(SettingsState())
@@ -55,7 +53,7 @@ class SettingsViewModel(
         }
 
         viewModelScope.launch {
-            applicationRepository.injectMethod.collect { injectMethod ->
+            settingsRepository.injectMethod.collect { injectMethod ->
                 _state.update { currentState ->
                     currentState.copy(injectMethod = injectMethod)
                 }
@@ -63,7 +61,7 @@ class SettingsViewModel(
         }
 
         viewModelScope.launch {
-            applicationRepository.language.collect { locale ->
+            settingsRepository.language.collect { locale ->
                 _state.update { currentState ->
                     currentState.copy(currentLanguage = locale)
                 }
@@ -71,7 +69,7 @@ class SettingsViewModel(
         }
 
         viewModelScope.launch {
-            applicationRepository.cacheSize.collect { size ->
+            settingsRepository.cacheSize.collect { size ->
                 _state.update { currentState ->
                     currentState.copy(cacheSize = size)
                 }
@@ -123,7 +121,7 @@ class SettingsViewModel(
 
     private fun cleanCloudStorageButton() {
         viewModelScope.launch {
-            optimizeDatabaseRepository.cleanStorage().onStart {
+            settingsRepository.cleanStorage().onStart {
                 _state.update { currentState ->
                     currentState.copy(isCleanCloudStorageButtonLoading = true) }
             }.onCompletion {
@@ -141,7 +139,7 @@ class SettingsViewModel(
 
     private fun setInjectMethod(injectMethod: InjectMethod) {
         viewModelScope.launch {
-            applicationRepository.setInjectMethod(
+            settingsRepository.setInjectMethod(
                 injectMethod = injectMethod
             ).collect { either ->
                 either.onLeft { text ->
@@ -153,7 +151,7 @@ class SettingsViewModel(
 
     private fun setLanguageButton(locale: Locale) {
         viewModelScope.launch {
-            applicationRepository.setLanguage(
+            settingsRepository.setLanguage(
                 locale = locale
             ).collect { either ->
                 either.onRight {
@@ -167,7 +165,7 @@ class SettingsViewModel(
 
     private fun cleanCacheButton() {
         viewModelScope.launch {
-            applicationRepository.cleanCache().onStart {
+            settingsRepository.cleanCache().onStart {
                 _state.update { currentState ->
                     currentState.copy(isCleanCacheButtonLoading = true) }
             }.onCompletion {

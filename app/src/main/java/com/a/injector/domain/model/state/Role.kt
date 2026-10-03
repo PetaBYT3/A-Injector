@@ -1,31 +1,29 @@
 package com.a.injector.domain.model.state
 
 import com.a.injector.R
-import com.a.injector.domain.model.Text
 import kotlinx.serialization.Serializable
 
 @Serializable
 enum class Role(
-    val title: Text,
-    val desc: Text
+    val title: Int,
+    val desc: Int
 ) {
-    Administrator(
-        Text.Resource(R.string.administrator),
-        Text.Resource(R.string.administrator_desc)
-    ),
-    Manager(
-        Text.Resource(R.string.manager),
-        Text.Resource(R.string.manager_desc)
-    ),
-    Contributor(
-        Text.Resource(R.string.contributor),
-        Text.Resource(R.string.contributor_desc)
-    ),
-    User(
-        Text.Resource(R.string.user),
-        Text.Resource(R.string.user_desc)
-    );
+    Administrator(R.string.administrator, R.string.administrator_desc),
+    Manager(R.string.manager, R.string.manager_desc),
+    Contributor(R.string.contributor, R.string.contributor_desc),
+    User(R.string.user, R.string.user_desc),
+    Unknown(R.string.unknown, R.string.unknown);
 
     val modifyEnabled: Boolean get() = this != User
     val deleteEnabled: Boolean get() = this in setOf(Administrator, Manager)
+
+    companion object {
+        val allowedRoleToRequest = Role.entries.filterNot { role ->
+            role == Administrator || role == Unknown
+        }
+
+        val allRole = Role.entries.filterNot { role ->
+            role == Unknown
+        }
+    }
 }

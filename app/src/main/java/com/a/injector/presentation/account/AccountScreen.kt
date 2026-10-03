@@ -27,9 +27,9 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
-import com.a.injector.domain.model.state.Role
 import com.a.injector.domain.model.ProfileModel
 import com.a.injector.domain.model.state.AuthResult
+import com.a.injector.domain.model.state.Role
 import com.a.injector.presentation.account.ManageAccount.ChangePassword
 import com.a.injector.presentation.account.Profile.Contribution
 import com.a.injector.presentation.account.Profile.Email
@@ -179,7 +179,7 @@ private fun Content(
                                 append(stringResource(R.string.top_contributor_desc))
                             }
                             Supporting -> state.profile.nominal.toIdr()
-                            ProfileRole -> state.profile.role.title.asString()
+                            ProfileRole -> stringResource(state.profile.role.title)
                         }
                         Text(text = supportingText)
                     },

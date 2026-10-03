@@ -111,14 +111,14 @@ private fun PanelRoleScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(5.dp)
                         ) {
-                            Text(text = state.requestToAction.profile.role.title.asString())
+                            Text(text = stringResource(state.requestToAction.profile.role.title))
                             Icon(
                                 modifier = Modifier
                                     .size(15.dp),
                                 imageVector = Icons.Rounded.ArrowForward,
                                 contentDescription = null
                             )
-                            Text(text = state.requestToAction.role.title.asString())
+                            Text(text = stringResource(state.requestToAction.role.title))
                         }
                     }
                 )

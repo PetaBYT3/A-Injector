@@ -6,18 +6,22 @@ import arrow.core.Either
 import com.a.injector.R
 import com.a.injector.data.local.settings.SettingsApi
 import com.a.injector.data.mapper.VersionMapper
+import com.a.injector.data.remote.replace.ReplaceApi
+import com.a.injector.data.remote.storage.StorageApi
 import com.a.injector.data.remote.version.VersionApi
 import com.a.injector.data.util.catchAndDispatch
 import com.a.injector.domain.model.Text
 import com.a.injector.domain.model.VersionModel
+import com.a.injector.domain.model.state.Bucket
 import com.a.injector.domain.model.state.InjectMethod
-import com.a.injector.domain.repository.ApplicationRepository
+import com.a.injector.domain.repository.SettingsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
@@ -27,11 +31,13 @@ import java.io.File
 import java.util.Locale
 
 @Single
-class ApplicationRepositoryImpl(
+class SettingsRepositoryImpl(
     private val context: Context,
     private val versionApi: VersionApi,
+    private val replaceApi: ReplaceApi,
+    private val storageApi: StorageApi,
     private val settingsApi: SettingsApi
-): ApplicationRepository {
+): SettingsRepository {
     private val repositoryScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     init {
@@ -50,6 +56,22 @@ class ApplicationRepositoryImpl(
                 }
             }
             emitAll(result)
+        }.catchAndDispatch()
+    }
+
+    override fun cleanStorage(): Flow<Either<Text, Text>> {
+        return flow<Either<Text, Text>> {
+            val filesInPostgrest = replaceApi.getList().first().map { "${it.id}.zip" }
+            val filesInStorage = storageApi.getFileNames(Bucket.SCRIPT)
+            val filesToDelete = filesInStorage.filter { it !in filesInPostgrest }
+
+            if (filesToDelete.isNotEmpty()) {
+                storageApi.delete(
+                    fromBucket = Bucket.SCRIPT,
+                    files = filesToDelete
+                )
+            }
+            emit(Either.Right(Text.Resource(R.string.success_clean_cloud_storage)))
         }.catchAndDispatch()
     }
 

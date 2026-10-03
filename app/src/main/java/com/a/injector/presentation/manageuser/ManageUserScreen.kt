@@ -178,14 +178,14 @@ private fun Content(
         }
         spacer()
         itemsIndexed(
-            items = Role.entries,
+            items = Role.allRole,
             key = { _, role -> role.name }
         ) { index, role ->
             DefaultClickableListItem(
                 modifier = Modifier
                     .animateItem(),
                 index = index,
-                count = Role.entries.size,
+                count = Role.allRole.size,
                 onClick = { onAction(ManageUserAction.SelectRoleButton(role)) },
                 leadingContent = {
                     RadioButton(
@@ -193,8 +193,8 @@ private fun Content(
                         onClick = null
                     )
                 },
-                content = { Text(text = role.title.asString()) },
-                supportingContent = { Text(text = role.desc.asString()) }
+                content = { Text(text = stringResource(role.title)) },
+                supportingContent = { Text(text = stringResource(role.desc)) }
             )
         }
     }

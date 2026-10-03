@@ -1,4 +1,4 @@
-package com.a.injector.presentation.supportdev
+package com.a.injector.presentation.supportmethod
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -8,13 +8,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.AbsoluteRoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Download
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedListItem
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
@@ -28,45 +34,56 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
 import com.a.injector.presentation.component.CustomBottomSheet
+import com.a.injector.presentation.component.CustomIconButton
 import com.a.injector.presentation.component.CustomTopAppBar
 import com.a.injector.presentation.component.DefaultClickableListItem
 import com.a.injector.presentation.component.DefaultListItem
 import com.a.injector.presentation.component.spacer
 import com.a.injector.presentation.mainnavigation.popBackStack
-import com.a.injector.presentation.supportdev.SupportMethod.Qris
-import com.a.injector.presentation.supportdev.SupportMethod.Seabank
+import com.a.injector.presentation.supportmethod.SupportMethod.Qris
+import com.a.injector.presentation.supportmethod.SupportMethod.Seabank
+import com.a.injector.presentation.util.ScreenEffectLauncher
 import com.a.injector.presentation.util.copyToClipboard
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun SupportDevScreenRoot(
+fun SupportMethodScreenRoot(
     navBackStack: NavBackStack<NavKey>,
-    viewModel: SupportDevViewModel = koinViewModel()
+    viewModel: SupportMethodViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val snackBarHostState = remember { SnackbarHostState() }
 
-    SupportDevScreen(
+    SupportMethodScreen(
         navBackStack = navBackStack,
         state = state,
-        onAction = viewModel::onAction
+        onAction = viewModel::onAction,
+        snackBarHostState = snackBarHostState
+    )
+
+    ScreenEffectLauncher(
+        snackBarHostState = snackBarHostState,
+        screenEffect = viewModel.effect
     )
 }
 
 @Composable
 @Preview
 private fun Preview() {
-    SupportDevScreen(
+    SupportMethodScreen(
         navBackStack = rememberNavBackStack(),
-        state = SupportDevState(),
-        onAction = {}
+        state = SupportMethodState(),
+        onAction = {},
+        snackBarHostState = SnackbarHostState()
     )
 }
 
 @Composable
-private fun SupportDevScreen(
+private fun SupportMethodScreen(
     navBackStack: NavBackStack<NavKey>,
-    state: SupportDevState,
-    onAction: (SupportDevAction) -> Unit
+    state: SupportMethodState,
+    onAction: (SupportMethodAction) -> Unit,
+    snackBarHostState: SnackbarHostState
 ) {
     Scaffold(
         topBar = {
@@ -82,12 +99,13 @@ private fun SupportDevScreen(
                 state = state,
                 onAction = onAction
             )
-        }
+        },
+        snackbarHost = { SnackbarHost(hostState = snackBarHostState) }
     )
 
     CustomBottomSheet(
         visible = state.isQrisBottomSheetVisible,
-        onDismiss = { onAction(SupportDevAction.QrisBottomSheet) },
+        onDismiss = { onAction(SupportMethodAction.QrisBottomSheet) },
         title = stringResource(R.string.qris),
         content = {
             item {
@@ -95,7 +113,16 @@ private fun SupportDevScreen(
                     index = 0,
                     count = 2,
                     content = { Text(text = stringResource(R.string.qris_desc)) },
-                    supportingContent = { Text(text = stringResource(R.string.qris_meta)) }
+                    supportingContent = { Text(text = stringResource(R.string.qris_meta)) },
+                    trailingContent = {
+                        CustomIconButton(
+                            onClick = {
+                                onAction(SupportMethodAction.QrisBottomSheet)
+                                onAction(SupportMethodAction.DownloadDrawable(R.drawable.qris))
+                            },
+                            content = { Icon(Icons.Rounded.Download, null) }
+                        )
+                    }
                 )
             }
             item {
@@ -120,8 +147,8 @@ private fun SupportDevScreen(
 @Composable
 private fun Content(
     modifier: Modifier = Modifier,
-    state: SupportDevState,
-    onAction: (SupportDevAction) -> Unit
+    state: SupportMethodState,
+    onAction: (SupportMethodAction) -> Unit
 ) {
     val context = LocalContext.current
 
@@ -152,7 +179,7 @@ private fun Content(
                 onClick = {
                     when (static.id) {
                         Qris -> {
-                            onAction(SupportDevAction.QrisBottomSheet)
+                            onAction(SupportMethodAction.QrisBottomSheet)
                         }
                         Seabank -> {
                             copyToClipboard(

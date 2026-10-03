@@ -213,7 +213,9 @@ private fun Content(
                         Text(text = stringResource(supportingText))
                     },
                     trailingContent = {
-                        if (state.inject.injectMethod == StorageManager) {
+                        val isStorageManager = state.inject.injectMethod == StorageManager
+                        val isGranted = state.inject.isGranted
+                        if (isStorageManager && !isGranted) {
                             Button(
                                 onClick = { openStoragePermissionSettings(context) },
                                 content = { Text(text = stringResource(R.string.settings)) }

@@ -63,6 +63,7 @@ private fun BottomNavigationScreen(
             modifier = Modifier
                 .weight(1f),
             state = pagerState,
+            beyondViewportPageCount = 1
         ) { pageContent ->
             when (pageContent) {
                 0 -> HomeScreenRoot(navBackStack = navBackStack)

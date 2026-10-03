@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -17,6 +18,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,6 +28,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 
@@ -36,6 +40,9 @@ fun CustomUndismissableBottomSheet(
     title: String,
     content: (LazyListScope.() -> Unit)
 ) {
+    val currentContext = LocalContext.current
+    val currentConfiguration = LocalConfiguration.current
+
     var isVisibleInternally by remember { mutableStateOf(visible) }
     var allowHide by remember { mutableStateOf(false) }
 
@@ -72,21 +79,26 @@ fun CustomUndismissableBottomSheet(
             sheetState = sheetState,
             onDismissRequest = {  }
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp)
+            CompositionLocalProvider(
+                LocalContext provides currentContext,
+                LocalConfiguration provides currentConfiguration
             ) {
-                CustomTopAppBar(
-                    title = title
-                )
-                LazyColumn(
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    contentPadding = PaddingValues(horizontal = 10.dp),
-                    verticalArrangement = Arrangement.spacedBy(2.5.dp)
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp)
                 ) {
-                    content()
+                    CustomTopAppBar(
+                        title = title
+                    )
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        contentPadding = PaddingValues(horizontal = 10.dp),
+                        verticalArrangement = Arrangement.spacedBy(2.5.dp)
+                    ) {
+                        content()
+                    }
                 }
             }
         }
@@ -99,10 +111,13 @@ fun CustomBottomSheet(
     visible: Boolean,
     onDismiss: () -> Unit,
     title: String,
-    content: (LazyListScope.(dismissSheet: () -> Unit) -> Unit),
-    bottomBar: @Composable ((dismissSheet: () -> Unit) -> Unit)? = null
+    content: (LazyListScope.() -> Unit),
+    bottomBar: @Composable (RowScope.() -> Unit)? = null
 ) {
+    val currentContext = LocalContext.current
+    val currentConfiguration = LocalConfiguration.current
     val scope = rememberCoroutineScope()
+
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
@@ -122,49 +137,52 @@ fun CustomBottomSheet(
         }
     }
 
-    val dismissSheet: () -> Unit = {
-        scope.launch {
-            sheetState.hide()
-            onDismiss()
-        }
-    }
-
     if (isSheetVisible) {
         ModalBottomSheet(
             modifier = modifier
                 .statusBarsPadding(),
             sheetState = sheetState,
-            onDismissRequest = { dismissSheet() }
+            onDismissRequest = {
+                scope.launch {
+                    sheetState.hide()
+                    onDismiss()
+                }
+            }
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp)
+            CompositionLocalProvider(
+                LocalContext provides currentContext,
+                LocalConfiguration provides currentConfiguration
             ) {
-                CustomTopAppBar(
-                    title = title
-                )
-                LazyColumn(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f, false),
-                    contentPadding = PaddingValues(horizontal = 10.dp),
-                    verticalArrangement = Arrangement.spacedBy(2.5.dp)
+                        .padding(bottom = 16.dp)
                 ) {
-                    content(dismissSheet)
-                }
-                if (bottomBar != null) {
-                    BottomAppBar(
-                        containerColor = Color.Transparent
+                    CustomTopAppBar(
+                        title = title
+                    )
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f, false),
+                        contentPadding = PaddingValues(horizontal = 10.dp),
+                        verticalArrangement = Arrangement.spacedBy(2.5.dp)
                     ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 10.dp),
-                            horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.End),
-                            verticalAlignment = Alignment.CenterVertically
+                        content(this)
+                    }
+                    if (bottomBar != null) {
+                        BottomAppBar(
+                            containerColor = Color.Transparent
                         ) {
-                            bottomBar(dismissSheet)
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 10.dp),
+                                horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.End),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                bottomBar()
+                            }
                         }
                     }
                 }

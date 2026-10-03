@@ -81,8 +81,10 @@ class RoleViewModel(
             }
             is RoleAction.RoleButton -> {
                 _state.update { currentState ->
-                    currentState.copy(requestedRole = currentState.requestedRole.copy(
-                        role = action.role)
+                    currentState.copy(
+                        requestedRole = currentState.requestedRole.copy(
+                            role = action.role
+                        )
                     )
                 }
             }

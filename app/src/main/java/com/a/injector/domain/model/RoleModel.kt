@@ -10,7 +10,7 @@ data class RoleModel(
     companion object {
         val EMPTY = RoleModel(
             id = "",
-            role = Role.User,
+            role = Role.Unknown,
             profile = ProfileModel.EMPTY
         )
     }

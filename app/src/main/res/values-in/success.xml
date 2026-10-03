@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="success_sign_link_email_sent">Tautan telah dikirim</string>
+
+    <string name="success_script_install">Skrip berhasil terpasang</string>
+
+    <string name="success_profile_updated">Profil berhasil diperbarui</string>
+    <string name="success_support_request">Permintaan dukungan telah dikirim</string>
+    <string name="success_role_request">Permintaan peran telah dikirim</string>
+
+    <string name="success_change_password">Kata sandi berhasil diubah</string>
+
+    <string name="success_clean_cloud_storage">Penyimpanan cloud berhasil dibersihkan</string>
+    <string name="success_clean_cache">Cache berhasil dibersihkan</string>
+
+    <string name="success_image_save">Gambar berhasil disimpan</string>
+</resources>
