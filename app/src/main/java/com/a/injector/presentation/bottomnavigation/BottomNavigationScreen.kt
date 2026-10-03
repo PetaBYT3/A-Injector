@@ -81,11 +81,6 @@ private fun BottomNavigationScreen(
                 3 -> SettingsScreenRoot(navBackStack = navBackStack)
             }
         }
-//        AnimatedVisibility(
-//            visible = !isKeyboardVisible
-//        ) {
-//
-//        }
         NavigationBar(
             content = {
                 bottomNavigationItems.fastForEachIndexed { index, static ->
