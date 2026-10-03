@@ -2,6 +2,8 @@
 
 package com.a.injector.presentation.component
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
@@ -12,19 +14,10 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.dp
-
-fun buttonCircularStore(density: Density) = Stroke(
-    width = with(density) { 2.dp.toPx() },
-    cap = StrokeCap.Round
-)
 
 @Composable
 fun CustomButton(
@@ -35,7 +28,17 @@ fun CustomButton(
     isLoading: Boolean = false,
     enabled: Boolean = true
 ) {
-    val density = LocalDensity.current
+    val contentAlpha by animateFloatAsState(
+        targetValue = if (isLoading) 0f else 1f,
+        animationSpec = tween(durationMillis = 200),
+        label = "ContentAlpha"
+    )
+
+    val loadingAlpha by animateFloatAsState(
+        targetValue = if (isLoading) 1f else 0f,
+        animationSpec = tween(durationMillis = 200),
+        label = "LoadingAlpha"
+    )
 
     Button(
         modifier = modifier,
@@ -54,15 +57,13 @@ fun CustomButton(
             ) {
                 Text(
                     modifier = Modifier
-                        .graphicsLayer(
-                            alpha = if (isLoading) 0f else 1f
-                        ),
+                        .graphicsLayer(alpha = contentAlpha),
                     text = text
                 )
                 CircularWavyProgressIndicator(
                     modifier = Modifier
                         .size(ButtonDefaults.IconSize)
-                        .graphicsLayer(alpha = if (isLoading) 1f else 0f)
+                        .graphicsLayer(alpha = loadingAlpha)
                 )
             }
         },
@@ -78,7 +79,17 @@ fun CustomTonalButton(
     isLoading: Boolean = false,
     enabled: Boolean = true
 ) {
-    val density = LocalDensity.current
+    val contentAlpha by animateFloatAsState(
+        targetValue = if (isLoading) 0f else 1f,
+        animationSpec = tween(durationMillis = 200),
+        label = "ContentAlpha"
+    )
+
+    val loadingAlpha by animateFloatAsState(
+        targetValue = if (isLoading) 1f else 0f,
+        animationSpec = tween(durationMillis = 200),
+        label = "LoadingAlpha"
+    )
 
     FilledTonalButton(
         modifier = modifier,
@@ -89,15 +100,13 @@ fun CustomTonalButton(
             ) {
                 Text(
                     modifier = Modifier
-                        .graphicsLayer(
-                            alpha = if (isLoading) 0f else 1f
-                        ),
+                        .graphicsLayer(alpha = contentAlpha),
                     text = text
                 )
                 CircularWavyProgressIndicator(
                     modifier = Modifier
                         .size(ButtonDefaults.IconSize)
-                        .graphicsLayer(alpha = if (isLoading) 1f else 0f)
+                        .graphicsLayer(alpha = loadingAlpha)
                 )
             }
         },

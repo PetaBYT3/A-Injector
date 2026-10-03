@@ -22,7 +22,6 @@ import androidx.navigation3.ui.NavDisplay
 import com.a.injector.domain.model.NavigationState
 import com.a.injector.domain.repository.NavigationRepository
 import com.a.injector.presentation.bottomnavigation.BottomNavigationScreenRoot
-import com.a.injector.presentation.debug.DebugScreenRoot
 import com.a.injector.presentation.hero.HeroScreenRoot
 import com.a.injector.presentation.imagepreview.ImagePreviewScreenRoot
 import com.a.injector.presentation.landing.LandingScreenRoot
@@ -187,7 +186,7 @@ fun NavigationScreen(
                         )
                     }
                 }
-                is MainNavigationRoute.PanelSupportingScreen -> {
+                is MainNavigationRoute.PanelSupportScreen -> {
                     NavEntry(navKey) {
                         PanelSupportScreenRoot(
                             navBackStack = navBackStack
@@ -228,13 +227,6 @@ fun NavigationScreen(
                         ImagePreviewScreenRoot(
                             navBackStack = navBackStack,
                             imageSource = navKey.imageSource
-                        )
-                    }
-                }
-                is MainNavigationRoute.DebugScreen -> {
-                    NavEntry(navKey) {
-                        DebugScreenRoot(
-                            navBackStack = navBackStack
                         )
                     }
                 }

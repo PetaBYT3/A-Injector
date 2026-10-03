@@ -41,7 +41,7 @@ import com.a.injector.presentation.component.CustomBottomSheet
 import com.a.injector.presentation.component.CustomCenterCircularWavyProgressIndicator
 import com.a.injector.presentation.component.CustomCenterTextMessage
 import com.a.injector.presentation.component.CustomFloatingActionButton
-import com.a.injector.presentation.component.CustomFloatingActionToolBar
+import com.a.injector.presentation.component.CustomHorizontalToolBar
 import com.a.injector.presentation.component.CustomIconButton
 import com.a.injector.presentation.component.CustomSlideUpAnimatedVisibility
 import com.a.injector.presentation.component.CustomTopAppBar
@@ -128,7 +128,7 @@ private fun HeroScreen(
                 CustomSlideUpAnimatedVisibility(
                     visible = !state.isContentLoading
                 ) {
-                    CustomFloatingActionToolBar(
+                    CustomHorizontalToolBar(
                         floatingActionButton = {
                             CustomFloatingActionButton(
                                 onClick = {
@@ -138,7 +138,7 @@ private fun HeroScreen(
                                     )
                                     navBackStack.add(targetRoute)
                                 },
-                                content = { Icon(Icons.Rounded.Add, null) }
+                                content = Icons.Rounded.Add
                             )
                         }
                     )

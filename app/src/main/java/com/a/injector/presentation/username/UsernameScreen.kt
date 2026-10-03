@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Save
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -25,7 +24,7 @@ import com.a.injector.R
 import com.a.injector.presentation.component.CustomCenterCircularWavyProgressIndicator
 import com.a.injector.presentation.component.CustomCenterTextMessage
 import com.a.injector.presentation.component.CustomFloatingActionButton
-import com.a.injector.presentation.component.CustomFloatingActionToolBar
+import com.a.injector.presentation.component.CustomHorizontalToolBar
 import com.a.injector.presentation.component.CustomSlideUpAnimatedVisibility
 import com.a.injector.presentation.component.CustomTextField
 import com.a.injector.presentation.component.CustomTopAppBar
@@ -93,11 +92,11 @@ private fun UsernameScreen(
             CustomSlideUpAnimatedVisibility(
                 visible = state.profile.username.isNotBlank()
             ) {
-                CustomFloatingActionToolBar(
+                CustomHorizontalToolBar(
                     floatingActionButton = {
                         CustomFloatingActionButton(
                             onClick = { onAction(UsernameAction.UpsertProfileButton) },
-                            content = { Icon(Icons.Rounded.Save, null) },
+                            content = Icons.Rounded.Save,
                             isLoading = state.isUpsertProfileButtonLoading
                         )
                     }

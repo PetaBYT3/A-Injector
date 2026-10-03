@@ -14,8 +14,10 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.util.fastForEachIndexed
@@ -51,10 +53,18 @@ private fun BottomNavigationScreen(
 ) {
     val scope = rememberCoroutineScope()
     val isKeyboardVisible = WindowInsets.isImeVisible
+    val focusManager = LocalFocusManager.current
 
     val pagerState = rememberPagerState(
         pageCount = { bottomNavigationItems.size }
     )
+
+    LaunchedEffect(pagerState.isScrollInProgress) {
+        if (pagerState.isScrollInProgress) {
+            focusManager.clearFocus()
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()

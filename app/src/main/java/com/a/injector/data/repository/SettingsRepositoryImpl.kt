@@ -8,6 +8,7 @@ import com.a.injector.data.local.settings.SettingsApi
 import com.a.injector.data.mapper.VersionMapper
 import com.a.injector.data.remote.replace.ReplaceApi
 import com.a.injector.data.remote.storage.StorageApi
+import com.a.injector.data.remote.support.SupportApi
 import com.a.injector.data.remote.version.VersionApi
 import com.a.injector.data.util.catchAndDispatch
 import com.a.injector.domain.model.Text
@@ -35,6 +36,7 @@ class SettingsRepositoryImpl(
     private val context: Context,
     private val versionApi: VersionApi,
     private val replaceApi: ReplaceApi,
+    private val supportApi: SupportApi,
     private val storageApi: StorageApi,
     private val settingsApi: SettingsApi
 ): SettingsRepository {
@@ -61,14 +63,31 @@ class SettingsRepositoryImpl(
 
     override fun cleanStorage(): Flow<Either<Text, Text>> {
         return flow<Either<Text, Text>> {
-            val filesInPostgrest = replaceApi.getList().first().map { "${it.id}.zip" }
-            val filesInStorage = storageApi.getFileNames(Bucket.SCRIPT)
-            val filesToDelete = filesInStorage.filter { it !in filesInPostgrest }
+            val validScriptFiles = replaceApi.getList().first().map { replaceDto ->
+                "${replaceDto.id}.zip"
+            }
+            val validImageFiles = supportApi.getList().first().map { supportDto ->
+                "${supportDto.id}.webp"
+            }
 
-            if (filesToDelete.isNotEmpty()) {
+            val orphanScripts = storageApi.getFileNames(Bucket.SCRIPT).filter { fileName ->
+                fileName !in validScriptFiles
+            }
+            val orphanImages = storageApi.getFileNames(Bucket.IMAGE).filter { fileName ->
+                fileName !in validImageFiles
+            }
+
+            if (orphanScripts.isNotEmpty()) {
                 storageApi.delete(
                     fromBucket = Bucket.SCRIPT,
-                    files = filesToDelete
+                    files = orphanScripts
+                )
+            }
+
+            if (orphanImages.isNotEmpty()) {
+                storageApi.delete(
+                    fromBucket = Bucket.IMAGE,
+                    files = orphanImages
                 )
             }
             emit(Either.Right(Text.Resource(R.string.success_clean_cloud_storage)))

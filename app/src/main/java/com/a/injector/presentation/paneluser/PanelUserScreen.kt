@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Edit
@@ -24,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,7 +35,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
 import com.a.injector.presentation.component.CustomCenterCircularWavyProgressIndicator
-import com.a.injector.presentation.component.CustomFloatingActionToolBar
+import com.a.injector.presentation.component.CustomHorizontalToolBar
 import com.a.injector.presentation.component.CustomIconButton
 import com.a.injector.presentation.component.CustomTopAppBar
 import com.a.injector.presentation.component.DefaultListItem
@@ -97,35 +99,41 @@ private fun PanelUserScreen(
         },
         snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         floatingActionButton = {
-            CustomFloatingActionToolBar {
-                AnimatedContent(
-                    targetState = isSearchExpanded
-                ) { animatedContentState ->
-                    if (animatedContentState) {
-                        TransparentTextField(
-                            modifier = Modifier
-                                .width(250.dp),
-                            placeholder = stringResource(R.string.search_here),
-                            value = state.searchTextField,
-                            onValueChange = { onAction(PanelUserAction.SearchTextField(it)) },
-                            trailingIcon = {
-                                IconButton(
-                                    onClick = {
-                                        isSearchExpanded = false
-                                        onAction(PanelUserAction.SearchTextField(""))
-                                    },
-                                    content = { Icon(Icons.Rounded.Close, null) }
+            CustomHorizontalToolBar(
+                content = {
+                    AnimatedContent(
+                        targetState = isSearchExpanded
+                    ) { animatedContentState ->
+                        if (animatedContentState) {
+                            TransparentTextField(
+                                modifier = Modifier
+                                    .width(250.dp),
+                                placeholder = stringResource(R.string.search_here),
+                                value = state.searchTextField,
+                                onValueChange = { onAction(PanelUserAction.SearchTextField(it)) },
+                                trailingIcon = {
+                                    IconButton(
+                                        onClick = {
+                                            isSearchExpanded = false
+                                            onAction(PanelUserAction.SearchTextField(""))
+                                        },
+                                        content = { Icon(Icons.Rounded.Close, null) }
+                                    )
+                                },
+                                singleLine = true,
+                                keyboardOptions = KeyboardOptions(
+                                    imeAction = ImeAction.Done
                                 )
-                            }
-                        )
-                    } else {
-                        IconButton(
-                            onClick = { isSearchExpanded = true },
-                            content = { Icon(Icons.Rounded.Search, null) }
-                        )
+                            )
+                        } else {
+                            IconButton(
+                                onClick = { isSearchExpanded = true },
+                                content = { Icon(Icons.Rounded.Search, null) }
+                            )
+                        }
                     }
                 }
-            }
+            )
         }
     )
 }

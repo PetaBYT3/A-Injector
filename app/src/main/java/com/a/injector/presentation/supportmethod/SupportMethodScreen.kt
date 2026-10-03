@@ -35,6 +35,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
 import com.a.injector.presentation.component.CustomBottomSheet
 import com.a.injector.presentation.component.CustomIconButton
+import com.a.injector.presentation.component.CustomSurfaceText
 import com.a.injector.presentation.component.CustomTopAppBar
 import com.a.injector.presentation.component.DefaultClickableListItem
 import com.a.injector.presentation.component.DefaultListItem
@@ -157,6 +158,14 @@ private fun Content(
         contentPadding = PaddingValues(start = 10.dp, end = 10.dp, bottom = 100.dp),
         verticalArrangement = Arrangement.spacedBy(2.5.dp)
     ) {
+        item("supportDesc") {
+            CustomSurfaceText(
+                modifier = Modifier
+                    .animateItem(),
+                text = stringResource(R.string.support_desc)
+            )
+        }
+        spacer()
         item("supportMethodTitle") {
             DefaultListItem(
                 modifier = Modifier

@@ -279,7 +279,7 @@ private fun Content(
                         onClick = {
                             when (static.id) {
                                 PanelSupporting -> {
-                                    navBackStack.add(MainNavigationRoute.PanelSupportingScreen)
+                                    navBackStack.add(MainNavigationRoute.PanelSupportScreen)
                                 }
                                 RoleManager -> {
                                     navBackStack.add(MainNavigationRoute.ManageRoleScreen)

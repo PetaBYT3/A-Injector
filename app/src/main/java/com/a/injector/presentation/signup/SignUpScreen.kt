@@ -39,7 +39,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
 import com.a.injector.presentation.component.CustomExtendedFloatingActionButton
-import com.a.injector.presentation.component.CustomFloatingActionToolBar
+import com.a.injector.presentation.component.CustomHorizontalToolBar
 import com.a.injector.presentation.component.CustomSlideUpAnimatedVisibility
 import com.a.injector.presentation.component.CustomSurfaceText
 import com.a.injector.presentation.component.CustomTextField
@@ -108,11 +108,11 @@ private fun SignUpScreen(
             CustomSlideUpAnimatedVisibility(
                 visible = state.isDataValid
             ) {
-                CustomFloatingActionToolBar(
+                CustomHorizontalToolBar(
                     floatingActionButton = {
                         CustomExtendedFloatingActionButton(
                             onClick = { onAction(SignUpAction.SignUpButton) },
-                            content = { Text(text = stringResource(R.string.sign_up)) },
+                            content = stringResource(R.string.sign_up),
                             isLoading = state.isSignUpButtonLoading
                         )
                     }

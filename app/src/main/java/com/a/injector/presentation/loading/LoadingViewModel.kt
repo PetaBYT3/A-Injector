@@ -15,11 +15,12 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 import kotlin.time.Duration.Companion.seconds
 
 @KoinViewModel
 class LoadingViewModel(
-    private val signMethod: SignMethod,
+    @InjectedParam private val signMethod: SignMethod,
     private val accountRepository: AccountRepository,
     private val navigationRepository: NavigationRepository
 ): ViewModel() {

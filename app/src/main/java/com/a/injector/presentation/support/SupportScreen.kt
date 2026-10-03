@@ -30,7 +30,7 @@ import com.a.injector.R
 import com.a.injector.presentation.component.CustomCenterCircularWavyProgressIndicator
 import com.a.injector.presentation.component.CustomCenterTextMessage
 import com.a.injector.presentation.component.CustomFloatingActionButton
-import com.a.injector.presentation.component.CustomFloatingActionToolBar
+import com.a.injector.presentation.component.CustomHorizontalToolBar
 import com.a.injector.presentation.component.CustomIconButton
 import com.a.injector.presentation.component.CustomSlideUpAnimatedVisibility
 import com.a.injector.presentation.component.CustomTextField
@@ -114,11 +114,11 @@ private fun SupportingScreen(
                 CustomSlideUpAnimatedVisibility(
                     visible = !state.isContentLoading && !state.isRequested
                 ) {
-                    CustomFloatingActionToolBar(
+                    CustomHorizontalToolBar(
                         floatingActionButton = {
                             CustomFloatingActionButton(
                                 onClick = { onAction(SupportAction.UpsertSupportingButton) },
-                                content = { Icon(Icons.Rounded.OpenInNew, null) },
+                                content = Icons.Rounded.OpenInNew,
                                 isLoading = state.isUpsertSupportButtonLoading
                             )
                         }

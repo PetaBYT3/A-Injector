@@ -39,7 +39,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
 import com.a.injector.presentation.component.CustomFloatingActionButton
-import com.a.injector.presentation.component.CustomFloatingActionToolBar
+import com.a.injector.presentation.component.CustomHorizontalToolBar
 import com.a.injector.presentation.component.CustomSlideUpAnimatedVisibility
 import com.a.injector.presentation.component.CustomTextField
 import com.a.injector.presentation.component.CustomTopAppBar
@@ -110,11 +110,11 @@ private fun PasswordScreen(
             CustomSlideUpAnimatedVisibility(
                 visible = state.passwordValid
             ) {
-                CustomFloatingActionToolBar(
+                CustomHorizontalToolBar(
                     floatingActionButton = {
                         CustomFloatingActionButton(
                             onClick = { onAction(PasswordAction.ChangePasswordButton) },
-                            content = { Icon(Icons.Rounded.Save, null) },
+                            content = Icons.Rounded.Save,
                             isLoading = state.isChangePasswordButtonLoading
                         )
                     }

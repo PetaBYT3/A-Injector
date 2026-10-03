@@ -7,7 +7,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -21,7 +20,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
 import com.a.injector.presentation.component.CustomExtendedFloatingActionButton
-import com.a.injector.presentation.component.CustomFloatingActionToolBar
+import com.a.injector.presentation.component.CustomHorizontalToolBar
 import com.a.injector.presentation.component.CustomSlideUpAnimatedVisibility
 import com.a.injector.presentation.component.CustomSurfaceText
 import com.a.injector.presentation.component.CustomTextField
@@ -91,11 +90,11 @@ private fun SignLinkScreen(
             CustomSlideUpAnimatedVisibility(
                 visible = state.emailTextField.isNotBlank()
             ) {
-                CustomFloatingActionToolBar(
+                CustomHorizontalToolBar(
                     floatingActionButton = {
                         CustomExtendedFloatingActionButton(
                             onClick = { onAction(SignLinkAction.SendLinkButton) },
-                            content = { Text(text = stringResource(R.string.send)) },
+                            content = stringResource(R.string.send),
                             isLoading = state.isSendLinkButtonLoading
                         )
                     }

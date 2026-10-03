@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Close
@@ -26,6 +27,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -36,7 +38,7 @@ import com.a.injector.R
 import com.a.injector.domain.model.HeroModel
 import com.a.injector.presentation.component.CustomCenterCircularWavyProgressIndicator
 import com.a.injector.presentation.component.CustomFloatingActionButton
-import com.a.injector.presentation.component.CustomFloatingActionToolBar
+import com.a.injector.presentation.component.CustomHorizontalToolBar
 import com.a.injector.presentation.component.CustomSlideUpAnimatedVisibility
 import com.a.injector.presentation.component.CustomTopAppBar
 import com.a.injector.presentation.component.DefaultClickableListItem
@@ -118,12 +120,12 @@ private fun ScriptFloatingActionButton(
     CustomSlideUpAnimatedVisibility(
         visible = !state.isContentLoading
     ) {
-        CustomFloatingActionToolBar(
+        CustomHorizontalToolBar(
             floatingActionButton = if (state.isModifyEnabled) {
                 {
                     CustomFloatingActionButton(
                         onClick = { navBackStack.add(MainNavigationRoute.ManageHeroScreen("")) },
-                        content = { Icon(Icons.Rounded.Add, null) }
+                        content = Icons.Rounded.Add
                     )
                 }
             } else null,
@@ -146,7 +148,11 @@ private fun ScriptFloatingActionButton(
                                     },
                                     content = { Icon(Icons.Rounded.Close, null) }
                                 )
-                            }
+                            },
+                            singleLine = true,
+                            keyboardOptions = KeyboardOptions(
+                                imeAction = ImeAction.Done
+                            )
                         )
                     } else {
                         IconButton(

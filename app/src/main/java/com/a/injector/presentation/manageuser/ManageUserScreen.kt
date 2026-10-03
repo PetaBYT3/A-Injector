@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Save
-import androidx.compose.material3.Icon
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -30,7 +29,7 @@ import com.a.injector.R
 import com.a.injector.domain.model.state.Role
 import com.a.injector.presentation.component.CustomCenterCircularWavyProgressIndicator
 import com.a.injector.presentation.component.CustomFloatingActionButton
-import com.a.injector.presentation.component.CustomFloatingActionToolBar
+import com.a.injector.presentation.component.CustomHorizontalToolBar
 import com.a.injector.presentation.component.CustomTextField
 import com.a.injector.presentation.component.CustomTopAppBar
 import com.a.injector.presentation.component.DefaultClickableListItem
@@ -106,11 +105,11 @@ private fun ManageUserScreen(
         },
         snackbarHost = { SnackbarHost(hostState = snackBarHostState) },
         floatingActionButton = {
-            CustomFloatingActionToolBar(
+            CustomHorizontalToolBar(
                 floatingActionButton = {
                     CustomFloatingActionButton(
                         onClick = { onAction(ManageUserAction.UpsertProfileButton) },
-                        content = { Icon(Icons.Rounded.Save, null) },
+                        content = Icons.Rounded.Save,
                         isLoading = state.isUpsertProfileButtonLoading
                     )
                 }

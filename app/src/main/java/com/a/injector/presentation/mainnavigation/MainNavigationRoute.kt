@@ -7,7 +7,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed interface MainNavigationRoute: NavKey {
     @Serializable
-    data class LoadingScreen(val signMethod: SignMethod = SignMethod.EmailPassword): MainNavigationRoute, NavKey
+    data class LoadingScreen(
+        val signMethod: SignMethod = SignMethod.EmailPassword
+    ): MainNavigationRoute, NavKey
 
     @Serializable
     data object LandingScreen: MainNavigationRoute, NavKey
@@ -28,16 +30,27 @@ sealed interface MainNavigationRoute: NavKey {
     data object SupportDevScreen: MainNavigationRoute, NavKey
 
     @Serializable
-    data class HeroScreen(val heroId: String): MainNavigationRoute, NavKey
+    data class HeroScreen(
+        val heroId: String
+    ): MainNavigationRoute, NavKey
 
     @Serializable
-    data class ManageHeroScreen(val heroId: String): MainNavigationRoute, NavKey
+    data class ManageHeroScreen(
+        val heroId: String
+    ): MainNavigationRoute, NavKey
 
     @Serializable
-    data class ManageSkinScreen(val heroId: String, val skinId: String): MainNavigationRoute, NavKey
+    data class ManageSkinScreen(
+        val heroId: String,
+        val skinId: String
+    ): MainNavigationRoute, NavKey
 
     @Serializable
-    data class ManageReplaceScreen(val heroId: String, val skinId: String, val replaceId: String): MainNavigationRoute, NavKey
+    data class ManageReplaceScreen(
+        val heroId: String,
+        val skinId: String,
+        val replaceId: String
+    ): MainNavigationRoute, NavKey
 
     @Serializable
     data object UsernameScreen: MainNavigationRoute, NavKey
@@ -52,7 +65,7 @@ sealed interface MainNavigationRoute: NavKey {
     data object PasswordScreen: MainNavigationRoute, NavKey
 
     @Serializable
-    data object PanelSupportingScreen: MainNavigationRoute, NavKey
+    data object PanelSupportScreen: MainNavigationRoute, NavKey
 
     @Serializable
     data object ManageRoleScreen: MainNavigationRoute, NavKey
@@ -69,7 +82,4 @@ sealed interface MainNavigationRoute: NavKey {
     data class ImagePreviewScreen(
         val imageSource: String
     ): MainNavigationRoute, NavKey
-
-    @Serializable
-    data object DebugScreen: MainNavigationRoute, NavKey
 }

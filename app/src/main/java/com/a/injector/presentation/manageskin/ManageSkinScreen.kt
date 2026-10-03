@@ -30,7 +30,7 @@ import com.a.injector.presentation.component.CustomBottomSheet
 import com.a.injector.presentation.component.CustomButton
 import com.a.injector.presentation.component.CustomCenterCircularWavyProgressIndicator
 import com.a.injector.presentation.component.CustomFloatingActionButton
-import com.a.injector.presentation.component.CustomFloatingActionToolBar
+import com.a.injector.presentation.component.CustomHorizontalToolBar
 import com.a.injector.presentation.component.CustomIconButton
 import com.a.injector.presentation.component.CustomSlideUpAnimatedVisibility
 import com.a.injector.presentation.component.CustomSurfaceText
@@ -115,11 +115,11 @@ private fun Screen(
             CustomSlideUpAnimatedVisibility(
                 visible = !state.isContentLoading
             ) {
-                CustomFloatingActionToolBar(
+                CustomHorizontalToolBar(
                     floatingActionButton = {
                         CustomFloatingActionButton(
                             onClick = { onAction(ManageSkinAction.UpsertButton) },
-                            content = { Icon(Icons.Rounded.Save, null) },
+                            content = Icons.Rounded.Save,
                             isLoading = state.isUpsertButtonLoading
                         )
                     },
