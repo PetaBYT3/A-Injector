@@ -12,9 +12,11 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Storage
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -185,41 +187,48 @@ private fun Content(
                     modifier = Modifier
                         .animateItem(),
                     leadingContent = {
-                        val imageVector = when (state.inject.injectMethod) {
+                        val imageVector = when (state.inject.method) {
                             StorageManager -> Icons.Rounded.Storage
                             Shizuku -> ImageVector.vectorResource(R.drawable.shizuku)
                             Superuser -> ImageVector.vectorResource(R.drawable.superuser)
                         }
                         Icon(imageVector, null)
                     },
-                    content = { Text(text = stringResource(state.inject.injectMethod.title)) },
+                    content = { Text(text = stringResource(state.inject.method.title)) },
                     supportingContent = {
-                        val supportingText = when (state.inject.injectMethod) {
-                            Shizuku -> {
-                                if (state.inject.isGranted) {
-                                    R.string.authorized
-                                } else {
-                                    R.string.unauthorized
+                        val supportingText = when (state.inject.isGranted) {
+                            true -> R.string.granted
+                            false -> R.string.denied
+                        }
+                        Text(
+                            color = when (state.inject.isGranted) {
+                                true -> MaterialTheme.colorScheme.primary
+                                false -> MaterialTheme.colorScheme.error
+                            },
+                            text = stringResource(supportingText)
+                        )
+                    },
+                    trailingContent = {
+                        val isGranted = state.inject.isGranted
+                        when (state.inject.method) {
+                            StorageManager -> {
+                                if (!isGranted) {
+                                    Button(
+                                        onClick = { openStoragePermissionSettings(context) },
+                                        content = { Text(text = stringResource(R.string.settings)) }
+                                    )
                                 }
                             }
                             else -> {
-                                if (state.inject.isGranted) {
-                                    R.string.granted
-                                } else {
-                                    R.string.denied
+                                if (!isGranted) {
+                                    Icon(
+                                        modifier = Modifier
+                                            .padding(8.dp),
+                                        imageVector = Icons.Rounded.Warning,
+                                        contentDescription = null
+                                    )
                                 }
                             }
-                        }
-                        Text(text = stringResource(supportingText))
-                    },
-                    trailingContent = {
-                        val isStorageManager = state.inject.injectMethod == StorageManager
-                        val isGranted = state.inject.isGranted
-                        if (isStorageManager && !isGranted) {
-                            Button(
-                                onClick = { openStoragePermissionSettings(context) },
-                                content = { Text(text = stringResource(R.string.settings)) }
-                            )
                         }
                     }
                 )

@@ -7,6 +7,8 @@
 
     <queries>
         <package android:name="moe.shizuku.privilege.api" />
+        <package android:name="af.shizuku.plus.api" />
+        <package android:name="af.shizuku.plus" />
     </queries>
     
     <application
@@ -19,6 +21,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AInjector">
+
         <provider
             android:name="rikka.shizuku.ShizukuProvider"
             android:authorities="${applicationId}.shizuku"
@@ -46,6 +49,7 @@
                 <data android:scheme="com.a.injector" android:host="signin" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>

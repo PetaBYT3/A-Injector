@@ -4,8 +4,10 @@
     <string name="exception_manage_storage_failed">Inject with manage storage method failed</string>
 
     <string name="shizuku_unauthorized">Shizuku unauthorized or not running</string>
+    <string name="shizuku_method_failed">Inject with shizuku failed</string>
 
     <string name="superuser_denied">Superuser access denied or device isn\'t rooted</string>
+    <string name="superuser_method_failed">Inject with superuser failed</string>
 
     <string name="exception_credential_invalid">Email or password incorrect</string>
     <string name="exception_email_invalid">Email invalid</string>
@@ -23,6 +25,8 @@
     <string name="exception_superuser_denied">Cannot perform action, cause superuser access denied</string>
     <string name="exception_no_data">Data has been does not exist or has been deleted</string>
     <string name="exception_unknown">Something went wrong</string>
+
+    <string name="exception_security">Access denied by system</string>
 
     <string name="exception_fail_to_read_image">Fail to read image</string>
     <string name="exception_no_script">No script file picked</string>

@@ -4,8 +4,10 @@
     <string name="exception_manage_storage_failed">Injeksi dengan metode kelola penyimpanan gagal</string>
 
     <string name="shizuku_unauthorized">Shizuku tidak diotorisasi atau tidak berjalan</string>
+    <string name="shizuku_method_failed">Injeksi dengan shizuku gagal</string>
 
     <string name="superuser_denied">Akses superuser ditolak atau perangkat belum di-root</string>
+    <string name="superuser_method_failed">Injeksi dengan superuser gagal</string>
 
     <string name="exception_credential_invalid">Email atau kata sandi salah</string>
     <string name="exception_email_invalid">Email tidak valid</string>
@@ -23,6 +25,8 @@
     <string name="exception_superuser_denied">Tidak dapat melakukan tindakan karena akses superuser ditolak</string>
     <string name="exception_no_data">Data tidak ada atau telah dihapus</string>
     <string name="exception_unknown">Terjadi kesalahan</string>
+
+    <string name="exception_security">Akses ditolak oleh sistem</string>
 
     <string name="exception_fail_to_read_image">Gagal membaca gambar</string>
     <string name="exception_no_script">Tidak ada file skrip yang dipilih</string>

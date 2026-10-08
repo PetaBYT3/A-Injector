@@ -21,11 +21,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import com.a.injector.data.system.shizuku.ShizukuApi
-import com.a.injector.data.system.superuser.SuperuserApi
 import com.a.injector.domain.repository.DirectoryRepository
+import com.a.injector.domain.repository.InjectRepository
 import com.a.injector.domain.repository.NavigationRepository
-import com.a.injector.domain.repository.PermissionRepository
 import com.a.injector.presentation.loading.SignMethod
 import com.a.injector.presentation.mainnavigation.MainNavigationRoute
 import com.a.injector.presentation.mainnavigation.NavigationScreen
@@ -38,15 +36,13 @@ import org.koin.android.ext.android.inject
 import java.util.Locale
 
 class MainActivity : ComponentActivity() {
-    private val supabaseClient: SupabaseClient by inject()
-
     private val viewModel: MainViewModel by inject()
 
+    private val supabaseClient: SupabaseClient by inject()
+
     private val directoryRepository: DirectoryRepository by inject()
-    private val permissionRepository: PermissionRepository by inject()
-    private val shizukuApi: ShizukuApi by inject()
-    private val superuserApi: SuperuserApi by inject()
     private val navigationRepository: NavigationRepository by inject()
+    private val injectRepository: InjectRepository by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,9 +50,7 @@ class MainActivity : ComponentActivity() {
 
         lifecycleScope.launch {
             supabaseClient.realtime.connect()
-            permissionRepository.checkPermission()
-            shizukuApi.check()
-            superuserApi.check()
+            injectRepository.check()
         }
 
         enableEdgeToEdge()
@@ -96,6 +90,7 @@ class MainActivity : ComponentActivity() {
 
         lifecycleScope.launch {
             navigationRepository.replaceTo(MainNavigationRoute.LoadingScreen(SignMethod.EmailLink))
+            injectRepository.check()
         }
     }
 
@@ -104,18 +99,14 @@ class MainActivity : ComponentActivity() {
         supabaseClient.handleDeeplinks(intent)
 
         lifecycleScope.launch {
-            permissionRepository.checkPermission()
-            shizukuApi.check()
-            superuserApi.check()
+            injectRepository.check()
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
 
-        lifecycleScope.launch {
-            supabaseClient.realtime.disconnect()
-            shizukuApi.destroy()
-        }
+        supabaseClient.realtime.disconnect()
+        injectRepository.destroy()
     }
 }

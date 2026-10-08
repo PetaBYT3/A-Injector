@@ -1,5 +1,7 @@
 package com.a.injector.data.util
 
+import android.os.DeadObjectException
+import android.os.RemoteException
 import com.a.injector.R
 import com.a.injector.data.remote.SupabaseConst
 import com.a.injector.domain.model.Text
@@ -80,8 +82,40 @@ fun Throwable.toMessage(): Text {
         is ShizukuUnauthorized -> {
             Text.Resource(R.string.exception_shizuku_unauthorized)
         }
+        is ShizukuMethodFailed -> {
+            Text.Combined(
+                listOf(
+                    Text.Resource(R.string.shizuku_method_failed),
+                    Text.Static(": $message")
+                )
+            )
+        }
         is SuperuserDenied -> {
-            Text.Resource(R.string.exception_superuser_denied)
+            Text.Resource(R.string.superuser_denied)
+        }
+        is SuperuserMethodFailed -> {
+            Text.Combined(
+                listOf(
+                    Text.Resource(R.string.superuser_method_failed),
+                    Text.Static(": $message")
+                )
+            )
+        }
+        is RemoteException, is DeadObjectException -> {
+            Text.Combined(
+                listOf(
+                    Text.Resource(R.string.shizuku_method_failed),
+                    Text.Static(": ${this.localizedMessage}")
+                )
+            )
+        }
+        is SecurityException -> {
+            Text.Combined(
+                listOf(
+                    Text.Resource(R.string.exception_security),
+                    Text.Static(": ${this.localizedMessage}")
+                )
+            )
         }
         else -> {
             val message = this.message

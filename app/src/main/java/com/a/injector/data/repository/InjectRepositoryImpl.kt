@@ -1,4 +1,5 @@
 @file:Suppress("BlockingMethodInNonBlockingContext")
+@file:OptIn(ExperimentalCoroutinesApi::class)
 
 package com.a.injector.data.repository
 
@@ -21,10 +22,15 @@ import com.a.injector.domain.model.state.InjectMethod.StorageManager
 import com.a.injector.domain.model.state.InjectMethod.Superuser
 import com.a.injector.domain.repository.InjectRepository
 import com.a.injector.domain.repository.PermissionRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import org.koin.core.annotation.Single
 import java.io.File
 import java.util.zip.ZipFile
@@ -41,23 +47,32 @@ class InjectRepositoryImpl(
 ): InjectRepository {
     companion object {
         private const val MANAGE_STORAGE_TARGET_PATH = "com.mobile.legends/files/dragon2017/assets/"
-        private const val SHELL_TARGET_PATH = "/storage/emulated/0/Android/data/com.mobile.legends/files/dragon2017/assets/"
+        private const val SHELL_TARGET_PATH = "Android/data/com.mobile.legends/files/dragon2017/assets/"
     }
 
-    override val currentInjectMethod: Flow<InjectModel> = combine(
-        settingsApi.injectMethod,
-        permissionRepository.isManageExternalStorageGranted,
-        shizukuApi.isAuthorized,
-        superuserApi.isGranted
-    ) { injectMethod, permission, authorized, granted ->
-        InjectModel(
-            injectMethod = injectMethod,
-            isGranted = when (injectMethod) {
-                StorageManager -> permission
-                Shizuku -> authorized
-                Superuser -> granted
-            }
-        )
+    override val currentInjectMethod: Flow<InjectModel> = settingsApi.injectMethod.flatMapLatest { injectMethod ->
+        val isGranted = when (injectMethod) {
+            StorageManager -> permissionRepository.isManageExternalStorageGranted
+            Shizuku -> shizukuApi.isAuthorized
+            Superuser -> superuserApi.isGranted
+        }
+
+        isGranted.map { isGranted ->
+            InjectModel(
+                method = injectMethod,
+                isGranted = isGranted
+            )
+        }
+    }.distinctUntilChanged().flowOn(Dispatchers.IO)
+
+    override suspend fun check() {
+        permissionRepository.checkPermission()
+        shizukuApi.check()
+        superuserApi.check()
+    }
+
+    override fun destroy() {
+        shizukuApi.destroy()
     }
 
     override fun execute(replaceModel: ReplaceModel): Flow<Either<Text, Text>> {
@@ -81,20 +96,16 @@ class InjectRepositoryImpl(
                     )
                 }
                 Shizuku -> {
-                    extractedReplace.listFiles()?.forEach { file ->
-                        shizukuApi.copy(
-                            sourcePath = file.absolutePath,
-                            targetPath = SHELL_TARGET_PATH
-                        )
-                    }
+                    shizukuApi.copy(
+                        sourcePath = extractedReplace,
+                        targetPath = SHELL_TARGET_PATH
+                    )
                 }
                 Superuser -> {
-                    extractedReplace.listFiles()?.forEach { file ->
-                        superuserApi.copy(
-                            sourcePath = file.absolutePath,
-                            targetPath = SHELL_TARGET_PATH
-                        )
-                    }
+                    superuserApi.copy(
+                        sourcePath = extractedReplace,
+                        targetPath = SHELL_TARGET_PATH
+                    )
                 }
             }
             extractedReplace.deleteRecursively()
@@ -103,13 +114,41 @@ class InjectRepositoryImpl(
 
     private suspend fun validateReplace(fileName: String, expectedSize: Long?): File {
         val publicDownloadPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-        val targetDownloadPath = File(publicDownloadPath, context.getString(R.string.app_name))
+        val parentFolderName = "${context.getString(R.string.app_name)} Workspace"
 
-        if (!targetDownloadPath.exists()) {
-            targetDownloadPath.mkdirs()
+        var targetDownloadPath: File? = null
+        var suffix = 0
+
+        while (targetDownloadPath == null) {
+            val folderName = if (suffix == 0) {
+                parentFolderName
+            } else {
+                "$parentFolderName $suffix"
+            }
+
+            val candidateDir = File(publicDownloadPath, folderName)
+
+            if (candidateDir.exists()) {
+                candidateDir.deleteRecursively()
+            }
+
+            if (!candidateDir.exists()) {
+                candidateDir.mkdirs()
+            }
+
+            if (candidateDir.exists() && candidateDir.canWrite()) {
+                targetDownloadPath = candidateDir
+            } else {
+                suffix++
+            }
         }
 
         val downloadedFile = File(targetDownloadPath, fileName)
+
+        if (downloadedFile.exists() && !downloadedFile.canWrite()) {
+            downloadedFile.delete()
+        }
+
         if (!downloadedFile.exists() || downloadedFile.length() != expectedSize) {
             storageApi.download(
                 fromBucket = Bucket.SCRIPT,

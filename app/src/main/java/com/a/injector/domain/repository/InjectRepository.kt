@@ -8,5 +8,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface InjectRepository {
     val currentInjectMethod: Flow<InjectModel>
+    suspend fun check()
+    fun destroy()
+
     fun execute(replaceModel: ReplaceModel): Flow<Either<Text, Text>>
 }
