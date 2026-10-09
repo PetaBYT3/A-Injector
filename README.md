@@ -14,13 +14,7 @@ By utilizing a remote cloud database, this app eliminates manual file downloads,
 
 ---
 
-## Storage Access Methods (Scoped Storage Handling)
-
-### 1. Standard Mode (`MANAGE_EXTERNAL_STORAGE`)
-* **Target:** Primary file management permission for general storage access.
-* **Mechanism:** Requests "All Files Access", functioning like a standalone file manager to read/write directly to internal storage without relying on the native SAF picker UI.
-
-### 2. Shizuku Mode (Recommended Non-Root)
+### 1. Shizuku Mode (Recommended Non-Root)
 * **Target:** Android 11+ devices where system policies restrict `MANAGE_EXTERNAL_STORAGE` from modifying `/Android/data/`.
 * **Mechanism:** Leverages **Shizuku** via Wireless Debugging (ADB) to execute elevated file read/write operations inside restricted directories without root.
 * **Setup Flow:**
@@ -28,7 +22,7 @@ By utilizing a remote cloud database, this app eliminates manual file downloads,
   2. Start the **Shizuku** service.
   3. Grant the application Shizuku access when prompted.
 
-### 3. Root / Superuser Mode (Advanced)
+### 2. Root / Superuser Mode (Advanced)
 * **Target:** Rooted devices running Magisk, KernelSU, or APatch.
 * **Mechanism:** Requests `su` privileges to execute native shell commands (`cp`, `mv`, `chmod`) directly on the filesystem.
 
