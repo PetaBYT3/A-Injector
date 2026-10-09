@@ -17,11 +17,7 @@ class ShellService : IShellService.Stub {
             .redirectErrorStream(true)
             .start()
 
-        val output = process.inputStream.bufferedReader().readText()
         val exitCode = process.waitFor()
-
-        Log.d("Shell Result", "Code:$exitCode, Output:$output")
-
         return exitCode
     }
 

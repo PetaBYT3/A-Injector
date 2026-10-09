@@ -159,6 +159,7 @@
 
     <string name="no_support_requested">No support requested</string>
     <string name="no_role_requested">No role requested</string>
+    <string name="no_file_uploaded">No file uploaded</string>
 
     <string name="checking">Checking</string>
     <string name="waiting">Waiting</string>

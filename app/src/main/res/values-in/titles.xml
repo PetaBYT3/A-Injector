@@ -159,6 +159,7 @@
 
     <string name="no_support_requested">Tidak ada dukungan yang diminta</string>
     <string name="no_role_requested">Tidak ada peran yang diminta</string>
+    <string name="no_file_uploaded">Tidak ada file yang terupload</string>
 
     <string name="checking">Memeriksa</string>
     <string name="waiting">Menunggu</string>

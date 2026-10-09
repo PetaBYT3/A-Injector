@@ -8,7 +8,7 @@ data class InjectModel(
 ) {
     companion object {
         val EMPTY = InjectModel(
-            method = InjectMethod.StorageManager,
+            method = InjectMethod.Shizuku,
             isGranted = false
         )
     }

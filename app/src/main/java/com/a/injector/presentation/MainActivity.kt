@@ -21,7 +21,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import com.a.injector.domain.repository.DirectoryRepository
 import com.a.injector.domain.repository.InjectRepository
 import com.a.injector.domain.repository.NavigationRepository
 import com.a.injector.presentation.loading.SignMethod
@@ -40,13 +39,11 @@ class MainActivity : ComponentActivity() {
 
     private val supabaseClient: SupabaseClient by inject()
 
-    private val directoryRepository: DirectoryRepository by inject()
     private val navigationRepository: NavigationRepository by inject()
     private val injectRepository: InjectRepository by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        directoryRepository.initialize()
 
         lifecycleScope.launch {
             supabaseClient.realtime.connect()

@@ -10,10 +10,12 @@ import com.a.injector.data.remote.replace.ReplaceApi
 import com.a.injector.data.remote.storage.StorageApi
 import com.a.injector.data.remote.support.SupportApi
 import com.a.injector.data.remote.version.VersionApi
+import com.a.injector.data.system.directory.DirectoryApi
 import com.a.injector.data.util.catchAndDispatch
 import com.a.injector.domain.model.Text
 import com.a.injector.domain.model.VersionModel
 import com.a.injector.domain.model.state.Bucket
+import com.a.injector.domain.model.state.Directory
 import com.a.injector.domain.model.state.InjectMethod
 import com.a.injector.domain.repository.SettingsRepository
 import kotlinx.coroutines.CoroutineScope
@@ -34,6 +36,7 @@ import java.util.Locale
 @Single
 class SettingsRepositoryImpl(
     private val context: Context,
+    private val directoryApi: DirectoryApi,
     private val versionApi: VersionApi,
     private val replaceApi: ReplaceApi,
     private val supportApi: SupportApi,
@@ -121,9 +124,13 @@ class SettingsRepositoryImpl(
 
     override fun cleanCache(): Flow<Either<Text, Text>> {
         return flow<Either<Text, Text>> {
-            val publicDownloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-            val cachePath = File(publicDownloadDir, context.getString(R.string.app_name))
-            cachePath.listFiles()?.forEach { file ->
+            val downloadedDir = directoryApi.getDirectory(Directory.Downloaded)
+            val extractedDir = directoryApi.getDirectory(Directory.Extracted)
+
+            downloadedDir.listFiles()?.forEach { file ->
+                file.deleteRecursively()
+            }
+            extractedDir.listFiles()?.forEach { file ->
                 file.deleteRecursively()
             }
             emit(Either.Right(Text.Resource(R.string.success_clean_cache)))
@@ -132,13 +139,17 @@ class SettingsRepositoryImpl(
     }
 
     private fun updateCacheSize() {
-        val publicDownloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-        val cachePath = File(publicDownloadDir, context.getString(R.string.app_name))
-        if (!cachePath.exists()) {
-            _cacheSize.update { 0 }
-            return
-        }
-        val totalSize = cachePath.walkTopDown().filter { it.isFile }.sumOf { it.length() }
-        _cacheSize.update { totalSize }
+        val downloadedDir = directoryApi.getDirectory(Directory.Downloaded)
+        val extractedDir = directoryApi.getDirectory(Directory.Extracted)
+
+        val downloadedSize = if (downloadedDir.exists()) {
+            downloadedDir.walkTopDown().filter { it.isFile }.sumOf { it.length() }
+        } else 0L
+
+        val extractedSize = if (extractedDir.exists()) {
+            extractedDir.walkTopDown().filter { it.isFile }.sumOf { it.length() }
+        } else 0L
+
+        _cacheSize.update { downloadedSize + extractedSize }
     }
 }

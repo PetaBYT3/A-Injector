@@ -265,6 +265,7 @@ private fun Content(
                             .animateItem()
                     )
                 }
+                spacer()
             }
             state.profile.role == Role.Administrator -> {
                 itemsIndexed(
@@ -312,9 +313,9 @@ private fun Content(
                         }
                     )
                 }
+                spacer()
             }
         }
-        spacer()
         itemsIndexed(
             items = deviceSettings,
             key = { _, staticModel -> staticModel.id.name }

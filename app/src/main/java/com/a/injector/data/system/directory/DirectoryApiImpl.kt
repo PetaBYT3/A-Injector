@@ -1,15 +1,14 @@
-package com.a.injector.data.repository
+package com.a.injector.data.system.directory
 
 import android.content.Context
 import com.a.injector.domain.model.state.Directory
-import com.a.injector.domain.repository.DirectoryRepository
 import org.koin.core.annotation.Single
 import java.io.File
 
 @Single
-class DirectoryRepositoryImpl(
+class DirectoryApiImpl(
     private val context: Context
-): DirectoryRepository {
+): DirectoryApi {
     private val rootPath = context.getExternalFilesDir(null)
 
     override fun initialize() {

@@ -4,6 +4,6 @@ enum class Directory(
     val absoluteName: String
 ) {
     Image("image"),
-    Script("script"),
+    Downloaded("downloaded"),
     Extracted("extracted")
 }

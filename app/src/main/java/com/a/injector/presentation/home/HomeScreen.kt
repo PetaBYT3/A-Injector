@@ -37,7 +37,6 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import com.a.injector.R
 import com.a.injector.domain.model.Text
 import com.a.injector.domain.model.state.InjectMethod.Shizuku
-import com.a.injector.domain.model.state.InjectMethod.StorageManager
 import com.a.injector.domain.model.state.InjectMethod.Superuser
 import com.a.injector.presentation.component.CustomBottomSheet
 import com.a.injector.presentation.component.CustomButton
@@ -188,7 +187,6 @@ private fun Content(
                         .animateItem(),
                     leadingContent = {
                         val imageVector = when (state.inject.method) {
-                            StorageManager -> Icons.Rounded.Storage
                             Shizuku -> ImageVector.vectorResource(R.drawable.shizuku)
                             Superuser -> ImageVector.vectorResource(R.drawable.superuser)
                         }
@@ -196,39 +194,32 @@ private fun Content(
                     },
                     content = { Text(text = stringResource(state.inject.method.title)) },
                     supportingContent = {
-                        val supportingText = when (state.inject.isGranted) {
-                            true -> R.string.granted
-                            false -> R.string.denied
+                        val isGranted = state.inject.isGranted
+                        val supportingText = when (state.inject.method) {
+                            Shizuku -> {
+                                if (isGranted) R.string.authorized else R.string.unauthorized
+                            }
+                            Superuser -> {
+                                if (isGranted) R.string.granted else R.string.denied
+                            }
+                        }
+                        val color = when (state.inject.isGranted) {
+                            true -> MaterialTheme.colorScheme.primary
+                            false -> MaterialTheme.colorScheme.onSurfaceVariant
                         }
                         Text(
-                            color = when (state.inject.isGranted) {
-                                true -> MaterialTheme.colorScheme.primary
-                                false -> MaterialTheme.colorScheme.error
-                            },
+                            color = color,
                             text = stringResource(supportingText)
                         )
                     },
                     trailingContent = {
-                        val isGranted = state.inject.isGranted
-                        when (state.inject.method) {
-                            StorageManager -> {
-                                if (!isGranted) {
-                                    Button(
-                                        onClick = { openStoragePermissionSettings(context) },
-                                        content = { Text(text = stringResource(R.string.settings)) }
-                                    )
-                                }
-                            }
-                            else -> {
-                                if (!isGranted) {
-                                    Icon(
-                                        modifier = Modifier
-                                            .padding(8.dp),
-                                        imageVector = Icons.Rounded.Warning,
-                                        contentDescription = null
-                                    )
-                                }
-                            }
+                        if (!state.inject.isGranted) {
+                            Icon(
+                                modifier = Modifier
+                                    .padding(8.dp),
+                                imageVector = Icons.Rounded.Warning,
+                                contentDescription = null
+                            )
                         }
                     }
                 )

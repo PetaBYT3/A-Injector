@@ -6,7 +6,17 @@ import com.a.injector.R
 enum class InjectMethod(
     @StringRes val title: Int
 ) {
-    StorageManager(R.string.storage_manager),
     Shizuku(R.string.shizuku),
-    Superuser(R.string.superuser)
+    Superuser(R.string.superuser);
+
+    companion object {
+        fun fromString(name: String?): InjectMethod {
+            if (name == null) {
+                return Shizuku
+            }
+            return entries.firstOrNull { injectMethod ->
+                injectMethod.name.equals(name, ignoreCase = true)
+            } ?: Shizuku
+        }
+    }
 }

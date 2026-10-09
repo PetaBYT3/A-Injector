@@ -20,7 +20,7 @@ class SettingsApiImpl(
     }
 
     override val injectMethod: Flow<InjectMethod> = dataStore.data.map { preferences ->
-        InjectMethod.valueOf(preferences[INJECT_METHOD] ?: InjectMethod.StorageManager.name)
+        InjectMethod.fromString(preferences[INJECT_METHOD])
     }
 
     override suspend fun setInjectMethod(injectMethod: InjectMethod) {

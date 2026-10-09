@@ -9,6 +9,7 @@ import arrow.core.Either
 import com.a.injector.R
 import com.a.injector.data.local.settings.SettingsApi
 import com.a.injector.data.remote.storage.StorageApi
+import com.a.injector.data.system.directory.DirectoryApi
 import com.a.injector.data.system.managestorage.ManageStorageApi
 import com.a.injector.data.system.shizuku.ShizukuApi
 import com.a.injector.data.system.superuser.SuperuserApi
@@ -17,8 +18,8 @@ import com.a.injector.domain.model.InjectModel
 import com.a.injector.domain.model.ReplaceModel
 import com.a.injector.domain.model.Text
 import com.a.injector.domain.model.state.Bucket
+import com.a.injector.domain.model.state.Directory
 import com.a.injector.domain.model.state.InjectMethod.Shizuku
-import com.a.injector.domain.model.state.InjectMethod.StorageManager
 import com.a.injector.domain.model.state.InjectMethod.Superuser
 import com.a.injector.domain.repository.InjectRepository
 import com.a.injector.domain.repository.PermissionRepository
@@ -37,22 +38,20 @@ import java.util.zip.ZipFile
 
 @Single
 class InjectRepositoryImpl(
-    private val context: Context,
+    private val directoryApi: DirectoryApi,
     private val settingsApi: SettingsApi,
     private val permissionRepository: PermissionRepository,
-    private val manageStorageApi: ManageStorageApi,
     private val shizukuApi: ShizukuApi,
     private val superuserApi: SuperuserApi,
     private val storageApi: StorageApi
 ): InjectRepository {
-    companion object {
+    private companion object {
         private const val MANAGE_STORAGE_TARGET_PATH = "com.mobile.legends/files/dragon2017/assets/"
         private const val SHELL_TARGET_PATH = "Android/data/com.mobile.legends/files/dragon2017/assets/"
     }
 
     override val currentInjectMethod: Flow<InjectModel> = settingsApi.injectMethod.flatMapLatest { injectMethod ->
         val isGranted = when (injectMethod) {
-            StorageManager -> permissionRepository.isManageExternalStorageGranted
             Shizuku -> shizukuApi.isAuthorized
             Superuser -> superuserApi.isGranted
         }
@@ -66,6 +65,7 @@ class InjectRepositoryImpl(
     }.distinctUntilChanged().flowOn(Dispatchers.IO)
 
     override suspend fun check() {
+        directoryApi.initialize()
         permissionRepository.checkPermission()
         shizukuApi.check()
         superuserApi.check()
@@ -89,12 +89,6 @@ class InjectRepositoryImpl(
             val injectMethod = settingsApi.injectMethod.first()
 
             when (injectMethod) {
-                StorageManager -> {
-                    manageStorageApi.copyToAndroidData(
-                        sourcePath = extractedReplace,
-                        targetPath = MANAGE_STORAGE_TARGET_PATH
-                    )
-                }
                 Shizuku -> {
                     shizukuApi.copy(
                         sourcePath = extractedReplace,
@@ -113,55 +107,28 @@ class InjectRepositoryImpl(
     }
 
     private suspend fun validateReplace(fileName: String, expectedSize: Long?): File {
-        val publicDownloadPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-        val parentFolderName = "${context.getString(R.string.app_name)} Workspace"
+        val targetFile = directoryApi.setDirectory(
+            directory = Directory.Downloaded,
+            fileName = fileName
+        )
 
-        var targetDownloadPath: File? = null
-        var suffix = 0
-
-        while (targetDownloadPath == null) {
-            val folderName = if (suffix == 0) {
-                parentFolderName
-            } else {
-                "$parentFolderName $suffix"
-            }
-
-            val candidateDir = File(publicDownloadPath, folderName)
-
-            if (candidateDir.exists()) {
-                candidateDir.deleteRecursively()
-            }
-
-            if (!candidateDir.exists()) {
-                candidateDir.mkdirs()
-            }
-
-            if (candidateDir.exists() && candidateDir.canWrite()) {
-                targetDownloadPath = candidateDir
-            } else {
-                suffix++
-            }
-        }
-
-        val downloadedFile = File(targetDownloadPath, fileName)
-
-        if (downloadedFile.exists() && !downloadedFile.canWrite()) {
-            downloadedFile.delete()
-        }
-
-        if (!downloadedFile.exists() || downloadedFile.length() != expectedSize) {
+        if (!targetFile.exists() || targetFile.length() != expectedSize) {
             storageApi.download(
                 fromBucket = Bucket.SCRIPT,
                 fileName = fileName,
-                outputPath = downloadedFile
+                outputPath = targetFile
             )
         }
-        return downloadedFile
+        return targetFile
     }
 
     private fun extractAssets(targetFile: File): File {
-        val targetPath = File(targetFile.parentFile, targetFile.nameWithoutExtension)
-        targetPath.mkdirs()
+        val targetPath = directoryApi.setDirectory(
+            directory = Directory.Extracted,
+            fileName = targetFile.nameWithoutExtension
+        ).apply {
+            if (!exists()) mkdirs()
+        }
 
         val canonicalTargetPath = targetPath.canonicalPath + File.separator
 

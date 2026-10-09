@@ -13,7 +13,7 @@ data class SettingsState(
     val isCleanCloudStorageBottomSheetVisible: Boolean = false,
     val isCleanCloudStorageButtonLoading: Boolean = false,
 
-    val injectMethod: InjectMethod = InjectMethod.StorageManager,
+    val injectMethod: InjectMethod = InjectMethod.Shizuku,
     val isInjectMethodBottomSheetVisible: Boolean = false,
 
     val currentLanguage: Locale = Locale.US,

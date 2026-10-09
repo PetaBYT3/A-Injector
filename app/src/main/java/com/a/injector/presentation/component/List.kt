@@ -338,7 +338,7 @@ fun SkinDetailListItem(
                                     append(" | ")
                                     append(replace.fileSize?.toMegaBytes())
                                 }
-                                false -> stringResource(R.string.exception_no_script)
+                                false -> stringResource(R.string.no_file_uploaded)
                             }
                             Text(
                                 text = overlineText,
